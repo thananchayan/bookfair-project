@@ -2,11 +2,43 @@
 .DS_Store
 .env
 
-# Backend (Java/Maven)
-/backend/target/
-*.class
+# Backend (Java/Maven/Spring Boot)
+backend/HELP.md
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+!backend/**/src/main/**/target/ # Keep nested targets for inclusion if needed
+!backend/**/src/test/**/target/ # Keep nested targets for inclusion if needed
 
-# Frontend (Node.js)
-/frontend/node_modules/
-/frontend/build/
+# STS (IDE Specific for Backend)
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+
+# IntelliJ IDEA (IDE Specific for both - this assumes .idea is at root, if per-module, adjust)
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans (IDE Specific for Backend)
+backend/nbproject/private/
+backend/nbbuild/
+backend/dist/
+backend/nbdist/
+backend/.nb-gradle/
+backend/build/
+!backend/**/src/main/**/build/
+!backend/**/src/test/**/build/
+
+# VS Code (IDE Specific for both - this assumes .vscode is at root, if per-module, adjust)
+.vscode/
+
+# Frontend (Node.js/React/Vue/Angular)
+frontend/node_modules/
+frontend/build/
+frontend/dist/ # Common for some frontend frameworks
 .npm
