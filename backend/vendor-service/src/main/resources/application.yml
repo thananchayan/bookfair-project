@@ -1,0 +1,11 @@
+server:
+  port: 8083
+spring:
+  application.name: vendor-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vendor_db
+    username: postgres
+    password: root
+  jpa:
+    hibernate.ddl-auto: update
+    open-in-view: false
