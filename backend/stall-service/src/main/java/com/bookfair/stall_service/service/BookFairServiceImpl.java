@@ -1,0 +1,153 @@
+package com.bookfair.stall_service.service;
+
+import com.bookfair.stall_service.dto.ContentResponse;
+import com.bookfair.stall_service.dto.request.CreateBookFairRequest;
+import com.bookfair.stall_service.dto.request.UpdateBookFairRequest;
+import com.bookfair.stall_service.dto.response.BookFairResponse;
+import com.bookfair.stall_service.entity.BookFairEntity;
+import com.bookfair.stall_service.enums.BookFairStatus;
+import com.bookfair.stall_service.repository.BookFairRepository;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class BookFairServiceImpl implements BookFairService {
+
+  private final BookFairRepository bookFairRepository;
+
+  @Override
+  public ContentResponse<BookFairResponse> createBookFair(
+      CreateBookFairRequest createBookFairRequest) {
+    if (bookFairRepository.existsByName(createBookFairRequest.getName())) {
+      throw new IllegalArgumentException("Book fair with this name already exists");
+    }
+    BookFairEntity bookFairEntity = mapToEntity(createBookFairRequest);
+    bookFairRepository.save(bookFairEntity);
+    BookFairResponse bookFairResponse = mapToRespnse(bookFairEntity);
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fair created successfully",
+        "SUCCESS",
+        "200",
+        bookFairResponse
+    );
+  }
+
+  @Override
+  public ContentResponse<BookFairResponse> getBookFairById(Long id) {
+    BookFairEntity existingEntity = bookFairRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
+    BookFairResponse bookFairResponse = mapToRespnse(existingEntity);
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fair retrieved successfully",
+        "SUCCESS",
+        "200",
+        bookFairResponse
+    );
+  }
+
+  @Override
+  public ContentResponse<List<BookFairResponse>> getAll() {
+    List<BookFairEntity> bookFairEntities = bookFairRepository.findAll();
+    List<BookFairResponse> bookFairResponses = bookFairEntities.stream()
+        .map(this::mapToRespnse)
+        .toList();
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fairs retrieved successfully",
+        "SUCCESS",
+        "200",
+        bookFairResponses
+    );
+  }
+
+
+  @Override
+  public ContentResponse<BookFairResponse> updateBookFair(Long id,
+      UpdateBookFairRequest updateBookFairRequest) {
+    BookFairEntity existingEntity = bookFairRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
+    if (bookFairRepository.existsByName(updateBookFairRequest.getName())) {
+      throw new IllegalArgumentException("Book fair with this name already exists");
+    }
+    existingEntity.setName(updateBookFairRequest.getName());
+    existingEntity.setStartDate(updateBookFairRequest.getStartDate());
+    existingEntity.setEndDate(updateBookFairRequest.getEndDate());
+    existingEntity.setOrganizer(updateBookFairRequest.getOrganizer());
+    existingEntity.setDurationDays(updateBookFairRequest.getDurationDays());
+    existingEntity.setDescription(updateBookFairRequest.getDescription());
+    existingEntity.setLocation(updateBookFairRequest.getLocation());
+    existingEntity.setStatus(updateBookFairRequest.getStatus());
+
+    bookFairRepository.save(existingEntity);
+    BookFairResponse bookFairResponse = mapToRespnse(existingEntity);
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fair updated successfully",
+        "SUCCESS",
+        "200",
+        bookFairResponse
+    );
+  }
+
+  @Override
+  public ContentResponse<BookFairResponse> findById(Long id) {
+    BookFairEntity bookFairEntity = bookFairRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
+    BookFairResponse bookFairResponse = mapToRespnse(bookFairEntity);
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fair retrieved successfully",
+        "SUCCESS",
+        "200",
+        bookFairResponse
+    );
+  }
+
+  @Override
+  public ContentResponse<Void> deleteBookFairById(Long id) {
+    BookFairEntity bookFairEntity = bookFairRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
+    bookFairRepository.delete(bookFairEntity);
+    return new ContentResponse<>(
+        "BookFair",
+        "Book fair deleted successfully",
+        "SUCCESS",
+        "200",
+        null
+    );
+  }
+
+  private BookFairEntity mapToEntity(CreateBookFairRequest createBookFairRequest) {
+    return BookFairEntity.builder()
+        .name(createBookFairRequest.getName())
+        .startDate(createBookFairRequest.getStartDate())
+        .endDate(createBookFairRequest.getEndDate())
+        .organizer(createBookFairRequest.getOrganizer())
+        .durationDays(createBookFairRequest.getDurationDays())
+        .description(createBookFairRequest.getDescription())
+        .location(createBookFairRequest.getLocation())
+        .status(BookFairStatus.UPCOMING)
+        .build();
+
+  }
+
+  private BookFairResponse mapToRespnse(BookFairEntity bookFairEntity) {
+    return BookFairResponse.builder()
+        .id(bookFairEntity.getId())
+        .name(bookFairEntity.getName())
+        .startDate(bookFairEntity.getStartDate())
+        .endDate(bookFairEntity.getEndDate())
+        .organizer(bookFairEntity.getOrganizer())
+        .durationDays(bookFairEntity.getDurationDays())
+        .description(bookFairEntity.getDescription())
+        .location(bookFairEntity.getLocation())
+        .status(bookFairEntity.getStatus())
+        .build();
+  }
+
+
+}

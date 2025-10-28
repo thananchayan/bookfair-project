@@ -9,3 +9,14 @@ spring:
   jpa:
     hibernate.ddl-auto: update
     open-in-view: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: alpha
+    defaultModelsExpandDepth: 1
+    defaultModelExpandDepth: 1
+

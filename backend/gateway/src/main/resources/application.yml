@@ -2,20 +2,20 @@ server:
   port: 8087
 spring:
   application.name: gateway
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: reservation
-#          uri: http://reservation-service:8081
-#          predicates:
-#            - Path=/api/reservations/**,/api/availability/**
-#        - id: stall
-#          uri: http://stall-service:8082
-#          predicates:
-#            - Path=/api/stalls/**
-#        - id: vendor
-#          uri: http://vendor-service:8083
-#          predicates:
-#            - Path=/api/me/**,/api/vendors/**
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://reservation-service:8081
+          predicates:
+            - Path=/api/reservations/**,/api/availability/**
+        - id: stall
+          uri: http://stall-service:8082
+          predicates:
+            - Path=/api/stalls/**
+        - id: vendor
+          uri: http://vendor-service:8083
+          predicates:
+            - Path=/api/me/**,/api/vendors/**
 
 # Add CORS here if frontends run elsewhere
