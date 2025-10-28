@@ -80,7 +80,6 @@ public class BookFairServiceImpl implements BookFairService {
     existingEntity.setDurationDays(updateBookFairRequest.getDurationDays());
     existingEntity.setDescription(updateBookFairRequest.getDescription());
     existingEntity.setLocation(updateBookFairRequest.getLocation());
-    existingEntity.setStatus(updateBookFairRequest.getStatus());
 
     bookFairRepository.save(existingEntity);
     BookFairResponse bookFairResponse = mapToRespnse(existingEntity);
@@ -129,8 +128,8 @@ public class BookFairServiceImpl implements BookFairService {
         .organizer(createBookFairRequest.getOrganizer())
         .durationDays(createBookFairRequest.getDurationDays())
         .description(createBookFairRequest.getDescription())
-        .location(createBookFairRequest.getLocation())
         .status(BookFairStatus.UPCOMING)
+        .location(createBookFairRequest.getLocation())
         .build();
 
   }
@@ -144,8 +143,8 @@ public class BookFairServiceImpl implements BookFairService {
         .organizer(bookFairEntity.getOrganizer())
         .durationDays(bookFairEntity.getDurationDays())
         .description(bookFairEntity.getDescription())
-        .location(bookFairEntity.getLocation())
         .status(bookFairEntity.getStatus())
+        .location(bookFairEntity.getLocation())
         .build();
   }
 

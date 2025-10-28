@@ -74,9 +74,7 @@ public class StallServiceImpl implements StallService {
 
     existingStall.setStallName(request.getStallName());
     existingStall.setSize(request.getSize());
-    existingStall.setLocation(request.getLocation());
     existingStall.setStatus(request.getStatus());
-    existingStall.setPrice(request.getPrice());
     existingStall.setDescription(request.getDescription());
 
     StallEntity updatedStall = stallRepository.save(existingStall);
@@ -121,10 +119,8 @@ public class StallServiceImpl implements StallService {
     return StallEntity.builder()
         .stallName(createStallRequest.getStallName())
         .size(Size.SMALL)
-        .location(createStallRequest.getLocation())
-        .status(Status.AVAILABLE)
-        .price(createStallRequest.getPrice())
         .description(createStallRequest.getDescription())
+        .status(Status.AVAILABLE)
         .build();
   }
 
@@ -133,9 +129,7 @@ public class StallServiceImpl implements StallService {
         .id(stallEntity.getId())
         .stallName(stallEntity.getStallName())
         .size(stallEntity.getSize())
-        .location(stallEntity.getLocation())
         .status(stallEntity.getStatus())
-        .price(stallEntity.getPrice())
         .description(stallEntity.getDescription())
         .build();
   }

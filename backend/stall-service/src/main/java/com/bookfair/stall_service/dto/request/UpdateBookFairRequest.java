@@ -36,6 +36,5 @@ public class UpdateBookFairRequest {
 
   private String description;
 
-  private BookFairStatus status;
 
 }

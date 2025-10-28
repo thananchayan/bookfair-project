@@ -14,8 +14,5 @@ public class CreateStallRequest {
   private String stallName;
   @NotNull(message = "Size is required")
   private Size size;
-  @NotBlank(message = "Location is required")
-  private String location;
-  private double price;
   private String description;
 }

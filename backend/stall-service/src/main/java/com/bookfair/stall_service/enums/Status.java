@@ -7,7 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Status {
   AVAILABLE,
-  RESERVED,
   BLOCKED,
 
 }

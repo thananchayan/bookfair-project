@@ -13,7 +13,5 @@ public class StallResponse {
   private String stallName;
   private Size size;
   private Status status;
-  private String location;
-  private double price;
   private String description;
 }

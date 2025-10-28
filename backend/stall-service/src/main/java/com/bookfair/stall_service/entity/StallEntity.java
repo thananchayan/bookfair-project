@@ -4,6 +4,8 @@ import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,16 +31,18 @@ public class StallEntity {
   private String stallName;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private Size size;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private Status status;
-
-  @Column(nullable = false, unique = true)
-  private String location;
-
-  @Column(nullable = false)
-  private double price;
+//
+//  @Column(nullable = false, unique = true)
+//  private String location;
+//
+//  @Column(nullable = false)
+//  private double price;
 
   private String description;
 
