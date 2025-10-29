@@ -4,6 +4,7 @@ import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateBookFairRequest;
 import com.bookfair.stall_service.dto.request.UpdateBookFairRequest;
 import com.bookfair.stall_service.dto.response.BookFairResponse;
+import com.bookfair.stall_service.enums.BookFairStatus;
 import java.util.List;
 
 public interface BookFairService {
@@ -19,4 +20,7 @@ public interface BookFairService {
   ContentResponse<BookFairResponse> findById(Long id);
 
   ContentResponse<Void> deleteBookFairById(Long id);
+
+  //set status of book fair
+  BookFairResponse setBookFairStatus(Long id, BookFairStatus status);
 }

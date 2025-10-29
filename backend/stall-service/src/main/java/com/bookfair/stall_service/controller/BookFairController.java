@@ -4,6 +4,7 @@ import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateBookFairRequest;
 import com.bookfair.stall_service.dto.request.UpdateBookFairRequest;
 import com.bookfair.stall_service.dto.response.BookFairResponse;
+import com.bookfair.stall_service.enums.BookFairStatus;
 import com.bookfair.stall_service.service.BookFairService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -53,4 +54,19 @@ public class BookFairController {
     return ResponseEntity.ok(bookFairService.deleteBookFairById(id));
   }
 
+  @PutMapping("/setStatus/{id}")
+  public ResponseEntity<ContentResponse<BookFairResponse>> setBookFairStatus(
+      @PathVariable Long id, @RequestBody BookFairStatus status) {
+    BookFairResponse bookFairResponse = bookFairService.setBookFairStatus(id, status);
+    return ResponseEntity.ok(
+        new ContentResponse<>(
+            "BookFair",
+            "BookFair status updated successfully",
+            "200",
+            "SUCCESS",
+            bookFairResponse
+        )
+    );
+
+  }
 }

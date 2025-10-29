@@ -120,6 +120,24 @@ public class BookFairServiceImpl implements BookFairService {
     );
   }
 
+  @Override
+  public BookFairResponse setBookFairStatus(Long id, BookFairStatus status) {
+    if (!bookFairRepository.existsById(id)) {
+      throw new IllegalArgumentException("Book fair not found");
+    }
+    BookFairEntity bookFairEntity = bookFairRepository.findById(id).get();
+    if (bookFairEntity.getStatus() == BookFairStatus.COMPLETED
+        || bookFairEntity.getStatus() == BookFairStatus.CANCELLED) {
+      throw new IllegalArgumentException(
+          "Cannot change status of completed or cancelled book fair");
+    }
+    bookFairEntity.setStatus(status);
+    bookFairRepository.save(bookFairEntity);
+    BookFairResponse bookFairResponse = mapToRespnse(bookFairEntity);
+    return bookFairResponse;
+
+  }
+
   private BookFairEntity mapToEntity(CreateBookFairRequest createBookFairRequest) {
     return BookFairEntity.builder()
         .name(createBookFairRequest.getName())
