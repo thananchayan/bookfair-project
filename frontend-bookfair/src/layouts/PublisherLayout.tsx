@@ -93,10 +93,7 @@ export default function PublisherLayout() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full text-center py-4 text-xs text-gray-400 border-t mt-12">
-        CBF Publisher Portal © {new Date().getFullYear()}
-      </footer>
+     
     </div>
   );
 }

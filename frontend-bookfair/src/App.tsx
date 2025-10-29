@@ -1,17 +1,23 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import WelcomePage from "../src/pages/publisher/Welcompage/WelcomePage"; // from previous step
+// (optional) a placeholder login page
 
-import './App.css' 
+
+import "./App.css";
+import SiteLayout from "./layouts/SiteLayout";
 
 function App() {
- 
-
   return (
-    <div>
+    <Routes>
+<Route element={<SiteLayout />}>
+      <Route path="/"element={<WelcomePage />}/>
 
-      <h1>Welcome to the Home Page</h1>
-      <p>This is the landing page for your application.</p>
-   
-    </div>
-  )
+
+</Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

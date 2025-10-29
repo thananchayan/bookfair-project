@@ -90,8 +90,6 @@ const useSearchParamsMock = () => {
 const useSearchParamsReal = useSearchParams || useSearchParamsMock;
 
 
-// Mock Link component using an anchor tag for simulation
-// Re-exported from react-router-dom if available, otherwise mocked
 const LinkMock = ({ href, children, className }: { href: string, children: React.ReactNode, className: string }) => (
   <a href={href} className={className} onClick={(e) => {
     e.preventDefault();
@@ -232,7 +230,6 @@ export function LoginPage() {
 }
 
 
-// --- Component 2: SignupPage (Converted) ---
 
 export default function SignupPage() {
   const navigate = useNavigateReal()
