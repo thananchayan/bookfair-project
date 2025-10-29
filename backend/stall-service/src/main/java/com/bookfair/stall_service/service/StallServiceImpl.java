@@ -7,6 +7,7 @@ import com.bookfair.stall_service.dto.response.StallResponse;
 import com.bookfair.stall_service.entity.StallEntity;
 import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.Status;
+import com.bookfair.stall_service.repository.StallAllocationRepository;
 import com.bookfair.stall_service.repository.StallRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class StallServiceImpl implements StallService {
 
   private final StallRepository stallRepository;
+  private final StallAllocationRepository stallAllocationRepository;
+
 
   @Override
   public ContentResponse<StallResponse> createStall(CreateStallRequest createStallRequest) {
@@ -34,7 +37,6 @@ public class StallServiceImpl implements StallService {
         "Stall created successfully",
         stallResponse
     );
-
   }
 
   @Override
@@ -92,6 +94,10 @@ public class StallServiceImpl implements StallService {
   public ContentResponse<Void> deleteStallById(Long id) {
     StallEntity existingStall = stallRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
+
+//    if (stallAllocationService.isStallAllocated(id)) {
+//      throw new IllegalArgumentException("Stall is allocated to a Book Fair and cannot be deleted");
+//    }
 
     stallRepository.delete(existingStall);
     return new ContentResponse<>(

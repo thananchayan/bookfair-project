@@ -54,6 +54,16 @@ public class StallAllocationServiceImp implements StallAllocationService {
       throw new IllegalArgumentException("Stall is blocked and cannot be allocated");
     }
 
+    if (stallAllocationRepository.existsByBookFairAndStall(bookFairEntity, stallEntity)
+    ) {
+      throw new IllegalArgumentException("Stall is already allocated to this Book Fair");
+    }
+
+    if (stallAllocationRepository.existsByBookFairAndStallLocation(bookFairEntity,
+        request.getStallLocation())) {
+      throw new IllegalArgumentException("Stall location is already taken in this Book Fair");
+    }
+
     StallAllocationEntity entity = mapToEntity(request);
     stallAllocationRepository.save(entity);
     StallAllocationResponse response = mapToResponse(entity);
@@ -68,23 +78,101 @@ public class StallAllocationServiceImp implements StallAllocationService {
 
   @Override
   public ContentResponse<StallAllocationResponse> getStallAllocationById(Long id) {
-    return null;
+    if (!stallAllocationRepository.existsById(id)) {
+      throw new IllegalArgumentException("Stall Allocation not found");
+    }
+    StallAllocationEntity entity = stallAllocationRepository.findById(id).get();
+    StallAllocationResponse response = mapToResponse(entity);
+    return new ContentResponse<>(
+        "StallAllocation",
+        "Stall Allocation retrieved successfully",
+        "SUCCESS",
+        "200",
+        response
+    );
   }
 
   @Override
-  public ContentResponse<List<StallAllocationResponse>> getAll() {
-    return null;
+  public ContentResponse<List<StallAllocationResponse>> getAllStallAllocation() {
+    List<StallAllocationEntity> entity = stallAllocationRepository.findAll();
+    List<StallAllocationResponse> response = entity.stream()
+        .map(this::mapToResponse)
+        .toList();
+    return new ContentResponse<>(
+        "StallAllocation",
+        "All Stall Allocations retrieved successfully",
+        "SUCCESS",
+        "200",
+        response
+    );
+
   }
+
 
   @Override
   public ContentResponse<StallAllocationResponse> updateStallAllocationById(Long id,
       UpdateStallAllocationRequest request) {
-    return null;
+    StallAllocationEntity stallAllocationEntity = stallAllocationRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Stall Allocation not found"));
+
+    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId())
+        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
+    StallEntity stallEntity = stallRepository.findById(request.getStallId())
+        .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
+
+    if (!(stallAllocationEntity.getStallAllocationStatus() == StallAllocationStatus.PENDING)) {
+      throw new IllegalArgumentException(
+          "Only pending stall allocations can be updated");
+    }
+
+    if (stallAllocationRepository.existsByBookFairAndStall(bookFairEntity, stallEntity) &&
+        !stallAllocationEntity.getStall().getId().equals(stallEntity.getId())) {
+      throw new IllegalArgumentException("Stall is already allocated to this Book Fair");
+    }
+
+    if (stallAllocationRepository.existsByBookFairAndStallLocation(bookFairEntity,
+        request.getStallLocation()) &&
+        !stallAllocationEntity.getStallLocation().equals(request.getStallLocation())) {
+      throw new IllegalArgumentException("Stall location is already taken in this Book Fair");
+    }
+
+    stallAllocationEntity.setBookFair(bookFairEntity);
+    stallAllocationEntity.setStall(stallEntity);
+    stallAllocationEntity.setStallLocation(request.getStallLocation());
+    stallAllocationEntity.setStallPrice(request.getPrice());
+    stallAllocationEntity.setStallAllocationStatus(request.getStatus());
+
+    stallAllocationRepository.save(stallAllocationEntity);
+    StallAllocationResponse response = mapToResponse(stallAllocationEntity);
+    return new ContentResponse<>(
+        "StallAllocation",
+        "Stall Allocation updated successfully",
+        "SUCCESS",
+        "200",
+        response
+    );
   }
 
   @Override
   public ContentResponse<Void> deleteStallAllocation(Long id) {
-    return null;
+    StallAllocationEntity allocation = stallAllocationRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("Stall Allocation not found"));
+    BookFairEntity bookFairEntity = bookFairRepository.findById(allocation.getBookFair().getId())
+        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
+
+    if (bookFairEntity.getStatus() == BookFairStatus.COMPLETED
+        || bookFairEntity.getStatus() == BookFairStatus.CANCELLED) {
+      throw new IllegalArgumentException(
+          "Cannot delete stall allocation from a completed or cancelled Book Fair");
+    }
+    stallAllocationRepository.deleteById(id);
+    return new ContentResponse<>(
+        "StallAllocation",
+        "Stall Allocation deleted successfully",
+        "SUCCESS",
+        "200",
+        null
+    );
   }
 
   @Override

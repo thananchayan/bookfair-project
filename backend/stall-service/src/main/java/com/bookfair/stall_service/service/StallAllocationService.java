@@ -13,7 +13,7 @@ public interface StallAllocationService {
 
   ContentResponse<StallAllocationResponse> getStallAllocationById(Long id);
 
-  ContentResponse<List<StallAllocationResponse>> getAll();
+  ContentResponse<List<StallAllocationResponse>> getAllStallAllocation();
 
   ContentResponse<StallAllocationResponse> updateStallAllocationById(Long id,
       UpdateStallAllocationRequest request);
@@ -21,4 +21,5 @@ public interface StallAllocationService {
   ContentResponse<Void> deleteStallAllocation(Long id);
 
   ContentResponse<StallAllocationResponse> allocateStallToBookFair(Long stallId, Long bookFairId);
+
 }
