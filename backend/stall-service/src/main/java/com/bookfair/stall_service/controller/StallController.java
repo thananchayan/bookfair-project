@@ -53,8 +53,8 @@ public class StallController {
     return ResponseEntity.ok(stallService.deleteStallById(id));
   }
 
-  @DeleteMapping("/deleteAll")
-  public ResponseEntity<ContentResponse<Void>> deleteAllStalls() {
-    return ResponseEntity.ok(stallService.deleteAllStalls());
-  }
+//  @DeleteMapping("/deleteAll")
+//  public ResponseEntity<ContentResponse<Void>> deleteAllStalls() {
+//    return ResponseEntity.ok(stallService.deleteAllStalls());
+//  }
 }

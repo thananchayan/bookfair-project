@@ -4,12 +4,16 @@ import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallRequest;
 import com.bookfair.stall_service.dto.response.StallResponse;
+import com.bookfair.stall_service.entity.BookFairEntity;
+import com.bookfair.stall_service.entity.StallAllocationEntity;
 import com.bookfair.stall_service.entity.StallEntity;
 import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.Status;
 import com.bookfair.stall_service.repository.StallAllocationRepository;
 import com.bookfair.stall_service.repository.StallRepository;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,13 +70,19 @@ public class StallServiceImpl implements StallService {
           stallResponse
       );
     }
-
   }
 
   @Override
   public ContentResponse<StallResponse> updateStall(Long id, UpdateStallRequest request) {
     StallEntity existingStall = stallRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
+
+    String newStallName = request.getStallName();
+    if (newStallName != null && !newStallName.equals(existingStall.getStallName())) {
+      if (stallRepository.existsByStallName(newStallName)) {
+        throw new IllegalArgumentException("Stall name already exists");
+      }
+    }
 
     existingStall.setStallName(request.getStallName());
     existingStall.setSize(request.getSize());
@@ -95,8 +105,31 @@ public class StallServiceImpl implements StallService {
     StallEntity existingStall = stallRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
 
-//    if (stallAllocationService.isStallAllocated(id)) {
-//      throw new IllegalArgumentException("Stall is allocated to a Book Fair and cannot be deleted");
+    boolean isStallAllocated = stallAllocationRepository.existsByStall_Id(id);
+    if (isStallAllocated) {
+      throw new IllegalStateException(
+          "Stall is allocated to a book fair and cannot be deleted.");
+    }
+
+//    List<StallAllocationEntity> allocatedStallAllocationEntities = stallAllocationRepository.findByStall_Id(
+//        id);
+//    List<BookFairEntity> allocatedBookFairs = bookFairsFromAllocations(
+//        allocatedStallAllocationEntities);
+//
+//    //need to check is allocatedBookFairs status equall to upcoming or ongoing
+//    boolean isAllocatedBookFairEntities = allocatedBookFairs.stream()
+//        .anyMatch(bf ->
+//            bf.getStatus() == BookFairStatus.UPCOMING
+//                || bf.getStatus() == BookFairStatus.ONGOING);
+//
+//    boolean isAllocatedStallAllocationEntities = allocatedStallAllocationEntities.stream()
+//        .anyMatch(sa ->
+//            sa.getStallAllocationStatus() == StallAllocationStatus.PENDING ||
+//                sa.getStallAllocationStatus() == StallAllocationStatus.APPROVED);
+//
+//    if (isAllocatedBookFairEntities) {
+//      throw new IllegalStateException(
+//          "Stall is allocated to an upcoming or ongoing book fair and cannot be deleted.");
 //    }
 
     stallRepository.delete(existingStall);
@@ -119,6 +152,20 @@ public class StallServiceImpl implements StallService {
         "All stalls deleted successfully",
         null
     );
+  }
+
+  @Override
+  public List<BookFairEntity> bookFairsFromAllocations(List<StallAllocationEntity> allocations) {
+    if (allocations == null || allocations.isEmpty()) {
+      return List.of();
+    }
+    return allocations.stream()
+        .map(StallAllocationEntity::getBookFair)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(BookFairEntity::getId, bf -> bf, (a, b) -> a))
+        .values()
+        .stream()
+        .collect(Collectors.toList());
   }
 
   private StallEntity mapToEntity(CreateStallRequest createStallRequest) {

@@ -54,11 +54,6 @@ public class StallAllocationServiceImp implements StallAllocationService {
       throw new IllegalArgumentException("Stall is blocked and cannot be allocated");
     }
 
-    if (stallAllocationRepository.existsByBookFairAndStall(bookFairEntity, stallEntity)
-    ) {
-      throw new IllegalArgumentException("Stall is already allocated to this Book Fair");
-    }
-
     if (stallAllocationRepository.existsByBookFairAndStallLocation(bookFairEntity,
         request.getStallLocation())) {
       throw new IllegalArgumentException("Stall location is already taken in this Book Fair");

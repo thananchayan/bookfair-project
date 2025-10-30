@@ -7,6 +7,7 @@ import com.bookfair.stall_service.dto.response.BookFairResponse;
 import com.bookfair.stall_service.entity.BookFairEntity;
 import com.bookfair.stall_service.enums.BookFairStatus;
 import com.bookfair.stall_service.repository.BookFairRepository;
+import com.bookfair.stall_service.repository.StallAllocationRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class BookFairServiceImpl implements BookFairService {
 
   private final BookFairRepository bookFairRepository;
+  private final StallAllocationRepository stallAllocationRepository;
 
   @Override
   public ContentResponse<BookFairResponse> createBookFair(
@@ -110,6 +112,9 @@ public class BookFairServiceImpl implements BookFairService {
   public ContentResponse<Void> deleteBookFairById(Long id) {
     BookFairEntity bookFairEntity = bookFairRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
+    if (stallAllocationRepository.existsByBookFair_Id(id)) {
+      throw new IllegalArgumentException("Cannot delete book fair with allocated stalls");
+    }
     bookFairRepository.delete(bookFairEntity);
     return new ContentResponse<>(
         "BookFair",
