@@ -1,7 +1,7 @@
 package com.bookfair.reservation_service;
 
-import com.bookfair.reservation_service.configuration.request.EmailRequest;
-import io.swagger.v3.oas.annotations.Operation;
+import com.bookfair.reservation_service.request.EmailRequest;
+import com.bookfair.reservation_service.request.StallAllocationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,16 +19,35 @@ public class EmailController {
     this.emailService = emailService;
   }
 
-  @PostMapping("/send")
-  @Operation(summary = "Send email notification")
-  public ResponseEntity<EmailResponse> sendAccountCreationEmail(@RequestBody EmailRequest emailRequest) {
+  @PostMapping("/createAccount")
+  public ResponseEntity<EmailResponse> accountCreationEmail(
+      @RequestBody EmailRequest emailRequest) {
     try {
-      emailService.sendAccountCreationEmail(emailRequest.getTo(), emailRequest.getUserName());
-      return ResponseEntity.ok(new EmailResponse(true, "Email sent successfully"));
+      emailService.sendAccountCreationEmail(emailRequest);
+      return ResponseEntity.ok(
+          new EmailResponse("SUCCESS", "Create Account", "Email sent successfully"));
     } catch (Exception e) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(new EmailResponse(false, "Failed to send email: " + e.getMessage()));
+          .body(new EmailResponse("FAILURE", "Create Account",
+              "Failed to send email: " + e.getMessage()));
     }
   }
+
+  @PostMapping("/createReservation")
+  public ResponseEntity<EmailResponse> stallReservationEmail(
+      @RequestBody StallAllocationRequest stallAllocationRequest) {
+    try {
+      emailService.sendReservationConfirmation(stallAllocationRequest);
+      return ResponseEntity.ok(
+          new EmailResponse("SUCCESS", "Stall Reservation", "Email sent successfully"));
+    } catch (Exception e) {
+      return ResponseEntity
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new EmailResponse("FAILURE", "Stall Reservation",
+              "Failed to send email: " + e.getMessage()));
+    }
+  }
+
+
 }

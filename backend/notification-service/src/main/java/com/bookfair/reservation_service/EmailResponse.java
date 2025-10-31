@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class EmailResponse {
 
-  private boolean success;
+  private String status;
+  private String module;
   private String message;
 }

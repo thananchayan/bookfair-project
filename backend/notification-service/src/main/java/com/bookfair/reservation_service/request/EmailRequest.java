@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.configuration.request;
+package com.bookfair.reservation_service.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,7 @@ import lombok.Data;
 //@NoArgsConstructor
 public class EmailRequest {
 
-  private String to;
+  private String email;
   private String userName;
   private String subject;
   private String body;
