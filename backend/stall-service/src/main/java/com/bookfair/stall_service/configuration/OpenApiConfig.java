@@ -13,25 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class OpenApiConfig {
 
-//  @Bean
-//  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//    http
-//        .authorizeHttpRequests(auth -> auth
-//            .requestMatchers(
-//                "/v3/api-docs/**",
-//                "/swagger-ui/**",
-//                "/swagger-ui.html",
-//                "/swagger-ui/index.html",
-//                "/webjars/**"
-//            ).permitAll()
-//            .anyRequest().authenticated()
-//        );
-//    http.formLogin(Customizer.withDefaults());
-//    http.httpBasic(Customizer.withDefaults());
-//
-//    return http.build();
-//  }
-
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
@@ -45,36 +26,6 @@ public class OpenApiConfig {
 
     return http.build();
   }
-
-//
-//  @Bean
-//  public UserDetailsService users() {
-//    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//    UserDetails user = User.withUsername("admin")
-//        .password(encoder.encode("password"))
-//        .roles("USER")
-//        .build();
-//    return new InMemoryUserDetailsManager(user);
-//  }
-//
-//  @Bean
-//  public OpenAPI customOpenAPI() {
-//    return new OpenAPI()
-//        .info(new Info()
-//            .title("Stall Service API")
-//            .version("v1.0")
-//            .description("API documentation for Stall Service")
-//
-//        );
-//  }
-
-//  @Bean
-//  public GroupedOpenApi stallApi() {
-//    return GroupedOpenApi.builder()
-//        .group("stall-service")
-//        .packagesToScan("com.bookfair.stall_service.controller")
-//        .build();
-//  }
 
   @Bean
   public OpenAPI customOpenAPI() {
