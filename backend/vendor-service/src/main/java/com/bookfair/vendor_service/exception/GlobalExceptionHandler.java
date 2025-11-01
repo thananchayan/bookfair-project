@@ -17,13 +17,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ContentResponse<Object>> handleResponseStatusException(
             ResponseStatusException e) {
-        ContentResponse<Object> errorResponse = ContentResponse.builder()
-                .type("error")
-                .data(null)
-                .status(RequestStatus.FAILURE.getStatus())
-                .statusCode(String.valueOf(e.getStatusCode().value()))
-                .message(e.getReason())
-                .build();
+        // Using the explicit constructor (type, status, statusCode, message, data)
+        ContentResponse<Object> errorResponse = new ContentResponse<>(
+                "error", // type
+                RequestStatus.FAILURE.getStatus(), // status
+                String.valueOf(e.getStatusCode().value()), // statusCode
+                e.getReason(), // message
+                null // data
+        );
         return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
     }
 
@@ -31,13 +32,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ContentResponse<Object>> handleVendorAlreadyExists(
             VendorAlreadyExistsException ex) {
         return ResponseEntity.badRequest().body(
-                ContentResponse.builder()
-                        .type("error")
-                        .data(null)
-                        .status(RequestStatus.FAILURE.getStatus())
-                        .statusCode("400")
-                        .message(ex.getMessage())
-                        .build()
+                new ContentResponse<>(
+                        "error",
+                        RequestStatus.FAILURE.getStatus(),
+                        "400",
+                        ex.getMessage(),
+                        null
+                )
         );
     }
 
@@ -51,26 +52,26 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.badRequest().body(
-                ContentResponse.builder()
-                        .type("error")
-                        .data(null)
-                        .status(RequestStatus.FAILURE.getStatus())
-                        .statusCode("400")
-                        .message("Validation failed: " + errorMsg)
-                        .build()
+                new ContentResponse<>(
+                        "error",
+                        RequestStatus.FAILURE.getStatus(),
+                        "400",
+                        "Validation failed: " + errorMsg,
+                        null
+                )
         );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ContentResponse<Object>> handleAll(Exception e) {
         e.printStackTrace();
-        ContentResponse<Object> errorResponse = ContentResponse.builder()
-                .type("error")
-                .data(null)
-                .status(RequestStatus.FAILURE.getStatus())
-                .statusCode("500")
-                .message("An unexpected internal server error occurred.")
-                .build();
+        ContentResponse<Object> errorResponse = new ContentResponse<>(
+                "error",
+                RequestStatus.FAILURE.getStatus(),
+                "500",
+                "An unexpected internal server error occurred.",
+                null
+        );
         return ResponseEntity.internalServerError().body(errorResponse);
     }
 }

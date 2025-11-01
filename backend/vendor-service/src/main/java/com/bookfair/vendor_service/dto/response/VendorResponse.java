@@ -16,5 +16,4 @@ public class VendorResponse {
     private String email;
     private String contactPerson;
     private Integer stallsReservedCount;
-    // Exclude sensitive information like 'password'
 }

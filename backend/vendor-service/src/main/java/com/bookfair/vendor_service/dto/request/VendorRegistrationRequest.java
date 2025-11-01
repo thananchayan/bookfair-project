@@ -27,6 +27,4 @@ public class VendorRegistrationRequest {
 
     @NotBlank(message = "Contact Person is required")
     private String contactPerson;
-
-    // Other necessary registration fields...
 }

@@ -8,7 +8,7 @@ import com.bookfair.vendor_service.entity.Vendor;
 import com.bookfair.vendor_service.exception.VendorAlreadyExistsException;
 import com.bookfair.vendor_service.repository.VendorRepo;
 import com.bookfair.vendor_service.service.VendorService;
-import com.bookfair.vendor_service.enums.RequestStatus; // Explicitly import RequestStatus
+import com.bookfair.vendor_service.enums.RequestStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,91 +25,70 @@ public class VendorServiceImpl implements VendorService {
     @Transactional
     public ContentResponse<VendorResponse> registerVendor(VendorRegistrationRequest request) {
 
-        // Check if the vendor already exists by email
         if (vendorRepo.existsByEmail(request.getEmail())) {
             throw new VendorAlreadyExistsException(request.getEmail());
         }
 
-        Vendor newVendor = Vendor.builder()
-                .email(request.getEmail())
-                .password(request.getPassword())
-                .businessName(request.getBusinessName())
-                .contactPerson(request.getContactPerson())
-                .stallsReservedCount(0)
-                .build();
+        Vendor vendor = vendorRepo.save(mapToEntity(request));
 
-        Vendor savedVendor = vendorRepo.save(newVendor);
-
-
-        VendorResponse response = VendorResponse.builder()
-                .id(savedVendor.getId())
-                .email(savedVendor.getEmail())
-                .businessName(savedVendor.getBusinessName())
-                .contactPerson(savedVendor.getContactPerson())
-                .stallsReservedCount(savedVendor.getStallsReservedCount())
-                .build();
-
-        return ContentResponse.<VendorResponse>builder()
-                .type("success")
-                .status(RequestStatus.SUCCESS.getStatus())
-                .statusCode("201")
-                .message("Vendor registration successful.")
-                .data(response)
-                .build();
+        return new ContentResponse<>(
+                "Vendor",
+                RequestStatus.SUCCESS.getStatus(),
+                "201",
+                "Vendor registered successfully",
+                mapToResponse(vendor)
+        );
     }
 
     @Override
     public ContentResponse<VendorResponse> getVendorById(Long id) {
         Vendor vendor = vendorRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found with id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found"));
 
-        VendorResponse response = VendorResponse.builder()
-                .id(vendor.getId())
-                .email(vendor.getEmail())
-                .businessName(vendor.getBusinessName())
-                .contactPerson(vendor.getContactPerson())
-                .stallsReservedCount(vendor.getStallsReservedCount())
-                .build();
-
-        return ContentResponse.<VendorResponse>builder()
-                .type("success")
-                .status(RequestStatus.SUCCESS.getStatus())
-                .statusCode("200")
-                .message("Vendor profile retrieved successfully.")
-                .data(response)
-                .build();
+        return new ContentResponse<>(
+                "Vendor",
+                RequestStatus.SUCCESS.getStatus(),
+                "200",
+                "Vendor details retrieved",
+                mapToResponse(vendor)
+        );
     }
 
     @Override
     @Transactional
     public ContentResponse<VendorResponse> updateVendorProfile(Long id, VendorProfileUpdateRequest request) {
         Vendor vendor = vendorRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found with id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Vendor not found"));
 
-        if (request.getBusinessName() != null && !request.getBusinessName().isBlank()) {
-            vendor.setBusinessName(request.getBusinessName());
-        }
-        if (request.getContactPerson() != null && !request.getContactPerson().isBlank()) {
-            vendor.setContactPerson(request.getContactPerson());
-        }
+        vendor.setBusinessName(request.getBusinessName());
+        vendor.setContactPerson(request.getContactPerson());
 
+        return new ContentResponse<>(
+                "Vendor",
+                RequestStatus.SUCCESS.getStatus(),
+                "200",
+                "Vendor updated successfully",
+                mapToResponse(vendor)
+        );
+    }
 
-        Vendor updatedVendor = vendorRepo.save(vendor);
-
-        VendorResponse response = VendorResponse.builder()
-                .id(updatedVendor.getId())
-                .email(updatedVendor.getEmail())
-                .businessName(updatedVendor.getBusinessName())
-                .contactPerson(updatedVendor.getContactPerson())
-                .stallsReservedCount(updatedVendor.getStallsReservedCount())
+    private Vendor mapToEntity(VendorRegistrationRequest request) {
+        return Vendor.builder()
+                .businessName(request.getBusinessName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .contactPerson(request.getContactPerson())
+                .stallsReservedCount(0)
                 .build();
+    }
 
-        return ContentResponse.<VendorResponse>builder()
-                .type("success")
-                .status(RequestStatus.SUCCESS.getStatus())
-                .statusCode("200")
-                .message("Vendor profile updated successfully.")
-                .data(response)
+    private VendorResponse mapToResponse(Vendor vendor) {
+        return VendorResponse.builder()
+                .id(vendor.getId())
+                .businessName(vendor.getBusinessName())
+                .email(vendor.getEmail())
+                .contactPerson(vendor.getContactPerson())
+                .stallsReservedCount(vendor.getStallsReservedCount())
                 .build();
     }
 }

@@ -6,10 +6,7 @@ import com.bookfair.vendor_service.dto.request.VendorProfileUpdateRequest;
 import com.bookfair.vendor_service.dto.response.VendorResponse;
 
 public interface VendorService {
-
     ContentResponse<VendorResponse> registerVendor(VendorRegistrationRequest request);
-
     ContentResponse<VendorResponse> getVendorById(Long id);
-
     ContentResponse<VendorResponse> updateVendorProfile(Long id, VendorProfileUpdateRequest request);
 }

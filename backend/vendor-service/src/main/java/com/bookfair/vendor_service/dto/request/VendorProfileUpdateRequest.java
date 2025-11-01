@@ -17,9 +17,6 @@ public class VendorProfileUpdateRequest {
 
     private String contactPerson;
 
-    // Fields related to the user requirement:
-    // "In the home screen, the user is prompted to add the literary genres they will be displaying/selling"
+    // Field for literary genres
     private String literaryGenres;
-
-    // Note: If the vendor is allowed to change their password, a separate DTO for password change is safer.
 }
