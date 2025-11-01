@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service;
+package com.bookfair.reservation_service.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,5 +37,12 @@ public class NotificationEntity {
 
   @Column(nullable = false)
   private LocalDateTime sentAt;
+
+  @Column(name = "reservation_token", unique = true)
+  private String reservationToken;
+
+  @Column(name = "qr_code_data", columnDefinition = "TEXT")
+  private String qrCodeData;
+
 
 }
