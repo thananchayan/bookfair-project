@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VendorResponse {
+
     private Long id;
     private String businessName;
     private String email;
     private String contactPerson;
     private Integer stallsReservedCount;
+    // Exclude sensitive information like 'password'
 }

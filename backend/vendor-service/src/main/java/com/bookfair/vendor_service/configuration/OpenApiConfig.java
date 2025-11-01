@@ -7,26 +7,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class OpenApiConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Allow access to all endpoints
-                )
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
-                .formLogin(formLogin -> formLogin.disable()) // Disable the login form
-                .httpBasic(httpBasic -> httpBasic.disable()); // Disable basic authentication
-
-        return http.build();
-    }
-
-    @Bean
+       @Bean
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
         return new OpenAPI()

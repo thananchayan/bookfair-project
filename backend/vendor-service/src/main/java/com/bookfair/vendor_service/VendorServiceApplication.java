@@ -10,5 +10,4 @@ public class VendorServiceApplication {
 		SpringApplication.run(VendorServiceApplication.class, args);
 		System.out.println("Vendor Service is running...");
 	}
-
 }
