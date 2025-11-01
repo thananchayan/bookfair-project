@@ -25,12 +25,19 @@ public class EmailController {
     try {
       emailService.sendAccountCreationEmail(emailRequest);
       return ResponseEntity.ok(
-          new EmailResponse("SUCCESS", "Create Account", "Email sent successfully"));
+          new EmailResponse(
+              "SUCCESS",
+              "Create Account",
+              "Email sent successfully"
+          ));
     } catch (Exception e) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(new EmailResponse("FAILURE", "Create Account",
-              "Failed to send email: " + e.getMessage()));
+          .body(new EmailResponse(
+              "FAILURE",
+              "Create Account",
+              "Failed to send email: " + e.getMessage()
+          ));
     }
   }
 
@@ -40,12 +47,19 @@ public class EmailController {
     try {
       emailService.sendReservationConfirmation(stallAllocationRequest);
       return ResponseEntity.ok(
-          new EmailResponse("SUCCESS", "Stall Reservation", "Email sent successfully"));
+          new EmailResponse(
+              "SUCCESS",
+              "Stall Reservation",
+              "Email sent successfully"
+          ));
     } catch (Exception e) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(new EmailResponse("FAILURE", "Stall Reservation",
-              "Failed to send email: " + e.getMessage()));
+          .body(new EmailResponse(
+              "FAILURE",
+              "Stall Reservation",
+              "Failed to send email: " + e.getMessage()
+          ));
     }
   }
 

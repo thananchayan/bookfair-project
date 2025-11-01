@@ -40,7 +40,7 @@ public class OpenApiConfig {
                     .scheme("bearer")
                     .bearerFormat("JWT")))
         .info(new Info()
-            .title("Stall Management API")
+            .title("Notification Service API")
             .version("1.0.0")
             .description("API documentation for the Stall management system"));
   }

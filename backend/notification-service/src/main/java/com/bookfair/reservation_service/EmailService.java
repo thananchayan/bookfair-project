@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
   private final JavaMailSender mailSender;
+  private  NotificationRepository notificationRepository;
+
 
   public void sendHtmlEmail(EmailRequest request) throws MessagingException {
     try {
@@ -26,7 +28,6 @@ public class EmailService {
       helper.setTo(request.getEmail());
       helper.setSubject(request.getSubject());
       helper.setText(request.getBody(), true);
-
       mailSender.send(message);
       log.info("HTML email sent successfully to: {}", request.getEmail());
     } catch (MessagingException e) {
@@ -48,6 +49,8 @@ public class EmailService {
         true
     );
     try {
+      NotificationEntity notificationEntity = mapToEntity(emailRequest);
+      notificationRepository.save(notificationEntity);
       sendHtmlEmail(request);
     } catch (MessagingException e) {
       log.error("Failed to send account creation email to {}", userEmail, e);
@@ -71,6 +74,8 @@ public class EmailService {
 
     try {
       sendHtmlEmail(request);
+      NotificationEntity notificationEntity = mapToEntity(stallAllocationRequest.emailRequest);
+      notificationRepository.save(notificationEntity);
     } catch (MessagingException e) {
       log.error("Failed to send reservation confirmation to {}",
           stallAllocationRequest.getEmailRequest().getEmail(), e);
@@ -78,6 +83,14 @@ public class EmailService {
     }
   }
 
+   private NotificationEntity mapToEntity(EmailRequest emailRequest) {
+     return NotificationEntity.builder()
+          .receipientEmail(emailRequest.getEmail())
+          .subject(emailRequest.getSubject())
+          .body(emailRequest.getBody())
+          .sentAt(java.time.LocalDateTime.now())
+          .build();
+   }
 
   //html templates
   private String buildAccountCreationTemplate(String userName, String userEmail) {
