@@ -87,10 +87,10 @@ public class GlobalExceptionHandler {
     e.printStackTrace();
     ContentResponse<Object> errorResponse = new ContentResponse<>(
         "error",
-        null,
         RequestStatus.FAILURE.getStatus(),
         "500",
-        "Something went wrong da"
+        "Something went wrong.",
+        e.getMessage() != null ? e.getMessage() : "An unexpected error occurred"
     );
     return ResponseEntity.internalServerError().body(errorResponse);
   }
@@ -139,10 +139,10 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ContentResponse<Object>> handleRuntimeException(RuntimeException ex) {
     ContentResponse<Object> errorResponse = new ContentResponse<>(
         "error",
-        null,
         RequestStatus.FAILURE.getStatus(),
         "500",
-        ex.getMessage() != null ? ex.getMessage() : "A runtime error occurred"
+        ex.getMessage() != null ? ex.getMessage() : "A runtime error occurred",
+        null
     );
     return ResponseEntity.internalServerError().body(errorResponse);
   }
