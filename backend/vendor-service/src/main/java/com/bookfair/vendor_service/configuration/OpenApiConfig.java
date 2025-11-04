@@ -17,3 +17,5 @@ public class OpenApiConfig {
                         .description("API documentation for the Vendor Service"));
     }
 }
+
+

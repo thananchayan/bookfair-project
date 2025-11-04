@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 public interface StallServiceClient {
     @PutMapping("/internal/stalls/reserve/{stallId/{vendorId}")
     ResponseEntity<ContentResponse<Object>> reserveStall(
-            
+            @PathVariable("stallId") Long stallId,
+            @PathVariable("vendorId") Long vendorId
     );
 }

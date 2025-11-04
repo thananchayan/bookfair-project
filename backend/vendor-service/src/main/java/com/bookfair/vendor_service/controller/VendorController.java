@@ -36,4 +36,12 @@ public class VendorController {
             @Valid @RequestBody VendorProfileUpdateRequest request) {
         return ResponseEntity.ok(vendorService.updateVendorProfile(id, request));
     }
+
+    @PostMapping("/{vendorId}/reserve/{stalId}")
+    public ResponseEntity<ContentResponse<Void>> reserveStall(
+            @PathVariable Long vendorId,
+            @PathVariable Long stallId){
+                return ResponseEntity.ok(vendorService.reserveStall(vendorId,stallId));
+    }
+
 }

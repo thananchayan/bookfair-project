@@ -9,4 +9,5 @@ public interface VendorService {
     ContentResponse<VendorResponse> registerVendor(VendorRegistrationRequest request);
     ContentResponse<VendorResponse> getVendorById(Long id);
     ContentResponse<VendorResponse> updateVendorProfile(Long id, VendorProfileUpdateRequest request);
+    ContentResponse<Void> reserveStall(Long vendorId, Long stallId);
 }
