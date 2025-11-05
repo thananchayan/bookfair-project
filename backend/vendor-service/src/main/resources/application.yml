@@ -19,3 +19,8 @@ springdoc:
     operations-sorter: alpha
     defaultModelsExpandDepth: 1
     defaultModelExpandDepth: 1
+
+external:
+  services:
+    stall-service:
+      url: http://localhost:8082
