@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.request;
+package com.bookfair.reservation_service.dto.request;
 
 import com.bookfair.reservation_service.enums.Size;
 import lombok.AllArgsConstructor;

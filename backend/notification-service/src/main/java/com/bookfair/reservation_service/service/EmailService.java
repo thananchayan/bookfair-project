@@ -1,10 +1,10 @@
 package com.bookfair.reservation_service.service;
 
 import com.bookfair.reservation_service.NotificationRepository;
+import com.bookfair.reservation_service.dto.request.EmailRequest;
+import com.bookfair.reservation_service.dto.request.StallAllocationRequest;
+import com.bookfair.reservation_service.dto.request.StallRequest;
 import com.bookfair.reservation_service.entity.NotificationEntity;
-import com.bookfair.reservation_service.request.EmailRequest;
-import com.bookfair.reservation_service.request.StallAllocationRequest;
-import com.bookfair.reservation_service.request.StallRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Base64;
@@ -77,14 +77,14 @@ public class EmailService {
 
   public void sendReservationConfirmation(StallAllocationRequest stallAllocationRequest) {
     try {
+      String userEmail = stallAllocationRequest.getEmailRequest().getEmail();
       //Generate QR code data
-      String reservationToken = qrCodeService.generateReservationToken();
+      String reservationToken = qrCodeService.generateReservationToken(userEmail);
       String qrData = String.format(
-          "Reservation ID: %s\nEmail: %s\nBookFair: %s\nStalls: %d",
+          "Email: %s\nReservation ID: %s\nBookFair: %s",
+          userEmail,
           reservationToken,
-          stallAllocationRequest.getEmailRequest().getEmail(),
-          stallAllocationRequest.getBookFairName(),
-          stallAllocationRequest.getStallRequest().size()
+          stallAllocationRequest.getBookFairName()
       );
       final String qrCodeBase64;
       try {
@@ -101,7 +101,7 @@ public class EmailService {
       String htmlBody = buildReservationConfirmationTemplate(
           stallAllocationRequest.getEmailRequest().getUserName(),
           stallAllocationRequest,
-          "qrCode"
+          qrCodeBase64
       );
       EmailRequest request = new EmailRequest(
           stallAllocationRequest.getEmailRequest().getEmail(),
@@ -111,6 +111,9 @@ public class EmailService {
           true
       );
       request.setInlineImages(Map.of("qrCode", qrBytes));
+
+      sendHtmlEmailWithAttachment(request, qrBytes,
+          "reservation-" + reservationToken.substring(0, 8) + ".png");
 
       sendHtmlEmail(request);
 
@@ -133,6 +136,32 @@ public class EmailService {
         .body(emailRequest.getBody())
         .sentAt(java.time.LocalDateTime.now())
         .build();
+  }
+
+  private void sendHtmlEmailWithAttachment(EmailRequest request, byte[] qrBytes, String filename)
+      throws MessagingException {
+    try {
+      MimeMessage message = mailSender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+      helper.setTo(request.getEmail());
+      helper.setSubject(request.getSubject());
+      helper.setText(request.getBody(), true);
+
+      if (request.getInlineImages() != null) {
+        for (Map.Entry<String, byte[]> e : request.getInlineImages().entrySet()) {
+          helper.addInline(e.getKey(), new ByteArrayResource(e.getValue()), "image/png");
+        }
+      }
+      // Add QR code as downloadable attachment
+      helper.addAttachment(filename, new ByteArrayResource(qrBytes), "image/png");
+
+      mailSender.send(message);
+      log.info("Email with attachment sent to: {}", request.getEmail());
+    } catch (MessagingException e) {
+      log.error("Failed to send email to {}: {}", request.getEmail(), e.getMessage());
+      throw e;
+    }
   }
 
   //html templates

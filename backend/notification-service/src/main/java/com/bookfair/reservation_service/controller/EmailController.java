@@ -1,8 +1,8 @@
 package com.bookfair.reservation_service.controller;
 
-import com.bookfair.reservation_service.EmailResponse;
-import com.bookfair.reservation_service.request.EmailRequest;
-import com.bookfair.reservation_service.request.StallAllocationRequest;
+import com.bookfair.reservation_service.dto.request.EmailRequest;
+import com.bookfair.reservation_service.dto.request.StallAllocationRequest;
+import com.bookfair.reservation_service.dto.response.EmailResponse;
 import com.bookfair.reservation_service.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

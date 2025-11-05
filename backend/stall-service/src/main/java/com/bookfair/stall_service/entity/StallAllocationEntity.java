@@ -46,4 +46,6 @@ public class StallAllocationEntity {
   @Enumerated(EnumType.STRING)
   private StallAllocationStatus stallAllocationStatus;
 
+  @Column(unique = true)
+  private String reservationToken;
 }
