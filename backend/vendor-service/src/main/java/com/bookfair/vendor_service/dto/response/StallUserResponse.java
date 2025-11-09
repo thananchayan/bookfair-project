@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class VendorResponse {
+@AllArgsConstructor
+public class StallUserResponse {
 
   private Long id;
   private String username;
@@ -19,4 +19,5 @@ public class VendorResponse {
   private String address;
   private UserProfession profession;
   private LocalDate date;
+
 }

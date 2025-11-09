@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StallUserRequest {
+public class CreateStallUserRequest {
 
   @NotBlank(message = "Username cannot be blank")
   @Email(message = "Username should be a valid email")
@@ -32,5 +32,4 @@ public class StallUserRequest {
   @NotNull(message = "Profession cannot be null")
   private UserProfession profession;
 
-  private String qrId;
 }

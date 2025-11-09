@@ -1,7 +1,7 @@
 package com.bookfair.stall_service.controller;
 
 import com.bookfair.stall_service.dto.ContentResponse;
-import com.bookfair.stall_service.dto.request.StallUserRequest;
+import com.bookfair.stall_service.dto.request.CreateStallUserRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.stall_service.dto.response.StallUserResponse;
 import com.bookfair.stall_service.service.StallUserService;
@@ -28,7 +28,7 @@ public class StallUserController {
 
   @PostMapping
   public ResponseEntity<ContentResponse<StallUserResponse>> createStallUser(
-      @Valid @RequestBody StallUserRequest request) {
+      @Valid @RequestBody CreateStallUserRequest request) {
     StallUserResponse response = stallUserService.createStallUser(request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(new ContentResponse<>(

@@ -1,6 +1,6 @@
 package com.bookfair.stall_service.service;
 
-import com.bookfair.stall_service.dto.request.StallUserRequest;
+import com.bookfair.stall_service.dto.request.CreateStallUserRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.stall_service.dto.response.StallUserResponse;
 import com.bookfair.stall_service.entity.StallUserEntity;
@@ -16,7 +16,7 @@ public class StallUserServiceImpl implements StallUserService {
   private final StallUserRepository stallUserRepository;
 
   @Override
-  public StallUserResponse createStallUser(StallUserRequest request) {
+  public StallUserResponse createStallUser(CreateStallUserRequest request) {
     if (stallUserRepository.existsByUsername(request.getUsername())) {
       throw new RuntimeException("Username already exists");
     }
@@ -31,7 +31,6 @@ public class StallUserServiceImpl implements StallUserService {
         .address(request.getAddress())
         .profession(request.getProfession())
         .date(java.time.LocalDate.now())
-        .qrId(request.getQrId())
         .build();
 
     StallUserEntity savedEntity = stallUserRepository.save(entity);

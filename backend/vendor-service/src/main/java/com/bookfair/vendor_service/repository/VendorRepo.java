@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface VendorRepo extends JpaRepository<Vendor, Long> {
 
-    Optional<Vendor> findByEmail(String email);
-    boolean existsByEmail(String email);
+  Optional<Vendor> findByUsername(String email);
+
+  boolean existsByUsername(String email);
 }

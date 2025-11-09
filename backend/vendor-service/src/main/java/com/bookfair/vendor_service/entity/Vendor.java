@@ -1,6 +1,15 @@
 package com.bookfair.vendor_service.entity;
 
-import jakarta.persistence.*;
+import com.bookfair.vendor_service.enums.UserProfession;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,22 +23,27 @@ import lombok.NoArgsConstructor;
 @Table(name = "vendors")
 public class Vendor {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+  @Column(nullable = false, unique = true)
+  private String username;
 
-    @Column(nullable = false)
-    private String password; // Note: Will store raw password until security is added
+  @Column(nullable = false)
+  private String password;
 
-    @Column(nullable = false, name = "business_name")
-    private String businessName;
+  @Column(nullable = false, unique = true)
+  private String phoneNumber;
 
-    @Column(name = "contact_person")
-    private String contactPerson;
+  private String address;
 
-    @Column(name = "stalls_reserved_count", columnDefinition = "INT default 0")
-    private Integer stallsReservedCount;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private UserProfession profession;
+
+  private LocalDate date;
+
+  private String qrId;
+
 }

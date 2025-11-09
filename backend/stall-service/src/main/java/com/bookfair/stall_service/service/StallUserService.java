@@ -1,12 +1,13 @@
 package com.bookfair.stall_service.service;
 
-import com.bookfair.stall_service.dto.request.StallUserRequest;
+import com.bookfair.stall_service.dto.request.CreateStallUserRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.stall_service.dto.response.StallUserResponse;
 import java.util.List;
 
 public interface StallUserService {
-  StallUserResponse createStallUser(StallUserRequest request);
+
+  StallUserResponse createStallUser(CreateStallUserRequest request);
 
   StallUserResponse getStallUserById(Long id);
 
