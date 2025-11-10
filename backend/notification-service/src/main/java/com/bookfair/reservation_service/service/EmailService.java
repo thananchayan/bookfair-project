@@ -241,8 +241,6 @@ public class EmailService {
                     <p class="welcome-text">Welcome, %s!</p>
                     <div class="info-box">
                         <p><strong>Account Created Successfully</strong></p>
-                        <p><strong>Email:</strong> %s</p>
-                        <p><strong>Name:</strong> %s</p>
                     </div>
                     <p>Your account has been successfully created and you're all set to explore our platform.</p>
                 </div>
@@ -253,7 +251,7 @@ public class EmailService {
             </div>
         </body>
         </html>
-        """.formatted(userName, userEmail, userName);
+        """.formatted(userName);
   }
 
   private String buildReservationConfirmationTemplate(String userName,

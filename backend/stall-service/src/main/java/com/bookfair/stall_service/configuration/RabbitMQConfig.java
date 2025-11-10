@@ -19,6 +19,10 @@ public class RabbitMQConfig {
   public static final String STALL_USER_DELETE_QUEUE = "stall.user.delete.queue";
   public static final String STALL_USER_DELETE_RESPONSE_QUEUE = "stall.user.delete.response.queue";
 
+  // Email notification queue
+  public static final String EMAIL_NOTIFICATION_QUEUE = "email.notification.queue";
+  public static final String EMAIL_NOTIFICATION_ROUTING_KEY = "email.notification";
+
   public static final String EXCHANGE = "bookfair.exchange";
   public static final String STALL_USER_ROUTING_KEY = "stall.user.create";
   public static final String STALL_USER_RESPONSE_ROUTING_KEY = "stall.user.response";
@@ -51,6 +55,11 @@ public class RabbitMQConfig {
   }
 
   @Bean
+  public Queue emailNotificationQueue() {
+    return new Queue(EMAIL_NOTIFICATION_QUEUE, true);
+  }
+
+  @Bean
   public Binding stallUserBinding(Queue stallUserQueue, TopicExchange exchange) {
     return BindingBuilder.bind(stallUserQueue).to(exchange).with(STALL_USER_ROUTING_KEY);
   }
@@ -72,6 +81,12 @@ public class RabbitMQConfig {
       TopicExchange exchange) {
     return BindingBuilder.bind(stallUserDeleteResponseQueue).to(exchange)
         .with(STALL_USER_DELETE_RESPONSE_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding emailNotificationBinding(Queue emailNotificationQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(emailNotificationQueue).to(exchange)
+        .with(EMAIL_NOTIFICATION_ROUTING_KEY);
   }
 
   @Bean
