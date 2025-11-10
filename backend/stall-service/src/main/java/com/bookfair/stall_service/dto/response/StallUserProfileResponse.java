@@ -1,6 +1,6 @@
-package com.bookfair.vendor_service.dto.request;
+package com.bookfair.stall_service.dto.response;
 
-import com.bookfair.vendor_service.enums.UserProfession;
+import com.bookfair.stall_service.enums.UserProfession;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,14 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateStallUserMessage {
+public class StallUserProfileResponse {
 
-  private Long userId;
+  private Long id;
   private String username;
-  private String oldPassword;
-  private String newPassword;
   private String phonenumber;
   private String address;
   private UserProfession profession;
+  private String status;
+  private String message;
 }
-

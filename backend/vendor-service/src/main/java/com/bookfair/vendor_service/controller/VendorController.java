@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,11 +31,12 @@ public class VendorController {
         .body(vendorService.registerUser(request));
   }
 
-  //  @GetMapping("/{id}")
-//  public ResponseEntity<ContentResponse<VendorResponse>> getVendorProfile(@PathVariable Long id) {
-//    return ResponseEntity.ok(vendorService.getVendorById(id));
-//  }
-//
+  @GetMapping("/{username}/profile")
+  public ResponseEntity<ContentResponse<StallUserResponse>> getVendorProfileByUsername(
+      @PathVariable String username) {
+    return ResponseEntity.ok(vendorService.getVenderProfileByUsername(username));
+  }
+
   @PutMapping("/{id}")
   public ResponseEntity<ContentResponse<StallUserResponse>> updateVendorProfile(
       @PathVariable Long id,

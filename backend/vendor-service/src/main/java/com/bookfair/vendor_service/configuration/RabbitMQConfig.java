@@ -16,14 +16,19 @@ public class RabbitMQConfig {
 
   public static final String STALL_USER_QUEUE = "stall.user.create.queue";
   public static final String STALL_USER_RESPONSE_QUEUE = "stall.user.response.queue"; // for receiving response
-  public static final String STALL_USER_UPDATE_QUEUE = "stall.user.update.queue";
-  public static final String STALL_USER_UPDATE_RESPONSE_QUEUE = "stall.user.update.response.queue";
-
 
   public static final String EXCHANGE = "bookfair.exchange"; // for both request and response
   public static final String STALL_USER_RESPONSE_ROUTING_KEY = "stall.user.response"; // for receiving response
+
+  public static final String STALL_USER_UPDATE_RESPONSE_QUEUE = "stall.user.update.response.queue";
+  public static final String STALL_USER_UPDATE_QUEUE = "stall.user.update.queue";
   public static final String STALL_USER_UPDATE_ROUTING_KEY = "stall.user.update";
   public static final String STALL_USER_UPDATE_RESPONSE_ROUTING_KEY = "stall.user.update.response";
+
+  public static final String STALL_USER_GET_QUEUE = "stall.user.get.queue";
+  public static final String STALL_USER_GET_RESPONSE_QUEUE = "stall.user.get.response.queue";
+  public static final String STALL_USER_GET_ROUTING_KEY = "stall.user.get";
+  public static final String STALL_USER_GET_RESPONSE_ROUTING_KEY = "stall.user.get.response";
 
 
   @Bean
@@ -80,6 +85,29 @@ public class RabbitMQConfig {
     RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
     rabbitTemplate.setMessageConverter(jasonMessageConverter());
     return rabbitTemplate;
+  }
+
+  @Bean
+  public Queue stallUserGetQueue() {
+    return new Queue(STALL_USER_GET_QUEUE, true);
+  }
+
+  @Bean
+  public Queue stallUserGetResponseQueue() {
+    return new Queue(STALL_USER_GET_RESPONSE_QUEUE, true);
+  }
+
+  @Bean
+  public Binding stallUserGetBinding(Queue stallUserGetQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserGetQueue).to(exchange)
+        .with(STALL_USER_GET_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding stallUserGetResponseBinding(Queue stallUserGetResponseQueue,
+      TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserGetResponseQueue).to(exchange)
+        .with(STALL_USER_GET_RESPONSE_ROUTING_KEY);
   }
 
 }

@@ -34,4 +34,15 @@ public class StallUserPublisherImpl implements StallUserPublisher {
         message
     );
   }
+
+  @Override
+  public void publishGetStallUser(String username) {
+    String usernameMessage = username;
+    log.info("Publishing GetStallUserRequest in vendor service for username: {}", username);
+    rabbitTemplate.convertAndSend(
+        RabbitMQConfig.EXCHANGE,
+        RabbitMQConfig.STALL_USER_GET_ROUTING_KEY,
+        usernameMessage
+    );
+  }
 }

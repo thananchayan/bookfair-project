@@ -10,6 +10,8 @@ public interface VendorService {
   ContentResponse<StallUserResponse> registerUser(CreateStallUserRequest request);
 
   ContentResponse<StallUserResponse> updateUser(Long userID, UpdateStallUserRequest request);
+
+  ContentResponse<StallUserResponse> getVenderProfileByUsername(String username);
 //    ContentResponse<VendorResponse> getVendorById(Long id);
 //    ContentResponse<VendorResponse> updateVendorProfile(Long id, VendorProfileUpdateRequest request);
 //    ContentResponse<Void> reserveStall(Long vendorId, Long stallId);

@@ -8,4 +8,6 @@ public interface StallUserPublisher {
   void publishCreateStallUser(CreateStallUserRequest request);
 
   void publishUpdateStallUser(UpdateStallUserMessage message);
+
+  void publishGetStallUser(String username);
 }
