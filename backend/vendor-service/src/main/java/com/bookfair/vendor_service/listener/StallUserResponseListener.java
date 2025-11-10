@@ -23,11 +23,26 @@ public class StallUserResponseListener {
     responseCache.put("latest", response);
   }
 
+  @RabbitListener(queues = RabbitMQConfig.STALL_USER_UPDATE_RESPONSE_QUEUE)
+  public void handleStallUserUpdateResponse(StallUserResponseMessage response) {
+    log.info("Received update response from stall-service: status={}, message={}",
+        response.getStatus(), response.getMessage());
+    responseCache.put("update", response);
+  }
+
   public StallUserResponseMessage getLatestResponse() {
     return responseCache.get("latest");
   }
 
+  public StallUserResponseMessage getLatestUpdateResponse() {
+    return responseCache.get("update");
+  }
+
   public void clearLatestResponse() {
     responseCache.remove("latest");
+  }
+
+  public void clearLatestUpdateResponse() {
+    responseCache.remove("update");
   }
 }

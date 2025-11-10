@@ -16,8 +16,15 @@ public class RabbitMQConfig {
 
   public static final String STALL_USER_QUEUE = "stall.user.create.queue";
   public static final String STALL_USER_RESPONSE_QUEUE = "stall.user.response.queue"; // for receiving response
+  public static final String STALL_USER_UPDATE_QUEUE = "stall.user.update.queue";
+  public static final String STALL_USER_UPDATE_RESPONSE_QUEUE = "stall.user.update.response.queue";
+
+
   public static final String EXCHANGE = "bookfair.exchange"; // for both request and response
   public static final String STALL_USER_RESPONSE_ROUTING_KEY = "stall.user.response"; // for receiving response
+  public static final String STALL_USER_UPDATE_ROUTING_KEY = "stall.user.update";
+  public static final String STALL_USER_UPDATE_RESPONSE_ROUTING_KEY = "stall.user.update.response";
+
 
   @Bean
   public Queue stallUserQueue() {
@@ -30,6 +37,16 @@ public class RabbitMQConfig {
   }
 
   @Bean
+  public Queue stallUserUpdateQueue() {
+    return new Queue(STALL_USER_UPDATE_QUEUE, true);
+  }
+
+  @Bean
+  public Queue stallUserUpdateResponseQueue() {
+    return new Queue(STALL_USER_UPDATE_RESPONSE_QUEUE, true);
+  }
+
+  @Bean
   public TopicExchange exchange() {
     return new TopicExchange(EXCHANGE);
   }
@@ -38,6 +55,19 @@ public class RabbitMQConfig {
   public Binding stallUserResponseBinding(Queue stallUserResponseQueue, TopicExchange exchange) {
     return BindingBuilder.bind(stallUserResponseQueue).to(exchange)
         .with(STALL_USER_RESPONSE_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding stallUserUpdateBinding(Queue stallUserUpdateQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserUpdateQueue).to(exchange)
+        .with(STALL_USER_UPDATE_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding stallUserUpdateResponseBinding(Queue stallUserUpdateResponseQueue,
+      TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserUpdateResponseQueue).to(exchange)
+        .with(STALL_USER_UPDATE_RESPONSE_ROUTING_KEY);
   }
 
   @Bean

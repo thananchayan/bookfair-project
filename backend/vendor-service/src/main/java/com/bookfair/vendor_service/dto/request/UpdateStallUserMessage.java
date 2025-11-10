@@ -1,7 +1,6 @@
-package com.bookfair.vendor_service.dto.response;
+package com.bookfair.vendor_service.dto.request;
 
 import com.bookfair.vendor_service.enums.UserProfession;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,14 +8,15 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class VendorResponse {
+@AllArgsConstructor
+public class UpdateStallUserMessage {
 
-  private Long id;
+  private Long userId;
   private String username;
+  private String oldPassword;
+  private String newPassword;
   private String phonenumber;
   private String address;
   private UserProfession profession;
-  private LocalDate date;
 }

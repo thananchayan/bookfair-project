@@ -2,6 +2,7 @@ package com.bookfair.vendor_service.service.impl;
 
 import com.bookfair.vendor_service.configuration.RabbitMQConfig;
 import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
+import com.bookfair.vendor_service.dto.request.UpdateStallUserMessage;
 import com.bookfair.vendor_service.service.StallUserPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,16 @@ public class StallUserPublisherImpl implements StallUserPublisher {
     rabbitTemplate.convertAndSend(
         RabbitMQConfig.STALL_USER_QUEUE,
         request
+    );
+  }
+
+  @Override
+  public void publishUpdateStallUser(UpdateStallUserMessage message) {
+    log.info("Publishing stall user update request for userId: {}", message.getUsername());
+    rabbitTemplate.convertAndSend(
+        RabbitMQConfig.EXCHANGE,
+        RabbitMQConfig.STALL_USER_UPDATE_ROUTING_KEY,
+        message
     );
   }
 }
