@@ -4,6 +4,7 @@ import com.bookfair.vendor_service.dto.ContentResponse;
 import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
 import com.bookfair.vendor_service.dto.request.UpdateStallUserMessage;
 import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.vendor_service.dto.response.StallUserProfileResponse;
 import com.bookfair.vendor_service.dto.response.StallUserResponse;
 import com.bookfair.vendor_service.dto.response.StallUserResponseMessage;
 import com.bookfair.vendor_service.listener.StallUserResponseListener;
@@ -103,6 +104,68 @@ public class VendorServiceImpl implements VendorService {
           null
       );
     }
+  }
+
+  @Override
+  public ContentResponse<StallUserResponse> getVenderProfileByUsername(String username) {
+    log.info("Getting vendor profile for username: {}", username);
+    stallUserPublisher.publishGetStallUser(username);
+
+    StallUserProfileResponse profileResponse = waitForGetResponse(5000);
+
+    if (profileResponse == null) {
+      return new ContentResponse<>(
+          "vendor-profile",
+          "TIMEOUT",
+          "408",
+          "Request timeout. Please try again later.",
+          null
+      );
+    }
+
+    if ("success".equalsIgnoreCase(profileResponse.getStatus())) {
+      StallUserResponse userResponse = StallUserResponse.builder()
+          .id(profileResponse.getId())
+          .username(profileResponse.getUsername())
+          .phonenumber(profileResponse.getPhonenumber())
+          .address(profileResponse.getAddress())
+          .profession(profileResponse.getProfession())
+          .build();
+
+      return new ContentResponse<>(
+          "vendor-profile",
+          "SUCCESS",
+          "200",
+          profileResponse.getMessage(),
+          userResponse
+      );
+    } else {
+      return new ContentResponse<>(
+          "vendor-profile",
+          "FAILURE",
+          "404",
+          profileResponse.getMessage(),
+          null
+      );
+    }
+  }
+
+  private StallUserProfileResponse waitForGetResponse(long timeoutMs) {
+    long startTime = System.currentTimeMillis();
+    while (System.currentTimeMillis() - startTime < timeoutMs) {
+      StallUserProfileResponse response = stallUserResponseListener.getLatestGetResponse();
+      if (response != null) {
+        stallUserResponseListener.clearLatestGetResponse();
+        return response;
+      }
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return null;
+      }
+    }
+    return null;
   }
 
 
