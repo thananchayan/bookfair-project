@@ -45,4 +45,14 @@ public class StallUserPublisherImpl implements StallUserPublisher {
         usernameMessage
     );
   }
+
+  @Override
+  public void publishDeleteStallUser(Long userId) {
+    log.info("Publishing DeleteStallUserRequest in vendor service for userId: {}", userId);
+    rabbitTemplate.convertAndSend(
+        RabbitMQConfig.EXCHANGE,
+        RabbitMQConfig.STALL_USER_DELETE_ROUTING_KEY,
+        userId
+    );
+  }
 }

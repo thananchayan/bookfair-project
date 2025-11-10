@@ -10,4 +10,6 @@ public interface StallUserPublisher {
   void publishUpdateStallUser(UpdateStallUserMessage message);
 
   void publishGetStallUser(String username);
+
+  void publishDeleteStallUser(Long userId);
 }

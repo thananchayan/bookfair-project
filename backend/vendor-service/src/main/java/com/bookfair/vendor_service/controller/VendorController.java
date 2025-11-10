@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,12 +44,10 @@ public class VendorController {
       @Valid @RequestBody UpdateStallUserRequest request) {
     return ResponseEntity.ok(vendorService.updateUser(id, request));
   }
-//
-//  @PostMapping("/{vendorId}/reserve/{stalId}")
-//  public ResponseEntity<ContentResponse<Void>> reserveStall(
-//      @PathVariable Long vendorId,
-//      @PathVariable Long stallId) {
-//    return ResponseEntity.ok(vendorService.reserveStall(vendorId, stallId));
-//  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<ContentResponse<Void>> deleteVendor(@PathVariable Long id) {
+    return ResponseEntity.ok(vendorService.deleteUser(id));
+  }
 
 }

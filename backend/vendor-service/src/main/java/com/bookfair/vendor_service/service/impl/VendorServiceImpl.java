@@ -150,6 +150,42 @@ public class VendorServiceImpl implements VendorService {
     }
   }
 
+  @Override
+  public ContentResponse<Void> deleteUser(Long userId) {
+    log.info("Deleting vendor with userId in vendor serviceIMPL: {}", userId);
+    stallUserPublisher.publishDeleteStallUser(userId);
+
+    StallUserResponseMessage responseMessage = waitForDeleteResponse(5000);
+
+    if (responseMessage == null) {
+      return new ContentResponse<>(
+          "vendor-delete",
+          "TIMEOUT",
+          "408",
+          "Request timeout. Please try again later.",
+          null
+      );
+    }
+
+    if ("success".equalsIgnoreCase(responseMessage.getStatus())) {
+      return new ContentResponse<>(
+          "vendor-delete",
+          "SUCCESS",
+          "200",
+          responseMessage.getMessage(),
+          null
+      );
+    } else {
+      return new ContentResponse<>(
+          "vendor-delete",
+          "FAILURE",
+          "500",
+          responseMessage.getMessage(),
+          null
+      );
+    }
+  }
+
   private StallUserProfileResponse waitForGetResponse(long timeoutMs) {
     long startTime = System.currentTimeMillis();
     while (System.currentTimeMillis() - startTime < timeoutMs) {
@@ -194,6 +230,24 @@ public class VendorServiceImpl implements VendorService {
       StallUserResponseMessage response = stallUserResponseListener.getLatestUpdateResponse();
       if (response != null) {
         stallUserResponseListener.clearLatestUpdateResponse();
+        return response;
+      }
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private StallUserResponseMessage waitForDeleteResponse(long timeoutMs) {
+    long startTime = System.currentTimeMillis();
+    while (System.currentTimeMillis() - startTime < timeoutMs) {
+      StallUserResponseMessage response = stallUserResponseListener.getLatestDeleteResponse();
+      if (response != null) {
+        stallUserResponseListener.clearLatestDeleteResponse();
         return response;
       }
       try {

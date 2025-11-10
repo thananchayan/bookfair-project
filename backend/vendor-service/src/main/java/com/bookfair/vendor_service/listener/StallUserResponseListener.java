@@ -64,5 +64,19 @@ public class StallUserResponseListener {
     profileResponseCache.remove("get");
   }
 
+  @RabbitListener(queues = RabbitMQConfig.STALL_USER_DELETE_RESPONSE_QUEUE)
+  public void handleStallUserDeleteResponse(StallUserResponseMessage response) {
+    log.info("Received delete response from stall-service: status={}, message={}",
+        response.getStatus(), response.getMessage());
+    responseCache.put("delete", response);
+  }
+
+  public StallUserResponseMessage getLatestDeleteResponse() {
+    return responseCache.get("delete");
+  }
+
+  public void clearLatestDeleteResponse() {
+    responseCache.remove("delete");
+  }
 
 }

@@ -30,6 +30,11 @@ public class RabbitMQConfig {
   public static final String STALL_USER_GET_ROUTING_KEY = "stall.user.get";
   public static final String STALL_USER_GET_RESPONSE_ROUTING_KEY = "stall.user.get.response";
 
+  public static final String STALL_USER_DELETE_QUEUE = "stall.user.delete.queue";
+  public static final String STALL_USER_DELETE_RESPONSE_QUEUE = "stall.user.delete.response.queue";
+  public static final String STALL_USER_DELETE_ROUTING_KEY = "stall.user.delete";
+  public static final String STALL_USER_DELETE_RESPONSE_ROUTING_KEY = "stall.user.delete.response";
+
 
   @Bean
   public Queue stallUserQueue() {
@@ -108,6 +113,29 @@ public class RabbitMQConfig {
       TopicExchange exchange) {
     return BindingBuilder.bind(stallUserGetResponseQueue).to(exchange)
         .with(STALL_USER_GET_RESPONSE_ROUTING_KEY);
+  }
+
+  @Bean
+  public Queue stallUserDeleteQueue() {
+    return new Queue(STALL_USER_DELETE_QUEUE, true);
+  }
+
+  @Bean
+  public Queue stallUserDeleteResponseQueue() {
+    return new Queue(STALL_USER_DELETE_RESPONSE_QUEUE, true);
+  }
+
+  @Bean
+  public Binding stallUserDeleteBinding(Queue stallUserDeleteQueue, TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserDeleteQueue).to(exchange)
+        .with(STALL_USER_DELETE_ROUTING_KEY);
+  }
+
+  @Bean
+  public Binding stallUserDeleteResponseBinding(Queue stallUserDeleteResponseQueue,
+      TopicExchange exchange) {
+    return BindingBuilder.bind(stallUserDeleteResponseQueue).to(exchange)
+        .with(STALL_USER_DELETE_RESPONSE_ROUTING_KEY);
   }
 
 }
