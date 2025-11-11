@@ -1,6 +1,6 @@
-package com.bookfair.reservation_service.dto.request;
+package com.bookfair.notification_service.dto.request;
 
-import com.bookfair.reservation_service.enums.Size;
+import com.bookfair.notification_service.enums.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

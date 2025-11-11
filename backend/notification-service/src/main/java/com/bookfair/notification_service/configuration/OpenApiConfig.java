@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.configuration;
+package com.bookfair.notification_service.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

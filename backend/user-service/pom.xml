@@ -13,7 +13,7 @@
   </parent>
 
   <groupId>com.bookfair</groupId>
-  <artifactId>vendor-service</artifactId>
+  <artifactId>user-service</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
   <properties>

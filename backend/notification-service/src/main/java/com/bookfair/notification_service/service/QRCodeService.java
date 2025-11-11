@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.service;
+package com.bookfair.notification_service.service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;

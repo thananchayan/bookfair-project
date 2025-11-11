@@ -1,7 +1,7 @@
-package com.bookfair.reservation_service.controller;
+package com.bookfair.notification_service.controller;
 
-import com.bookfair.reservation_service.dto.response.QRCodeReadResponse;
-import com.bookfair.reservation_service.service.QRCodeService;
+import com.bookfair.notification_service.dto.response.QRCodeReadResponse;
+import com.bookfair.notification_service.service.QRCodeService;
 import com.google.zxing.NotFoundException;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;

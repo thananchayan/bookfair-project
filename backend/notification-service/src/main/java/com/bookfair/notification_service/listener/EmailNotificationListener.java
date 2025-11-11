@@ -1,7 +1,7 @@
-package com.bookfair.reservation_service.listener;
+package com.bookfair.notification_service.listener;
 
-import com.bookfair.reservation_service.dto.request.EmailRequest;
-import com.bookfair.reservation_service.service.EmailService;
+import com.bookfair.notification_service.dto.request.EmailRequest;
+import com.bookfair.notification_service.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

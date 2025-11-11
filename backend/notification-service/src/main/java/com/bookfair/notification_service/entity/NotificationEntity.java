@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.entity;
+package com.bookfair.notification_service.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

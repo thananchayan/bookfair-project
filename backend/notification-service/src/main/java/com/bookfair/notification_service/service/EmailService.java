@@ -1,10 +1,10 @@
-package com.bookfair.reservation_service.service;
+package com.bookfair.notification_service.service;
 
-import com.bookfair.reservation_service.NotificationRepository;
-import com.bookfair.reservation_service.dto.request.EmailRequest;
-import com.bookfair.reservation_service.dto.request.StallAllocationRequest;
-import com.bookfair.reservation_service.dto.request.StallRequest;
-import com.bookfair.reservation_service.entity.NotificationEntity;
+import com.bookfair.notification_service.NotificationRepository;
+import com.bookfair.notification_service.dto.request.EmailRequest;
+import com.bookfair.notification_service.dto.request.StallAllocationRequest;
+import com.bookfair.notification_service.dto.request.StallRequest;
+import com.bookfair.notification_service.entity.NotificationEntity;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.util.Base64;

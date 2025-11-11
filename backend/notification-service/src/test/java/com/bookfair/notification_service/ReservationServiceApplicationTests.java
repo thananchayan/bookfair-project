@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service;
+package com.bookfair.notification_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

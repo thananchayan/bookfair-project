@@ -1,4 +1,4 @@
-package com.bookfair.reservation_service.dto.request;
+package com.bookfair.notification_service.dto.request;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

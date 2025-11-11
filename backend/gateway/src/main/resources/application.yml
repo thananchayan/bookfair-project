@@ -1,21 +1,60 @@
+# =========================
+# DEFAULT (LOCAL DEVELOPMENT)
+# =========================
 server:
   port: 8087
+
 spring:
-  application.name: gateway
+  application:
+    name: gateway
   cloud:
     gateway:
+      # Route to Eureka-registered services using lb://SERVICE-ID
       routes:
         - id: reservation
-          uri: http://reservation-service:8081
+          uri: lb://reservation-service
           predicates:
             - Path=/api/reservations/**,/api/availability/**
         - id: stall
-          uri: http://stall-service:8082
+          uri: lb://stall-service
           predicates:
             - Path=/api/stalls/**
         - id: vendor
-          uri: http://vendor-service:8083
+          uri: lb://vendor-service
           predicates:
             - Path=/api/me/**,/api/vendors/**
+      default-filters:
+        # Good hygiene: strip cookies by default (adjust as needed)
+        - name: RemoveRequestHeader
+          args:
+            name: Cookie
+        # Propagate a correlation id if not present
+        - name: AddRequestHeader
+          args:
+            name: X-Correlation-Id
+            value: "#{T(java.util.UUID).randomUUID().toString()}"
+    loadbalancer:
+      # Optional: retry/load-balancer tuning
+      ribbon:
+        enabled: false
 
-# Add CORS here if frontends run elsewhere
+# Eureka client (gateway registers itself and discovers others)
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
