@@ -1,11 +1,12 @@
-package com.bookfair.stall_service.service;
+package com.bookfair.vendor_service.service.impl;
 
-import com.bookfair.stall_service.dto.request.CreateStallUserRequest;
-import com.bookfair.stall_service.dto.request.EmailNotificationRequest;
-import com.bookfair.stall_service.dto.request.UpdateStallUserRequest;
-import com.bookfair.stall_service.dto.response.StallUserResponse;
-import com.bookfair.stall_service.entity.StallUserEntity;
-import com.bookfair.stall_service.repository.StallUserRepository;
+
+import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
+import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.vendor_service.dto.response.StallUserResponse;
+import com.bookfair.vendor_service.entity.StallUserEntity;
+import com.bookfair.vendor_service.repository.StallUserRepository;
+import com.bookfair.vendor_service.service.StallUserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class StallUserServiceImpl implements StallUserService {
 
   private final StallUserRepository stallUserRepository;
-  private final EmailNotificationPublisher emailNotificationPublisher;
 
   @Override
   public StallUserResponse createStallUser(CreateStallUserRequest request) {
@@ -40,7 +40,7 @@ public class StallUserServiceImpl implements StallUserService {
     StallUserEntity savedEntity = stallUserRepository.save(entity);
 
     // Send email notification after successful user creation
-    sendAccountCreationEmail(savedEntity);
+//    sendAccountCreationEmail(savedEntity);
     return mapToResponse(savedEntity);
   }
 
@@ -79,7 +79,7 @@ public class StallUserServiceImpl implements StallUserService {
     StallUserEntity entity = stallUserRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Stall User not found"));
 
-    if (!entity.getPassword().equals(request.getOldPassword())) {
+    if (!entity.getPassword().equals(request.getOld_password())) {
       throw new RuntimeException("Old password is incorrect");
     }
 
@@ -94,7 +94,7 @@ public class StallUserServiceImpl implements StallUserService {
     }
 
     entity.setUsername(request.getUsername());
-    entity.setPassword(request.getNewPassword());
+    entity.setPassword(request.getNew_password());
     entity.setPhoneNumber(request.getPhonenumber());
     entity.setAddress(request.getAddress());
     entity.setProfession(request.getProfession());
@@ -121,22 +121,22 @@ public class StallUserServiceImpl implements StallUserService {
         .build();
   }
 
-  private void sendAccountCreationEmail(StallUserEntity user) {
-    try {
-      EmailNotificationRequest emailRequest = EmailNotificationRequest.builder()
-          .email(user.getUsername())
-          .userName(user.getUsername())
-          .subject("Welcome to BookFair - Account Created Successfully")
-          .body("Your account has been created successfully. Welcome to BookFair!")
-          .build();
-
-      emailNotificationPublisher.publishEmailNotification(emailRequest);
-      log.info("Email notification sent for user: {}", user.getUsername());
-    } catch (Exception e) {
-      log.error("Failed to send email notification for user: {}", user.getUsername(), e);
-      // Don't throw exception - email failure shouldn't break user creation
-    }
-  }
+//  private void sendAccountCreationEmail(StallUserEntity user) {
+//    try {
+//      EmailNotificationRequest emailRequest = EmailNotificationRequest.builder()
+//          .email(user.getUsername())
+//          .userName(user.getUsername())
+//          .subject("Welcome to BookFair - Account Created Successfully")
+//          .body("Your account has been created successfully. Welcome to BookFair!")
+//          .build();
+//
+//      emailNotificationPublisher.publishEmailNotification(emailRequest);
+//      log.info("Email notification sent for user: {}", user.getUsername());
+//    } catch (Exception e) {
+//      log.error("Failed to send email notification for user: {}", user.getUsername(), e);
+//      // Don't throw exception - email failure shouldn't break user creation
+//    }
+//  }
 }
 
 
