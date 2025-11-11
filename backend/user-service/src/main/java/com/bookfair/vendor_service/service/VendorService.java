@@ -17,4 +17,15 @@ public interface VendorService {
 //    ContentResponse<VendorResponse> getVendorById(Long id);
 //    ContentResponse<VendorResponse> updateVendorProfile(Long id, VendorProfileUpdateRequest request);
 //    ContentResponse<Void> reserveStall(Long vendorId, Long stallId);
+
+
+  ContentResponse<UserReservationResponse> reserveStall(
+          Long userId,
+          StallReservationRequest request,
+          String authorizationHeader);
+
+
+  ContentResponse<List<UserReservationResponse>> getReservationHistory(
+          Long userId,
+          String authorizationHeader);
 }

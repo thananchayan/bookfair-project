@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.bookfair.vendor_service.feign.StallServiceClient;
+import com.bookfair.vendor_service.dto.request.StallReservationRequest;
+import com.bookfair.vendor_service.dto.response.UserReservationResponse;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +24,7 @@ public class VendorServiceImpl implements VendorService {
 
   private final StallUserPublisher stallUserPublisher;
   private final StallUserResponseListener stallUserResponseListener;
-
+  private final StallServiceClient stallServiceClient;
   @Override
   @Transactional
   public ContentResponse<StallUserResponse> registerUser(CreateStallUserRequest request) {
@@ -258,5 +260,58 @@ public class VendorServiceImpl implements VendorService {
       }
     }
     return null;
+  }
+
+  @Override
+  public ContentResponse<UserReservationResponse> reserveStall(
+          Long userId,
+          StallReservationRequest request,
+          String authorizationHeader) {
+
+    log.info("Vendor {} reserving stall {} at book fair {}",
+            userId, request.getStallId(), request.getBookFairId());
+
+    try {
+
+      ContentResponse<UserReservationResponse> response =
+              stallServiceClient.reserveStall(userId, request, authorizationHeader);
+
+      return response;
+    } catch (Exception e) {
+      log.error("Failed to reserve stall for user: {}", userId, e);
+
+      return new ContentResponse<>(
+              "StallReservation",
+              "FAILURE",
+              "503",
+              "Reservation service is currently unavailable.",
+              null
+      );
+    }
+  }
+
+
+  @Override
+  public ContentResponse<List<UserReservationResponse>> getReservationHistory(
+          Long userId,
+          String authorizationHeader) {
+
+    log.info("Fetching reservation history for user: {}", userId);
+
+    try {
+      ContentResponse<List<UserReservationResponse>> response =
+              stallServiceClient.getReservationsByUserId(userId, authorizationHeader);
+
+      return response;
+    } catch (Exception e) {
+      log.error("Failed to fetch history for user: {}", userId, e);
+      return new ContentResponse<>(
+              "ReservationHistory",
+              "FAILURE",
+              "503",
+              "Reservation history service is currently unavailable.",
+              null
+      );
+    }
   }
 }

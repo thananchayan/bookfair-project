@@ -177,6 +177,7 @@ public class StallServiceImpl implements StallService {
         .build();
   }
 
+
   private StallResponse mapToResponse(StallEntity stallEntity) {
     return StallResponse.builder()
         .id(stallEntity.getId())
