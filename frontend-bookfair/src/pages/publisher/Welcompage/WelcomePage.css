@@ -1,0 +1,257 @@
+.page-root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    color: #e8eef8;
+    position: relative;
+    z-index: 1;
+    padding-top: 80px;
+    padding-bottom: 64px;
+}
+
+
+.bg-stage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100svh;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+  
+}
+
+
+.bg-layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: saturate(1.0) contrast(1.0);
+    animation: fadeIn 600ms ease;
+}
+
+
+.bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(3, 6, 12, 0.25), rgba(3, 6, 12, 0.55));
+}
+
+
+.content-wrap {
+    position: relative;
+    z-index: 1;
+    padding: 32px 16px;
+    display: grid;
+    place-items: center;
+}
+
+
+
+.title {
+    margin: 0 0 8px;
+    font-size: clamp(18px, 5vw, 34px);
+}
+
+.subtitle {
+    margin: 12px 0 6px;
+    font-size: 16px;
+    color: #e8eef8;
+}
+
+.lead {
+    margin: 0 0 10px;
+    color: rgba(232, 238, 248, 0.95);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.benefits {
+    font-size: 14px;
+    margin: 6px 0 0;
+    padding-left: 0;
+    list-style-position: inside;
+    line-height: 1.6;
+    color: rgba(232, 238, 248, 0.9);
+    text-align: center;
+}
+
+
+.cta-row {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+
+.btn-gradient {
+    border: 1px solid whitesmoke;
+    background: transparent;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(0, 150, 255, 0.35);
+    filter: brightness(1.03);
+}
+
+
+.info {
+    position: relative;
+    z-index: 1;
+    gap: 16px;
+    margin: 0 auto 48px;
+    padding: 0 16px;
+    justify-content: center;
+}
+
+.info-card {
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    margin-top: 80px;
+    max-width: 1000px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 64px;
+    background: #000;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 0 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 100;
+  
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+    border-color: #ffffff;
+    color: #0c95a1;
+    background: linear-gradient(90deg, #d5d5d5 0%, #ffffff 100%);
+   
+}
+.btn-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 180% at 50% -20%,
+    rgba(255,255,255,0.35) 0%,
+    rgba(255,255,255,0.15) 45%,
+    rgba(255,255,255,0.0) 70%
+  );
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+/* GLASS HOVER */
+.btn-gradient:hover {
+  transform: translateY(-2px) scale(1.05);
+  /* translucent fill so backdrop-filter can show through */
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.45);
+  color: #ffffff;
+
+  /* frosted glass */
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+
+  /* soft glow */
+  box-shadow:
+    0 6px 20px rgba(255,255,255,0.25),
+    0 0 22px rgba(255,255,255,0.2) inset;
+}
+
+
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0.35;
+        transform: scale(1.02);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* --- Responsive type & spacing for small screens --- */
+@media (max-width: 600px) {
+    .title {
+        font-size: clamp(16px, 6vw, 24px);
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .lead {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .benefits {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .info-card {
+        margin-top: 48px;
+        padding: 16px;
+    }
+
+    .btn-gradient {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+}
+
+
+.btn-gradient {
+    border: 1px solid whitesmoke;
+    background: transparent;
+    color: #ffffff;
+    transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease, background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+
+
+
+
+@media (max-width: 600px) {
+    .color-swatch {
+        width: 24px;
+        height: 24px;
+    }
+}

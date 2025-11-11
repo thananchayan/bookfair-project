@@ -3,7 +3,7 @@ import {
   useContext,
   useState,
   useCallback,
-  type ReactNode, // Import ReactNode as type
+  type ReactNode, 
 } from "react"
 
 interface User {
@@ -57,29 +57,29 @@ export function AuthProvider({ children }: { children: ReactNode }) { // Use Rea
   )
 
   const signup = useCallback(
-  async (
-    email: string,
-    name: string,
-    companyName: string,
-    role: "publisher" | "organizer",
-  ) => {
-    setIsLoading(true)
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      setUser({
-        id: "1",
-        email,
-        name,
-        role,
-        companyName: role === "publisher" ? companyName : undefined,
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  },
-  [],
-)
+    async (
+      email: string,
+      name: string,
+      companyName: string,
+      role: "publisher" | "organizer",
+    ) => {
+      setIsLoading(true)
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        setUser({
+          id: "1",
+          email,
+          name,
+          role,
+          companyName: role === "publisher" ? companyName : undefined,
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [],
+  )
 
   const logout = useCallback(() => {
     setUser(null)
