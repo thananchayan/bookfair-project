@@ -2,6 +2,7 @@ package com.bookfair.vendor_service.service.impl;
 
 
 import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
+import com.bookfair.vendor_service.dto.request.EmailRequest;
 import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.vendor_service.dto.response.StallUserResponse;
 import com.bookfair.vendor_service.entity.StallUserEntity;
@@ -10,6 +11,7 @@ import com.bookfair.vendor_service.service.StallUserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class StallUserServiceImpl implements StallUserService {
 
   private final StallUserRepository stallUserRepository;
+  private final RabbitTemplate rabbitTemplate;
 
   @Override
   public StallUserResponse createStallUser(CreateStallUserRequest request) {
@@ -38,9 +41,10 @@ public class StallUserServiceImpl implements StallUserService {
         .build();
 
     StallUserEntity savedEntity = stallUserRepository.save(entity);
+    log.info("User created successfully: {}", entity.getUsername());
 
     // Send email notification after successful user creation
-//    sendAccountCreationEmail(savedEntity);
+    sendAccountCreationEmail(savedEntity);
     return mapToResponse(savedEntity);
   }
 
@@ -121,22 +125,26 @@ public class StallUserServiceImpl implements StallUserService {
         .build();
   }
 
-//  private void sendAccountCreationEmail(StallUserEntity user) {
-//    try {
-//      EmailNotificationRequest emailRequest = EmailNotificationRequest.builder()
-//          .email(user.getUsername())
-//          .userName(user.getUsername())
-//          .subject("Welcome to BookFair - Account Created Successfully")
-//          .body("Your account has been created successfully. Welcome to BookFair!")
-//          .build();
-//
-//      emailNotificationPublisher.publishEmailNotification(emailRequest);
-//      log.info("Email notification sent for user: {}", user.getUsername());
-//    } catch (Exception e) {
-//      log.error("Failed to send email notification for user: {}", user.getUsername(), e);
-//      // Don't throw exception - email failure shouldn't break user creation
-//    }
-//  }
+  private void sendAccountCreationEmail(StallUserEntity user) {
+    EmailRequest emailRequest = EmailRequest.builder()
+        .email(user.getUsername())
+        .subject("BookFair - Account Created Successfully")
+        .body("Your account has been created successfully. Welcome to BookFair!")
+        .build();
+
+    try {
+      rabbitTemplate.convertAndSend(
+          "user.exchange",
+          "user.created",
+          emailRequest
+      );
+      log.info("User creation event published for: {}", user.getUsername());
+    } catch (Exception e) {
+      log.error("Failed to publish user creation event for {}: {}",
+          user.getUsername(), e.getMessage());
+      // Don't throw exception - email failure shouldn't break user creation
+    }
+  }
 }
 
 

@@ -54,13 +54,11 @@ public class EmailService {
   }
 
   public void sendAccountCreationEmail(EmailRequest emailRequest) {
-    String userName = emailRequest.getUserName();
     String userEmail = emailRequest.getEmail();
-    String htmlBody = buildAccountCreationTemplate(userName, userEmail);
+    String htmlBody = buildAccountCreationTemplate(userEmail);
 
     EmailRequest request = new EmailRequest(
         userEmail,
-        userName,
         emailRequest.getSubject(),
         htmlBody,
         true
@@ -99,13 +97,12 @@ public class EmailService {
 
 // Append QR code image to email body
       String htmlBody = buildReservationConfirmationTemplate(
-          stallAllocationRequest.getEmailRequest().getUserName(),
+          stallAllocationRequest.getEmailRequest().getEmail(),
           stallAllocationRequest,
           qrCodeBase64
       );
       EmailRequest request = new EmailRequest(
           stallAllocationRequest.getEmailRequest().getEmail(),
-          stallAllocationRequest.getEmailRequest().getUserName(),
           stallAllocationRequest.getEmailRequest().getSubject(),
           htmlBody,
           true
@@ -165,7 +162,7 @@ public class EmailService {
   }
 
   //html templates
-  private String buildAccountCreationTemplate(String userName, String userEmail) {
+  private String buildAccountCreationTemplate(String userEmail) {
     return """
         <!DOCTYPE html>
         <html>
@@ -251,7 +248,7 @@ public class EmailService {
             </div>
         </body>
         </html>
-        """.formatted(userName);
+        """.formatted(userEmail);
   }
 
   private String buildReservationConfirmationTemplate(String userName,

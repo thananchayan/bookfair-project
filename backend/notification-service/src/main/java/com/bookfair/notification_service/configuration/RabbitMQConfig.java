@@ -13,35 +13,42 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-  public static final String EMAIL_NOTIFICATION_QUEUE = "email.notification.queue";
-  public static final String EMAIL_NOTIFICATION_ROUTING_KEY = "email.notification";
-  public static final String EXCHANGE = "bookfair.exchange";
+  // Queue name constant
+  public static final String USER_CREATION_QUEUE = "user.creation.queue";
+  public static final String USER_EXCHANGE = "user.exchange";
+  public static final String USER_CREATED_ROUTING_KEY = "user.created";
 
+  // Define Queue - stores messages until consumed
   @Bean
-  public Queue emailNotificationQueue() {
-    return new Queue(EMAIL_NOTIFICATION_QUEUE, true);
+  public Queue userCreationQueue() {
+    return new Queue(USER_CREATION_QUEUE, true); // durable=true (survives broker restart)
   }
 
+  // Define Exchange - routes messages to queues
   @Bean
-  public TopicExchange exchange() {
-    return new TopicExchange(EXCHANGE);
+  public TopicExchange userExchange() {
+    return new TopicExchange(USER_EXCHANGE);
   }
 
+  // Bind Queue to Exchange with routing key
   @Bean
-  public Binding emailNotificationBinding(Queue emailNotificationQueue, TopicExchange exchange) {
-    return BindingBuilder.bind(emailNotificationQueue).to(exchange)
-        .with(EMAIL_NOTIFICATION_ROUTING_KEY);
+  public Binding userCreationBinding(Queue userCreationQueue, TopicExchange userExchange) {
+    return BindingBuilder.bind(userCreationQueue)
+        .to(userExchange)
+        .with(USER_CREATED_ROUTING_KEY);
   }
 
+  // JSON converter for serialization/deserialization
   @Bean
   public Jackson2JsonMessageConverter messageConverter() {
     return new Jackson2JsonMessageConverter();
   }
 
+  // Configure RabbitTemplate with JSON converter
   @Bean
   public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-    RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-    rabbitTemplate.setMessageConverter(messageConverter());
-    return rabbitTemplate;
+    RabbitTemplate template = new RabbitTemplate(connectionFactory);
+    template.setMessageConverter(messageConverter());
+    return template;
   }
 }

@@ -8,21 +8,22 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
-public class EmailNotificationListener {
+@RequiredArgsConstructor
+public class UserEventListener {
 
   private final EmailService emailService;
 
-  @RabbitListener(queues = "email.notification.queue")
-  public void handleEmailNotification(EmailRequest emailRequest) {
-    log.info("Received email notification request for: {}", emailRequest.getEmail());
+  @RabbitListener(queues = "user.creation.queue")
+  public void handleUserCreation(EmailRequest emailRequest) {
+    log.info("Received user creation event for: {}", emailRequest.getEmail());
     try {
       emailService.sendAccountCreationEmail(emailRequest);
-      log.info("Email notification sent successfully to: {}", emailRequest.getEmail());
+      log.info("Account creation email sent successfully to: {}", emailRequest.getEmail());
     } catch (Exception e) {
-      log.error("Failed to send email notification to {}: {}",
+      log.error("Failed to send account creation email to {}: {}",
           emailRequest.getEmail(), e.getMessage(), e);
+      // Message will be re-queued or sent to DLQ based on configuration
     }
   }
 }
