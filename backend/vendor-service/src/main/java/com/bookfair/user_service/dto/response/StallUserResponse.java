@@ -1,6 +1,6 @@
-package com.bookfair.vendor_service.dto.response;
+package com.bookfair.user_service.dto.response;
 
-import com.bookfair.vendor_service.enums.UserProfession;
+import com.bookfair.user_service.enums.UserProfession;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

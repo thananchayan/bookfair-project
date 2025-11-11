@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.enums;
+package com.bookfair.user_service.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

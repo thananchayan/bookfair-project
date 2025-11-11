@@ -1,6 +1,6 @@
-package com.bookfair.vendor_service.entity;
+package com.bookfair.user_service.entity;
 
-import com.bookfair.vendor_service.enums.UserProfession;
+import com.bookfair.user_service.enums.UserProfession;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

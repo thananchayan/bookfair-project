@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service;
+package com.bookfair.user_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

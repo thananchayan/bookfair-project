@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.enums;
+package com.bookfair.user_service.enums;
 
 public enum RequestStatus {
     SUCCESS("Success"),

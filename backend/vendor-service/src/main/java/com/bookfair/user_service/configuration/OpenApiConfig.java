@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.configuration;
+package com.bookfair.user_service.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

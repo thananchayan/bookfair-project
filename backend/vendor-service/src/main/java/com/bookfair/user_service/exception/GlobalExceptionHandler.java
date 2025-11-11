@@ -1,7 +1,7 @@
-package com.bookfair.vendor_service.exception;
+package com.bookfair.user_service.exception;
 
-import com.bookfair.vendor_service.dto.ContentResponse;
-import com.bookfair.vendor_service.enums.RequestStatus;
+import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.enums.RequestStatus;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

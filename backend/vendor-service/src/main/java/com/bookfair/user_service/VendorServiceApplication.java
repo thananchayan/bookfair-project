@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service;
+package com.bookfair.user_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

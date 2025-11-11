@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.dto;
+package com.bookfair.user_service.dto;
 
 import lombok.Builder;
 import lombok.Data;
