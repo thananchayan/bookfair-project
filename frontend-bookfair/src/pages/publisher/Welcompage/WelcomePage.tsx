@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./welcomePage.css";
+import { useNavigate, Link } from "react-router-dom"
 
 type WelcomePageProps = { brand?: string };
 const ROTATE_MS = 8000; // change interval
@@ -67,9 +68,12 @@ const WelcomePage: React.FC<WelcomePageProps> = ({ brand = "BookFair" }) => {
                         firsthand.    </div>
 
                     <div className="cta-row">
-                        <button className="btn-gradient" >
-                            Book Tour Stall
-                        </button>
+                 
+                       <Link to="/login">
+  <button className="btn-gradient">
+    Book Tour Stall
+  </button>
+</Link>
                     </div>
                     <div className="info-cardN">
 
