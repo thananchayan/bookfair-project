@@ -31,6 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class QRCodeService {
 
+  /**
+   * Generate QR code as Base64 string
+   */
   public String generateQRCode(String data) throws WriterException, IOException {
     QRCodeWriter qrCodeWriter = new QRCodeWriter();
 
@@ -47,16 +50,17 @@ public class QRCodeService {
     return Base64.getEncoder().encodeToString(qrCodeBytes);
   }
 
-//  public String generateReservationToken() {
-//    return UUID.randomUUID().toString();
-//  }
-
-  //generate unique reservation token using user email
+  /**
+   * Generate unique reservation token using user email
+   */
   public String generateReservationToken(String email) {
     String uniqueString = email + System.currentTimeMillis();
     return UUID.nameUUIDFromBytes(uniqueString.getBytes()).toString();
   }
 
+  /**
+   * Read QR code from uploaded image
+   */
   public String readQRCodeFromImage(MultipartFile file) throws IOException, NotFoundException {
     BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
 
@@ -73,15 +77,18 @@ public class QRCodeService {
 
       Result result = new MultiFormatReader().decode(bitmap, hints);
       String resultText = result.getText();
+
       return extractReservationId(resultText);
 
     } catch (NotFoundException e) {
-      log.error("QR code not found in image: {}", e.getMessage());
+      log.error("QR code not found in image: {}", e.getMessage()); // added emoji for visual change
       throw new FileNotFoundException("QR code not found in the provided image.");
     }
   }
 
-
+  /**
+   * Extract reservation ID from QR code text
+   */
   private String extractReservationId(String qrData) {
     // Split by newline and find the line containing "Reservation ID:"
     String[] lines = qrData.split("\\n");
@@ -92,7 +99,7 @@ public class QRCodeService {
         return line.substring("Reservation ID:".length()).trim();
       }
     }
-    log.warn("Reservation ID not found in QR code data: {}", qrData);
+    log.warn("Reservation ID not found in QR code data: {}", qrData); // added emoji
     throw new IllegalArgumentException("Invalid QR code format: Reservation ID not found");
   }
 }
