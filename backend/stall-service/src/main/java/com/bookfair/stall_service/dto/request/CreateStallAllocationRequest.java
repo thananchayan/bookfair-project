@@ -23,4 +23,6 @@ public class CreateStallAllocationRequest {
   private String stallLocation;
 
   private Long price;
+  private Long userId;
+
 }

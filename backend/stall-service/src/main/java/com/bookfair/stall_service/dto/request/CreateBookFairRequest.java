@@ -34,5 +34,7 @@ public class CreateBookFairRequest {
   private Integer durationDays;
 
   private String description;
+  private Long userId;
+
 
 }

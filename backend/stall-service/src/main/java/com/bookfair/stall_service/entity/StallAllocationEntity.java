@@ -37,6 +37,9 @@ public class StallAllocationEntity {
   private StallEntity stall;
 
   @Column(nullable = false)
+  private Long userId;
+
+  @Column(nullable = false)
   private String stallLocation;
 
   @Column(nullable = false)
@@ -49,3 +52,4 @@ public class StallAllocationEntity {
   @Column(unique = true)
   private String reservationToken;
 }
+

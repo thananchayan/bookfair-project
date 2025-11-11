@@ -178,13 +178,15 @@ public class StallAllocationServiceImp implements StallAllocationService {
 
   private StallAllocationEntity mapToEntity(CreateStallAllocationRequest request) {
     return StallAllocationEntity.builder()
-        .bookFair(bookFairRepository.findById(request.getBookFairId()).get())
-        .stall(stallRepository.findById(request.getStallId()).get())
-        .stallLocation(request.getStallLocation())
-        .stallPrice(request.getPrice())
-        .stallAllocationStatus(StallAllocationStatus.PENDING)
-        .build();
+            .bookFair(bookFairRepository.findById(request.getBookFairId()).get())
+            .stall(stallRepository.findById(request.getStallId()).get())
+            .userId(request.getUserId()) // <-- ADD THIS
+            .stallLocation(request.getStallLocation())
+            .stallPrice(request.getPrice())
+            .stallAllocationStatus(StallAllocationStatus.PENDING)
+            .build();
   }
+
 
   private StallAllocationResponse mapToResponse(StallAllocationEntity entity) {
     StallAllocationResponse response = new StallAllocationResponse();

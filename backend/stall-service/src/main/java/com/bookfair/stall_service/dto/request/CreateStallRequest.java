@@ -15,4 +15,6 @@ public class CreateStallRequest {
   @NotNull(message = "Size is required")
   private Size size;
   private String description;
+  private Long userId;
+
 }
