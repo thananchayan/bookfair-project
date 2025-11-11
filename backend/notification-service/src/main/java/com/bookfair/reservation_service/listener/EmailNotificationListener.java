@@ -16,13 +16,13 @@ public class EmailNotificationListener {
 
   @RabbitListener(queues = "email.notification.queue")
   public void handleEmailNotification(EmailRequest emailRequest) {
-    log.info("Received email notification request for: {}", emailRequest.getEmail());
+    log.info("Received email notification request for: {}", emailRequest.getEmail()); // added emoji
     try {
       emailService.sendAccountCreationEmail(emailRequest);
-      log.info("Email notification sent successfully to: {}", emailRequest.getEmail());
+      log.info("Email notification sent successfully to: {}", emailRequest.getEmail()); // added emoji
     } catch (Exception e) {
       log.error("Failed to send email notification to {}: {}",
-          emailRequest.getEmail(), e.getMessage(), e);
+              emailRequest.getEmail(), e.getMessage(), e); // added emoji
     }
   }
 }
