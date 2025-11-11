@@ -1,0 +1,127 @@
+# =========================
+# DEFAULT (LOCAL DEVELOPMENT)
+# =========================
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Eureka server does not act as a client in single-node setup
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    # Tune for fast local feedback; adjust for production
+    eviction-interval-timer-in-ms: 60000
+    renewal-percent-threshold: 0.85
+    # For local dev you can disable self-preservation to see quick instance removal
+    enable-self-preservation: false
+    # Optional: speed up empty registry sync on boot (dev convenience)
+    wait-time-in-ms-when-sync-empty: 0
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
+
+---
+# =========================
+# DOCKER PROFILE
+#   Use with: SPRING_PROFILES_ACTIVE=docker
+# =========================
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    # Container hostname (matches your docker-compose service name)
+    hostname: eureka-server
+    # UI links will use this host; if your nodes reach via IP, set prefer-ip-address: true
+    prefer-ip-address: false
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    eviction-interval-timer-in-ms: 60000
+    renewal-percent-threshold: 0.85
+    enable-self-preservation: true  # safer in shared envs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+---
+# =========================
+# PRODUCTION + BASIC AUTH
+#   Use with: SPRING_PROFILES_ACTIVE=prod-secured
+#   Protects the Eureka dashboard and enables safer defaults
+# =========================
+spring:
+  config:
+    activate:
+      on-profile: prod-secured
+  security:
+    user:
+      name: eureka
+      password: ${EUREKA_DASHBOARD_PASSWORD:change-me-please}
+
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: ${EUREKA_HOSTNAME:eureka-server}
+    prefer-ip-address: false
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    # Safer production posture
+    enable-self-preservation: true
+    eviction-interval-timer-in-ms: 60000
+    renewal-percent-threshold: 0.85
+    # Optional: peer awareness if you later cluster Eureka
+    # peer-eureka-nodes-update-interval-ms: 60000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
