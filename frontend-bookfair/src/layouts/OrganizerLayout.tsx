@@ -1,5 +1,31 @@
 import React, { useEffect, useState, useCallback, useContext, createContext } from "react"
 import { Outlet } from "react-router-dom" ;
+import React from 'react';
+
+export interface OrganizerLayoutProps {
+  title?: string;
+  children?: React.ReactNode;
+  className?: string;
+}
+
+const OrganizerLayout: React.FC<OrganizerLayoutProps> = ({
+  title = 'Organizer Portal',
+  children,
+  className = '',
+}) => {
+  return (
+    <div className={`min-h-screen bg-gray-50 ${className}`}>
+      <header className="sticky top-0 z-10 bg-white border-b">
+        <div className="mx-auto max-w-7xl px-4 py-3">
+          <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
+        </div>
+      </header>
+      <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+    </div>
+  );
+};
+
+export default OrganizerLayout;
 
 
 
