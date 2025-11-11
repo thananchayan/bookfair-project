@@ -59,11 +59,11 @@ public class EmailService {
     String htmlBody = buildAccountCreationTemplate(userName, userEmail);
 
     EmailRequest request = new EmailRequest(
-        userEmail,
-        userName,
-        emailRequest.getSubject(),
-        htmlBody,
-        true
+            userEmail,
+            userName,
+            emailRequest.getSubject(),
+            htmlBody,
+            true
     );
     try {
       NotificationEntity notificationEntity = mapToEntity(emailRequest);
@@ -78,42 +78,39 @@ public class EmailService {
   public void sendReservationConfirmation(StallAllocationRequest stallAllocationRequest) {
     try {
       String userEmail = stallAllocationRequest.getEmailRequest().getEmail();
-      //Generate QR code data
       String reservationToken = qrCodeService.generateReservationToken(userEmail);
       String qrData = String.format(
-          "Email: %s\nReservation ID: %s\nBookFair: %s",
-          userEmail,
-          reservationToken,
-          stallAllocationRequest.getBookFairName()
+              "Email: %s\nReservation ID: %s\nBookFair: %s",
+              userEmail,
+              reservationToken,
+              stallAllocationRequest.getBookFairName()
       );
       final String qrCodeBase64;
       try {
         qrCodeBase64 = qrCodeService.generateQRCode(qrData);
       } catch (com.google.zxing.WriterException | java.io.IOException e) {
         log.error("Failed to generate QR code for reservation {}: {}", reservationToken,
-            e.getMessage(), e);
+                e.getMessage(), e);
         throw new RuntimeException("Failed to generate QR code: " + e.getMessage(), e);
       }
-      // Decode base64 to bytes and attach as inline image with content-id "qrCode"
       byte[] qrBytes = Base64.getDecoder().decode(qrCodeBase64);
 
-// Append QR code image to email body
       String htmlBody = buildReservationConfirmationTemplate(
-          stallAllocationRequest.getEmailRequest().getUserName(),
-          stallAllocationRequest,
-          qrCodeBase64
+              stallAllocationRequest.getEmailRequest().getUserName(),
+              stallAllocationRequest,
+              qrCodeBase64
       );
       EmailRequest request = new EmailRequest(
-          stallAllocationRequest.getEmailRequest().getEmail(),
-          stallAllocationRequest.getEmailRequest().getUserName(),
-          stallAllocationRequest.getEmailRequest().getSubject(),
-          htmlBody,
-          true
+              stallAllocationRequest.getEmailRequest().getEmail(),
+              stallAllocationRequest.getEmailRequest().getUserName(),
+              stallAllocationRequest.getEmailRequest().getSubject(),
+              htmlBody,
+              true
       );
       request.setInlineImages(Map.of("qrCode", qrBytes));
 
       sendHtmlEmailWithAttachment(request, qrBytes,
-          "reservation-" + reservationToken.substring(0, 8) + ".png");
+              "reservation-" + reservationToken.substring(0, 8) + ".png");
 
       sendHtmlEmail(request);
 
@@ -124,22 +121,22 @@ public class EmailService {
 
     } catch (MessagingException e) {
       log.error("Failed to send reservation confirmation to {}",
-          stallAllocationRequest.getEmailRequest().getEmail(), e);
+              stallAllocationRequest.getEmailRequest().getEmail(), e);
       throw new RuntimeException("Failed to send reservation confirmation: " + e.getMessage());
     }
   }
 
   private NotificationEntity mapToEntity(EmailRequest emailRequest) {
     return NotificationEntity.builder()
-        .receipientEmail(emailRequest.getEmail())
-        .subject(emailRequest.getSubject())
-        .body(emailRequest.getBody())
-        .sentAt(java.time.LocalDateTime.now())
-        .build();
+            .receipientEmail(emailRequest.getEmail())
+            .subject(emailRequest.getSubject())
+            .body(emailRequest.getBody())
+            .sentAt(java.time.LocalDateTime.now())
+            .build();
   }
 
   private void sendHtmlEmailWithAttachment(EmailRequest request, byte[] qrBytes, String filename)
-      throws MessagingException {
+          throws MessagingException {
     try {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -153,7 +150,6 @@ public class EmailService {
           helper.addInline(e.getKey(), new ByteArrayResource(e.getValue()), "image/png");
         }
       }
-      // Add QR code as downloadable attachment
       helper.addAttachment(filename, new ByteArrayResource(qrBytes), "image/png");
 
       mailSender.send(message);
@@ -187,7 +183,7 @@ public class EmailService {
                     box-shadow: 0 0 20px rgba(0,0,0,0.1);
                 }
                 .header {
-                    background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%);
+                    background: linear-gradient(135deg, #ff7e5f 0%%, #feb47b 100%%); /* changed */
                     color: white;
                     padding: 40px 30px;
                     text-align: center;
@@ -255,7 +251,7 @@ public class EmailService {
   }
 
   private String buildReservationConfirmationTemplate(String userName,
-      StallAllocationRequest stallAllocation, String qrCid) {
+                                                      StallAllocationRequest stallAllocation, String qrCid) {
 
     StringBuilder stallsList = new StringBuilder();
     var stalls = stallAllocation.getStallRequest();
@@ -277,106 +273,23 @@ public class EmailService {
              <html>
              <head>
                  <style>
-                     body {
-                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                         line-height: 1.6;
-                         color: #333;
-                         max-width: 600px;
-                         margin: 0 auto;
-                         background-color: #f4f4f4;
-                     }
-                     .container {
-                         background-color: #ffffff;
-                         margin: 20px;
-                         border-radius: 10px;
-                         overflow: hidden;
-                         box-shadow: 0 0 20px rgba(0,0,0,0.1);
-                     }
-                     .header {
-                         background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%);
-                         color: white;
-                         padding: 40px 30px;
-                         text-align: center;
-                     }
-                     .header h1 {
-                         margin: 0;
-                         font-size: 28px;
-                         font-weight: 600;
-                     }
-                     .header p {
-                         margin: 10px 0 0 0;
-                         font-size: 16px;
-                         opacity: 0.9;
-                     }
-                     .content {
-                         padding: 40px 30px;
-                     }
-                     .success-badge {
-                         background-color: #28a745;
-                         color: white;
-                         padding: 8px 20px;
-                         border-radius: 20px;
-                         display: inline-block;
-                         font-size: 14px;
-                         font-weight: 600;
-                         margin-bottom: 20px;
-                     }
-                     .welcome-text {
-                         font-size: 18px;
-                         color: #667eea;
-                         margin-bottom: 20px;
-                         font-weight: 600;
-                     }
-                     .info-box {
-                         background-color: #f8f9fa;
-                         border-left: 4px solid #667eea;
-                         padding: 20px;
-                         margin: 20px 0;
-                         border-radius: 5px;
-                     }
-                     .info-box p {
-                         margin: 8px 0;
-                     }
-                     .info-box strong {
-                         color: #667eea;
-                     }
-                     .stalls-table {
-                         width: 100%%;
-                         border-collapse: collapse;
-                         margin: 20px 0;
-                         background-color: white;
-                         border-radius: 8px;
-                         overflow: hidden;
-                         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                     }
-                     .stalls-table th {
-                         background-color: #667eea;
-                         color: white;
-                         padding: 15px;
-                         text-align: left;
-                         font-weight: 600;
-                     }
-                     .stalls-table td {
-                         padding: 12px;
-                         border-bottom: 1px solid #e9ecef;
-                     }
-                     .section-title {
-                         font-size: 16px;
-                         font-weight: 600;
-                         color: #667eea;
-                         margin: 25px 0 15px 0;
-                     }
-                     .footer {
-                         background-color: #f8f9fa;
-                         padding: 30px;
-                         text-align: center;
-                         color: #666;
-                         font-size: 14px;
-                         border-top: 1px solid #e9ecef;
-                     }
-                     .footer p {
-                         margin: 5px 0;
-                     }
+                     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; background-color: #f4f4f4; }
+                     .container { background-color: #ffffff; margin: 20px; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+                     .header { background: linear-gradient(135deg, #ff7e5f 0%%, #feb47b 100%%); color: white; padding: 40px 30px; text-align: center; } /* changed */
+                     .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+                     .header p { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+                     .content { padding: 40px 30px; }
+                     .success-badge { background-color: #ff6f61; color: white; padding: 8px 20px; border-radius: 20px; display: inline-block; font-size: 14px; font-weight: 600; margin-bottom: 20px; } /* changed */
+                     .welcome-text { font-size: 18px; color: #667eea; margin-bottom: 20px; font-weight: 600; }
+                     .info-box { background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
+                     .info-box p { margin: 8px 0; }
+                     .info-box strong { color: #667eea; }
+                     .stalls-table { width: 100%%; border-collapse: collapse; margin: 20px 0; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                     .stalls-table th { background-color: #667eea; color: white; padding: 15px; text-align: left; font-weight: 600; }
+                     .stalls-table td { padding: 12px; border-bottom: 1px solid #e9ecef; }
+                     .section-title { font-size: 16px; font-weight: 600; color: #667eea; margin: 25px 0 15px 0; }
+                     .footer { background-color: #f8f9fa; padding: 30px; text-align: center; color: #666; font-size: 14px; border-top: 1px solid #e9ecef; }
+                     .footer p { margin: 5px 0; }
                  </style>
              </head>
              <body>
@@ -428,11 +341,11 @@ public class EmailService {
              </body>
              </html>
         """.formatted(
-        userName,
-        stallAllocation.getBookFairName(),
-        stallAllocation.getStallRequest() == null ? 0 : stallAllocation.getStallRequest().size(),
-        stallsList.toString(),
-        qrCid
+            userName,
+            stallAllocation.getBookFairName(),
+            stallAllocation.getStallRequest() == null ? 0 : stallAllocation.getStallRequest().size(),
+            stallsList.toString(),
+            qrCid
     );
   }
 
