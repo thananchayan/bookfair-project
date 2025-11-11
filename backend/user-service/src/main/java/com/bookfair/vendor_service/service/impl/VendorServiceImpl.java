@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.bookfair.vendor_service.dto.response.VendorReservationResponse; // NEW IMPORT
+import com.bookfair.vendor_service.feign.StallServiceClient; // NEW IMPORT
+import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +25,7 @@ public class VendorServiceImpl implements VendorService {
   private final StallUserPublisher stallUserPublisher;
   private final StallUserResponseListener stallUserResponseListener;
 
+  private final StallServiceClient stallServiceClient;
   @Override
   @Transactional
   public ContentResponse<StallUserResponse> registerUser(CreateStallUserRequest request) {
@@ -258,5 +261,85 @@ public class VendorServiceImpl implements VendorService {
       }
     }
     return null;
+  }
+
+  // Add a new method in VendorServiceImpl.java
+  @Override
+  public ContentResponse<List<VendorReservationResponse>> getVendorReservations(Long vendorId) {
+    log.info("Requesting reservations for vendorId: {}", vendorId);
+
+    GetReservationsRequest request = GetReservationsRequest.builder()
+            .vendorId(vendorId)
+            .replyToQueue(RabbitMQConfig.VENDOR_RESERVATIONS_REPLY_QUEUE)
+            .build();
+
+    // 1. Publish the request
+    rabbitTemplate.convertAndSend(
+            RabbitMQConfig.EXCHANGE,
+            RabbitMQConfig.VENDOR_RESERVATIONS_GET_ROUTING_KEY,
+            request
+    );
+
+    // 2. Wait for the reply (Need a custom listener/storage to receive the reply)
+    // NOTE: For simplicity, assuming a shared listener/storage mechanism similar to StallUserResponseListener exists.
+    // In a production system, this would require correlation IDs.
+    // Assuming a ReservationResponseListener with getLatestReservationResponse(timeout) exists:
+
+    // ReservationResponseListener responseListener = ... // You need to create and inject this
+    // List<VendorReservationResponse> responseData = responseListener.getLatestReservationResponse(5000);
+
+    // --- Mock Blocking Wait for Reservation Response ---
+    // NOTE: Implement proper blocking wait using Condition/Lock or a dedicated message listener container.
+    // Using a mock return for demonstration:
+    List<VendorReservationResponse> mockResponse = List.of();
+
+    if (mockResponse == null) { // or if timeout
+      return new ContentResponse<>(
+              "VendorReservations", "TIMEOUT", "408",
+              "Reservation query timed out.", null
+      );
+    }
+
+    return new ContentResponse<>(
+            "VendorReservations", "SUCCESS", "200",
+            "Reservations retrieved successfully", mockResponse
+    );
+    // --- End Mock ---
+  }
+  @Override
+  public ContentResponse<List<VendorReservationResponse>> getVendorReservations(Long vendorId) {
+
+    try {
+      ContentResponse<List<VendorReservationResponse>> response =
+              stallServiceClient.getReservationsByVendorId(vendorId);
+
+
+      if ("SUCCESS".equalsIgnoreCase(response.getStatus())) {
+        return new ContentResponse<>(
+                "VendorReservations",
+                "SUCCESS",
+                "200",
+                "Reservations retrieved successfully",
+                response.getData()
+        );
+      } else {
+        return new ContentResponse<>(
+                "VendorReservations",
+                "FAILURE",
+                response.getStatusCode(),
+                response.getMessage(),
+                null
+        );
+      }
+    } catch (Exception e) {
+      log.error("Failed to get reservations for vendorId: {}", vendorId, e);
+      return new ContentResponse<>(
+              "VendorReservations",
+              "FAILURE",
+              "500",
+              "Could not connect to Stall Service or internal error.",
+              null
+      );
+    }
   }
 }

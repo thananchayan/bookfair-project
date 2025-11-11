@@ -22,4 +22,5 @@ public interface StallAllocationService {
 
   ContentResponse<StallAllocationResponse> allocateStallToBookFair(Long stallId, Long bookFairId);
 
+  ContentResponse<List<StallAllocationResponse>> getAllReservationsByVendor(Long vendorId);
 }

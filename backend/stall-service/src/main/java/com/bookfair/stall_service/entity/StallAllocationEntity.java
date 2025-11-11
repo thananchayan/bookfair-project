@@ -48,4 +48,10 @@ public class StallAllocationEntity {
 
   @Column(unique = true)
   private String reservationToken;
+
+  @Column(nullable = false)
+  private Long vendorId;
+  private Instant reservationDate;
+  @Column(unique = true)
+  private String qrCodeReference;
 }

@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.bookfair.vendor_service.dto.response.VendorReservationResponse;
+import java.util.List;
+import org.springframework.security.core.Authentication;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +52,21 @@ public class VendorController {
   @DeleteMapping("/{id}")
   public ResponseEntity<ContentResponse<Void>> deleteVendor(@PathVariable Long id) {
     return ResponseEntity.ok(vendorService.deleteUser(id));
+  }
+
+  @GetMapping("/reservations")
+  public ResponseEntity<ContentResponse<List<VendorReservationResponse>>> getVendorReservations(
+          Authentication authentication) {
+
+    Long vendorId;
+    try {
+      vendorId = Long.parseLong(authentication.getName());
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ContentResponse<>(
+              "VendorReservations", "FAILURE", "401", "Invalid vendor ID in token.", null
+      ));
+    }
+    return ResponseEntity.ok(vendorService.getVendorReservations(vendorId));
   }
 
 }

@@ -18,5 +18,10 @@ public interface StallAllocationRepository extends JpaRepository<StallAllocation
 
   boolean existsByStall_IdAndBookFair_Id(Long stallId, Long bookFairId);
 
+  long countByVendorIdAndBookFair(Long vendorId, BookFairEntity bookFair);
+
+  boolean existsByBookFairAndStall(BookFairEntity bookFair, StallEntity stall);
   List<StallAllocationEntity> findByStall_Id(Long stallId);
+
+  List<StallAllocationEntity> findByVendorId(Long vendorId);
 }

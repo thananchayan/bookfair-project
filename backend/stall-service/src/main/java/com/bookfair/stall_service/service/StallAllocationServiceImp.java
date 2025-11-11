@@ -176,6 +176,8 @@ public class StallAllocationServiceImp implements StallAllocationService {
     return null;
   }
 
+
+
   private StallAllocationEntity mapToEntity(CreateStallAllocationRequest request) {
     return StallAllocationEntity.builder()
         .bookFair(bookFairRepository.findById(request.getBookFairId()).get())

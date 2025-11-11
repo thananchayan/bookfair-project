@@ -14,5 +14,6 @@ public class EmailNotificationRequest {
   private String userName;
   private String subject;
   private String body;
+  private String qrCodeReference;
 }
 
