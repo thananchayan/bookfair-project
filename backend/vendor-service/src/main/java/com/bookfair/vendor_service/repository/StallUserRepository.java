@@ -1,6 +1,7 @@
-package com.bookfair.stall_service.repository;
+package com.bookfair.vendor_service.repository;
 
-import com.bookfair.stall_service.entity.StallUserEntity;
+
+import com.bookfair.vendor_service.entity.StallUserEntity;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

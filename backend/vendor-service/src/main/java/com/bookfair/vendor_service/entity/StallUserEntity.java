@@ -8,7 +8,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "vendors")
-public class Vendor {
+public class StallUserEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,5 +43,6 @@ public class Vendor {
   private LocalDate date;
 
   private String qrId;
+
 
 }
