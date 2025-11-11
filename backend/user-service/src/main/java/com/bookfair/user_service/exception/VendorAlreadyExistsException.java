@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.exception;
+package com.bookfair.user_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

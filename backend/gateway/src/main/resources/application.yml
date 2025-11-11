@@ -20,7 +20,7 @@ spring:
           predicates:
             - Path=/api/stalls/**
         - id: vendor
-          uri: lb://vendor-service
+          uri: lb://user-service
           predicates:
             - Path=/api/me/**,/api/vendors/**
       default-filters:

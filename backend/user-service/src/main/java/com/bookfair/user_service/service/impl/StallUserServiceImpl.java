@@ -1,13 +1,13 @@
-package com.bookfair.vendor_service.service.impl;
+package com.bookfair.user_service.service.impl;
 
 
-import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
-import com.bookfair.vendor_service.dto.request.EmailRequest;
-import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
-import com.bookfair.vendor_service.dto.response.StallUserResponse;
-import com.bookfair.vendor_service.entity.StallUserEntity;
-import com.bookfair.vendor_service.repository.StallUserRepository;
-import com.bookfair.vendor_service.service.StallUserService;
+import com.bookfair.user_service.dto.request.CreateStallUserRequest;
+import com.bookfair.user_service.dto.request.EmailRequest;
+import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.user_service.dto.response.StallUserResponse;
+import com.bookfair.user_service.entity.StallUserEntity;
+import com.bookfair.user_service.repository.StallUserRepository;
+import com.bookfair.user_service.service.StallUserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service.dto.request;
+package com.bookfair.user_service.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

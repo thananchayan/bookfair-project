@@ -1,4 +1,4 @@
-package com.bookfair.vendor_service;
+package com.bookfair.user_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class VendorServiceApplication {
+public class UserServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VendorServiceApplication.class, args);
-		System.out.println("Vendor Service is running...");
+		SpringApplication.run(UserServiceApplication.class, args);
+		System.out.println("User Service is running...");
 	}
 }

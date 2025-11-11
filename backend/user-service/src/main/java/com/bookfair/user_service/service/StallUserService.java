@@ -1,9 +1,9 @@
-package com.bookfair.vendor_service.service;
+package com.bookfair.user_service.service;
 
 
-import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
-import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
-import com.bookfair.vendor_service.dto.response.StallUserResponse;
+import com.bookfair.user_service.dto.request.CreateStallUserRequest;
+import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.user_service.dto.response.StallUserResponse;
 import java.util.List;
 
 public interface StallUserService {

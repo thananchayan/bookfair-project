@@ -1,10 +1,10 @@
-package com.bookfair.vendor_service.controller;
+package com.bookfair.user_service.controller;
 
-import com.bookfair.vendor_service.dto.ContentResponse;
-import com.bookfair.vendor_service.dto.request.CreateStallUserRequest;
-import com.bookfair.vendor_service.dto.request.UpdateStallUserRequest;
-import com.bookfair.vendor_service.dto.response.StallUserResponse;
-import com.bookfair.vendor_service.service.StallUserService;
+import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.dto.request.CreateStallUserRequest;
+import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.user_service.dto.response.StallUserResponse;
+import com.bookfair.user_service.service.StallUserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
