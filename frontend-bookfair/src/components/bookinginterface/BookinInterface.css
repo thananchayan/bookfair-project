@@ -1,0 +1,96 @@
+.stall-wrap {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legend {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+  user-select: none;
+}
+
+.pill.available { background: #f3f4f6; color: #111827; }
+.pill.held { background: #bfdbfe; color: #0b3b8a; }
+.pill.processing { background: #fde68a; color: #7a5900; }
+.pill.booked { background: #fecaca; color: #7f1d1d; }
+
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.btn:hover { background: #f3f4f6; }
+.btn.warn { border-color: #f59e0b; }
+.btn.good { border-color: #10b981; }
+
+.map {
+  width: 100%;
+  height: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.guide {
+  fill: none;
+  stroke: #ff7a00;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+/* Stalls */
+.stall {
+  stroke: #6b7280;
+  stroke-width: 1;
+  transition: fill 140ms ease, stroke 140ms ease, transform 120ms ease;
+}
+
+/* Size hints (optional subtle stroke width difference) */
+.stall.small  { stroke-width: 1; }
+.stall.medium { stroke-width: 1.5; }
+.stall.large  { stroke-width: 2; }
+
+/* Status colors */
+.stall.available { fill: #eeeeee; }
+.stall.held { fill: #cde4ff; }
+.stall.processing { fill: #ffe79c; }
+.stall.booked { fill: #ffb3b3; }
+
+/* Hover/disabled behaviors */
+.stall-hit { cursor: pointer; }
+.stall.available:hover,
+.stall.held:hover { filter: brightness(0.96); }
+
+/* Labels */
+.stall-label {
+  font: 600 11px/1.1 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+  fill: #111827;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  user-select: none;
+}

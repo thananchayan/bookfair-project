@@ -1,0 +1,88 @@
+.nav-wrapper {
+  position: fixed;
+  margin: 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-radius: 10px;
+  background: #ffffff;
+  /* stronger shadow */
+  box-shadow: 0 6px 20px rgba(0.08, 0.08, 0.08, 0.08);
+}
+
+.nav {
+border: #e9e9e9 2px solid;
+  border-radius: 10px;
+  height: 60px;
+  padding: 0 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Brand cluster */
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* Logos */
+.nav-logo {
+  display: block;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  height: auto;
+  object-fit: contain;
+}
+
+
+.nav-logo--sm {
+  width: 120px;
+}
+
+
+.nav-logo--lg {
+  width: 160px;
+  display: none;
+}
+
+
+@media (min-width: 768px) {
+  .nav-logo--lg { display: block; }
+  .nav-logo--sm { display: none; }
+}
+
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.btn-login {
+  appearance: none;
+  border: 1px solid whitesmoke;
+  background: linear-gradient(90deg, #0f056d 0%, #13e2e2 100%);
+  color: #ffffff;
+  padding: 6px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 150, 255, 0.35);
+}
+
+@media (max-width: 360px) {
+  .nav { padding: 0 10px; }
+  .btn-login { padding: 8px 12px; }
+}
