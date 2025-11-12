@@ -2,15 +2,18 @@ package com.bookfair.stall_service.service;
 
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
-import com.bookfair.stall_service.dto.request.UpdateStallAllocationRequest;
+import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.entity.BookFairEntity;
+import com.bookfair.stall_service.entity.HallEntity;
 import com.bookfair.stall_service.entity.StallAllocationEntity;
 import com.bookfair.stall_service.entity.StallEntity;
 import com.bookfair.stall_service.enums.BookFairStatus;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import com.bookfair.stall_service.enums.Status;
 import com.bookfair.stall_service.repository.BookFairRepository;
+import com.bookfair.stall_service.repository.HallRepository;
+import com.bookfair.stall_service.repository.HallStallRepository;
 import com.bookfair.stall_service.repository.StallAllocationRepository;
 import com.bookfair.stall_service.repository.StallRepository;
 import java.util.List;
@@ -21,42 +24,44 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StallAllocationServiceImp implements StallAllocationService {
 
-  private final BookFairService bookFairService;
-  private final StallService stallService;
 
   private final StallAllocationRepository stallAllocationRepository;
   private final BookFairRepository bookFairRepository;
   private final StallRepository stallRepository;
+  private final HallStallRepository hallStallRepository;
+  private final HallRepository hallRepository;
 
   @Override
   public ContentResponse<StallAllocationResponse> createStallAllocation(
       CreateStallAllocationRequest request) {
-    if (!bookFairRepository.existsById(request.getBookFairId())) {
-      throw new IllegalArgumentException("Book Fair not found");
+
+    StallEntity stallEntity = stallRepository.findById(request.getStallId())
+        .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
+
+    HallEntity hallEntity = hallStallRepository.findById(request.getHallStallID())
+        .orElseThrow(() -> new IllegalArgumentException("Hall Stall not found"))
+        .getHallEntity();
+
+//    BookFairEntity bookFairEntity = bookFairRepository.findById(hallEntity.getBookFair().getId()).get();
+    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId())
+        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
+
+//  if(stallAllocationRepository.existsByHallStall_IdAndStall_Id(request.getHallStallID(), request.getStallId())){
+//      	throw new IllegalArgumentException("Stall is already allocated to this Hall Stall");
+//    }
+
+    if (stallAllocationRepository.existsByHallStall_Id(request.getHallStallID())) {
+      throw new IllegalArgumentException("A Hall stall is already allocated ");
     }
 
-    if (!stallRepository.existsById(request.getStallId())) {
-      throw new IllegalArgumentException("Stall not found");
-    }
-
-    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId()).get();
-    StallEntity stallEntity = stallRepository.findById(request.getStallId()).get();
-
-    if (stallAllocationRepository.existsByBookFairAndStall(bookFairEntity, stallEntity)) {
-      throw new IllegalArgumentException("Stall is already allocated to this Book Fair");
-    }
     if (bookFairEntity.getStatus() == BookFairStatus.COMPLETED
         || bookFairEntity.getStatus() == BookFairStatus.CANCELLED) {
       throw new IllegalArgumentException(
           "Cannot allocate stall to a completed or cancelled Book Fair");
     }
+
     if (stallEntity.getStatus() == Status.BLOCKED) {
       throw new IllegalArgumentException("Stall is blocked and cannot be allocated");
-    }
-
-    if (stallAllocationRepository.existsByBookFairAndStallLocation(bookFairEntity,
-        request.getStallLocation())) {
-      throw new IllegalArgumentException("Stall location is already taken in this Book Fair");
     }
 
     StallAllocationEntity entity = mapToEntity(request);
@@ -88,6 +93,23 @@ public class StallAllocationServiceImp implements StallAllocationService {
   }
 
   @Override
+  public ContentResponse<List<StallAllocationResponse>> getStallAllocationByBookFairId(
+      Long bookFairId) {
+    List<StallAllocationEntity> response = stallAllocationRepository.findByBookFair_Id(bookFairId);
+    List<StallAllocationResponse> stallAllocationResponses = response.stream()
+        .map(this::mapToResponse)
+        .toList();
+    return new ContentResponse<>(
+        "StallAllocation",
+        "SUCCESS",
+        "200",
+        "Stall Allocations for Book Fair retrieved successfully",
+        stallAllocationResponses
+    );
+  }
+
+
+  @Override
   public ContentResponse<List<StallAllocationResponse>> getAllStallAllocation() {
     List<StallAllocationEntity> entity = stallAllocationRepository.findAll();
     List<StallAllocationResponse> response = entity.stream()
@@ -106,36 +128,17 @@ public class StallAllocationServiceImp implements StallAllocationService {
 
   @Override
   public ContentResponse<StallAllocationResponse> updateStallAllocationById(Long id,
-      UpdateStallAllocationRequest request) {
+      UpdateStallAllocationPrice request) {
     StallAllocationEntity stallAllocationEntity = stallAllocationRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Stall Allocation not found"));
-
-    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId())
-        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
-    StallEntity stallEntity = stallRepository.findById(request.getStallId())
-        .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
 
     if (!(stallAllocationEntity.getStallAllocationStatus() == StallAllocationStatus.PENDING)) {
       throw new IllegalArgumentException(
           "Only pending stall allocations can be updated");
     }
 
-    if (stallAllocationRepository.existsByBookFairAndStall(bookFairEntity, stallEntity) &&
-        !stallAllocationEntity.getStall().getId().equals(stallEntity.getId())) {
-      throw new IllegalArgumentException("Stall is already allocated to this Book Fair");
-    }
-
-    if (stallAllocationRepository.existsByBookFairAndStallLocation(bookFairEntity,
-        request.getStallLocation()) &&
-        !stallAllocationEntity.getStallLocation().equals(request.getStallLocation())) {
-      throw new IllegalArgumentException("Stall location is already taken in this Book Fair");
-    }
-
-    stallAllocationEntity.setBookFair(bookFairEntity);
-    stallAllocationEntity.setStall(stallEntity);
-    stallAllocationEntity.setStallLocation(request.getStallLocation());
     stallAllocationEntity.setStallPrice(request.getPrice());
-    stallAllocationEntity.setStallAllocationStatus(request.getStatus());
+    stallAllocationEntity.setStallAllocationStatus(request.getStallAllocationStatus());
 
     stallAllocationRepository.save(stallAllocationEntity);
     StallAllocationResponse response = mapToResponse(stallAllocationEntity);
@@ -179,8 +182,8 @@ public class StallAllocationServiceImp implements StallAllocationService {
   private StallAllocationEntity mapToEntity(CreateStallAllocationRequest request) {
     return StallAllocationEntity.builder()
         .bookFair(bookFairRepository.findById(request.getBookFairId()).get())
+        .hallStall(hallStallRepository.findById(request.getHallStallID()).get())
         .stall(stallRepository.findById(request.getStallId()).get())
-        .stallLocation(request.getStallLocation())
         .stallPrice(request.getPrice())
         .stallAllocationStatus(StallAllocationStatus.PENDING)
         .build();
@@ -190,11 +193,12 @@ public class StallAllocationServiceImp implements StallAllocationService {
     StallAllocationResponse response = new StallAllocationResponse();
     response.setId(entity.getId());
     response.setBookFairId(entity.getBookFair().getId());
+    response.setHallStallID(entity.getHallStall().getId());
     response.setStallId(entity.getStall().getId());
-    response.setStallLocation(entity.getStallLocation());
-    response.setStatus(entity.getStallAllocationStatus());
     response.setPrice(entity.getStallPrice());
-    response.setBookFairStatus(entity.getBookFair().getStatus());
+    response.setStallAllocationStatus(entity.getStallAllocationStatus());
+    response.setUserId(entity.getBookingUserId());
+    response.setReservationToken(entity.getReservationToken());
     return response;
   }
 

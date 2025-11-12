@@ -2,7 +2,7 @@ package com.bookfair.stall_service.controller;
 
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
-import com.bookfair.stall_service.dto.request.UpdateStallAllocationRequest;
+import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.service.StallAllocationService;
 import jakarta.validation.Valid;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class StallAllocationController {
 
   private final StallAllocationService stallAllocationService;
-
 
   @PostMapping
   public ResponseEntity<ContentResponse<StallAllocationResponse>> createStallAllocation(
@@ -49,7 +48,7 @@ public class StallAllocationController {
 
   @PutMapping("/{id}")
   public ResponseEntity<ContentResponse<StallAllocationResponse>> updateStallAllocation(
-      @Valid @RequestBody UpdateStallAllocationRequest request, Long id) {
+      @Valid @RequestBody UpdateStallAllocationPrice request, Long id) {
     return ResponseEntity.ok(stallAllocationService.updateStallAllocationById(id, request));
   }
 }
