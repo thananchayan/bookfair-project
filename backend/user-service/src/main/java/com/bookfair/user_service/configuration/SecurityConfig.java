@@ -32,11 +32,16 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
     http
         .csrf(csrf -> csrf.disable())
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**", "/actuator/health").permitAll()
+            .requestMatchers("/auth/**",
+                "/actuator/health",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html").permitAll()
             .anyRequest().authenticated()
         ).exceptionHandling(ex -> ex
             .accessDeniedHandler(customAccessDeniedHandler)  // Use your custom handler

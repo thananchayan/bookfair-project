@@ -49,13 +49,17 @@ public class AuthServiceImpl implements AuthService {
     // basic normalization
     String email = req.getUsername().trim().toLowerCase();
     String phone = req.getPhonenumber().trim();
+    UserProfession profession = normalizeProfession(req.getProfession());
+    if (profession == UserProfession.ADMIN) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot register as ADMIN");
+    }
 
     StallUserEntity user = StallUserEntity.builder()
         .username(email)
         .password(encoder.encode(req.getPassword()))
         .phoneNumber(phone)
         .address(req.getAddress())
-        .profession(normalizeProfession(req.getProfession()))
+        .profession(profession)
         .date(LocalDate.now())
         .enabled(true)
         .build();
