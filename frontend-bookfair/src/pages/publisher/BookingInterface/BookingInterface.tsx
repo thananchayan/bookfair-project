@@ -226,7 +226,7 @@ function BookingSummary({
   );
 }
 
-/* =============== Main Component =============== */
+
 export default function StallMap() {
   // Canvas
   const W = 1000,
@@ -308,7 +308,7 @@ export default function StallMap() {
       }
       setPendingId(id); // open confirm modal
     }
-    // Ignore clicks for "processing" / "booked"
+    
   };
 
   const confirmSelect = () => {
