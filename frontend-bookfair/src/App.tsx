@@ -8,7 +8,7 @@ import "./App.css";
 import PublisherDashboard from "./pages/publisher/PublisherDashboard";
 import PublisherLayout from "./layouts/PublisherLayout";
 import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
-import ProfileSettings from "./pages/publisher/Profile/profile";
+import ProfileSettings from "./pages/publisher/Profile/Profile";
 
 function App() {
   return (

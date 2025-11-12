@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/common/Button";
 import { Card } from "../../components/Card";
-import LiteraryGenresCard from "../../components/LiteraryGenresCard/LiterarygenresCard";
+import LiteraryGenresCard from "../../components/LiteraryGenresCard/LiteraryGenresCard";
 
 const PublisherDashboard: React.FC = () => {
   const dummyUser = {
