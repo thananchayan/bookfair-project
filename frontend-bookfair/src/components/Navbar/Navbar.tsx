@@ -10,6 +10,11 @@ type NavbarProps = {
   fixed?: boolean;
 };
 
+const SAMPLE_USER = {
+  name: "Silva",
+  email: "silva@example.com",
+};
+
 const Navbar: React.FC<NavbarProps> = ({
   bigLogoSrc = BFLogoA,
   smallLogoSrc = BFLogoA,
@@ -20,9 +25,9 @@ const Navbar: React.FC<NavbarProps> = ({
   const navigate = useNavigate();
   const [elevated, setElevated] = useState(false);
 
-  // MOCK auth state (replace with real auth later)
+  // Mock auth state (derived from route for now)
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("John Doe");
+  const [userName, setUserName] = useState(SAMPLE_USER.name);
 
   useEffect(() => {
     const onScroll = () => setElevated(window.scrollY > 8);
@@ -37,16 +42,25 @@ const Navbar: React.FC<NavbarProps> = ({
     location.pathname === "/login" ||
     location.pathname === "/signup";
 
-  // Button label driven by page type
+  // 🔧 Mock: whenever we navigate, pretend we're logged in on non-auth pages
+  useEffect(() => {
+    if (isAuthPage) {
+      setLoggedIn(false);
+      setUserName(""); // hide on auth pages
+    } else {
+      setLoggedIn(true);
+      setUserName(SAMPLE_USER.name);
+    }
+  }, [isAuthPage]);
+
   const buttonText = isAuthPage ? "Login" : "Logout";
 
   const handleAuth = () => {
     if (isAuthPage) {
-      // Always go to login on these pages
       navigate("/login");
       return;
     }
-    // On all other pages: treat as logout
+    // Mock logout then go home
     setLoggedIn(false);
     setUserName("");
     navigate("/");
@@ -61,13 +75,12 @@ const Navbar: React.FC<NavbarProps> = ({
         </Link>
 
         <div className="nav-actions flex items-center gap-4">
-          {/* Show username on all non-auth pages, only if logged in */}
+          {/* Show sample username on all non-auth pages */}
           {!isAuthPage && loggedIn && (
             <span className="text-gray-700 font-medium hidden sm:inline">
               {userName}
             </span>
           )}
-
           <button className="btn-login" onClick={handleAuth}>
             {buttonText}
           </button>

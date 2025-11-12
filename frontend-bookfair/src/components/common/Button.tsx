@@ -15,11 +15,11 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variants = {
     primary:
-      "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
+      "bg-[#0e6993] text-white hover:bg-[#0c5b81] focus:ring-[#0e6993]",
     secondary:
       "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400",
     outline:
-      "border border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500",
+      "border border-[#0e6993] text-[#0e6993] hover:bg-[#e7f3f8] focus:ring-[#0e6993]",
   };
 
   return (
