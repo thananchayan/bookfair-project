@@ -13,7 +13,7 @@ export default function AppSubNavbar() {
 
   const publisherLinks = [
     { to: "/publisher/dashboard", label: "Dashboard" },
-    { to: "/publisher/reservations", label: "My Reservations" },
+    { to: "/publisher/reserve-stall", label: "Reservations" },
     { to: "/publisher/profile", label: "Profile" },
   ];
 
@@ -71,7 +71,7 @@ export default function AppSubNavbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown panel */}
+
       <div
         className={[
           "md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out bg-gray-50 border-t border-gray-200",
