@@ -66,19 +66,6 @@ public class StallUserController {
     ));
   }
 
-  @GetMapping("/qr/{qrId}")
-  public ResponseEntity<ContentResponse<StallUserResponse>> getStallUserByQrId(
-      @PathVariable String qrId) {
-    StallUserResponse response = stallUserService.getStallUserByQrId(qrId);
-    return ResponseEntity.ok(new ContentResponse<>(
-        "success",
-        "SUCCESS",
-        "200",
-        "Stall user retrieved successfully",
-        response
-    ));
-  }
-
   @GetMapping
   public ResponseEntity<ContentResponse<List<StallUserResponse>>> getAllStallUsers() {
     List<StallUserResponse> responses = stallUserService.getAllStallUsers();

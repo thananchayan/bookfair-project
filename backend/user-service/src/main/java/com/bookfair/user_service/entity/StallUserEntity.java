@@ -42,7 +42,9 @@ public class StallUserEntity {
 
   private LocalDate date;
 
-  private String qrId;
+  @Builder.Default
+  @Column(nullable = false)
+  private Boolean enabled = true;
 
 
 }

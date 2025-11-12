@@ -2,6 +2,7 @@ package com.bookfair.user_service.exception;
 
 import com.bookfair.user_service.dto.ContentResponse;
 import com.bookfair.user_service.enums.RequestStatus;
+import io.jsonwebtoken.ExpiredJwtException;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,131 +20,144 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ContentResponse<Object>> handleResponseStatusException(
-        ResponseStatusException e) {
-        ContentResponse<Object> errorResponse = new ContentResponse<>(
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ContentResponse<Object>> handleResponseStatusException(
+      ResponseStatusException e) {
+    ContentResponse<Object> errorResponse = new ContentResponse<>(
+        "error",
+        null,
+        RequestStatus.FAILURE.getStatus(),
+        String.valueOf(e.getStatusCode().value()),
+        e.getReason()
+    );
+    return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ContentResponse<Object>> handleIllegalArgument(
+      IllegalArgumentException ex) {
+    return ResponseEntity.badRequest().body(
+        new ContentResponse<>(
             "error",
             null,
             RequestStatus.FAILURE.getStatus(),
-            String.valueOf(e.getStatusCode().value()),
-            e.getReason()
-        );
-        return ResponseEntity.status(e.getStatusCode()).body(errorResponse);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ContentResponse<Object>> handleIllegalArgument(
-        IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "400",
-                ex.getMessage()
-            )
-        );
-    }
+            "400",
+            ex.getMessage()
+        )
+    );
+  }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ContentResponse<Object>> handleValidationException(
-        MethodArgumentNotValidException e) {
-        String errorMsg = e.getBindingResult()
-            .getFieldErrors()
-            .stream()
-            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .collect(Collectors.joining(", "));
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ContentResponse<Object>> handleValidationException(
+      MethodArgumentNotValidException e) {
+    String errorMsg = e.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+        .collect(Collectors.joining(", "));
 
-        return ResponseEntity.badRequest().body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "400",
-                errorMsg
-            )
-        );
-    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ContentResponse<Object>> handleBadCredentials(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "401",
-                "Bad Credentials: "
-                    + (ex.getMessage() != null ? ex.getMessage() : "Invalid username or password")
-            )
-        );
-    }
-
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ContentResponse<Object>> handleAll(Exception e) {
-        e.printStackTrace();
-        ContentResponse<Object> errorResponse = new ContentResponse<>(
+    return ResponseEntity.badRequest().body(
+        new ContentResponse<>(
             "error",
+            null,
             RequestStatus.FAILURE.getStatus(),
-            "500",
-            "Something went wrong.",
-            e.getMessage() != null ? e.getMessage() : "An unexpected error occurred"
-        );
-        return ResponseEntity.internalServerError().body(errorResponse);
-    }
+            "400",
+            errorMsg
+        )
+    );
+  }
 
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ContentResponse<Object>> handleDisabled(DisabledException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "401",
-                "Your account is disabled"
-            )
-        );
-    }
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ContentResponse<Object>> handleAll(Exception e) {
+    e.printStackTrace();
+    ContentResponse<Object> errorResponse = new ContentResponse<>(
+        "error",
+        RequestStatus.FAILURE.getStatus(),
+        "500",
+        "Something went wrong.",
+        e.getMessage() != null ? e.getMessage() : "An unexpected error occurred"
+    );
+    return ResponseEntity.internalServerError().body(errorResponse);
+  }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ContentResponse<Object>> handleNotFound(UsernameNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "401",
-                "User name not found."
-            )
-        );
-
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ContentResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-            new ContentResponse<>(
-                "error",
-                null,
-                RequestStatus.FAILURE.getStatus(),
-                "403",
-                "You are not authorized to perform this action"
-            )
-        );
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ContentResponse<Object>> handleRuntimeException(RuntimeException ex) {
-        ContentResponse<Object> errorResponse = new ContentResponse<>(
+  @ExceptionHandler(DisabledException.class)
+  public ResponseEntity<ContentResponse<Object>> handleDisabled(DisabledException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+        new ContentResponse<>(
             "error",
+            null,
             RequestStatus.FAILURE.getStatus(),
-            "500",
-            ex.getMessage() != null ? ex.getMessage() : "A runtime error occurred",
-            null
-        );
-        return ResponseEntity.internalServerError().body(errorResponse);
-    }
+            "401",
+            "Your account is disabled"
+        )
+    );
+  }
+
+  @ExceptionHandler(UsernameNotFoundException.class)
+  public ResponseEntity<ContentResponse<Object>> handleNotFound(UsernameNotFoundException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+        new ContentResponse<>(
+            "error",
+            null,
+            RequestStatus.FAILURE.getStatus(),
+            "401",
+            "User name not found."
+        )
+    );
+
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ContentResponse<Object>> handleAccessDenied(AccessDeniedException ex) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+        new ContentResponse<>(
+            "error",
+            null,
+            RequestStatus.FAILURE.getStatus(),
+            "403",
+            "You are not authorized to perform this action"
+        )
+    );
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<ContentResponse<Object>> handleRuntimeException(RuntimeException ex) {
+    ex.printStackTrace();
+    ContentResponse<Object> errorResponse = new ContentResponse<>(
+
+        "error",
+        RequestStatus.FAILURE.getStatus(),
+        "500",
+        ex.getMessage() != null ? ex.getMessage() : "A runtime error occurred",
+        null
+    );
+    return ResponseEntity.internalServerError().body(errorResponse);
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ContentResponse<Object>> handleBadCredentialsException(
+      BadCredentialsException ex) {
+    ContentResponse<Object> errorResponse = new ContentResponse<>(
+        "error",
+        RequestStatus.FAILURE.getStatus(),
+        "401",
+        "Invalid username or password",
+        null
+    );
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+  }
+
+  @ExceptionHandler(ExpiredJwtException.class)
+  public ResponseEntity<ContentResponse<Object>> handleExpiredJwtException(
+      ExpiredJwtException ex) {
+    ContentResponse<Object> errorResponse = new ContentResponse<>(
+        "error",
+        RequestStatus.FAILURE.getStatus(),
+        "401",
+        "JWT token has expired",
+        null
+    );
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+  }
 }

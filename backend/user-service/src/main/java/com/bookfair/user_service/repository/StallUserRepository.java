@@ -12,11 +12,10 @@ public interface StallUserRepository extends JpaRepository<StallUserEntity, Long
 
   boolean existsByUsername(String username);
 
-  boolean existsByQrId(String qrId);
-
   Optional<StallUserEntity> findByUsername(String username);
 
-  Optional<StallUserEntity> findByQrId(String qrId);
+  Optional<StallUserEntity> findByPhoneNumber(String phoneNumber);
+
 
   boolean existsByPhoneNumber(@NotNull(message = "Phone number cannot be null") String phonenumber);
 }

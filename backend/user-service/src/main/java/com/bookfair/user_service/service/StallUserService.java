@@ -14,8 +14,6 @@ public interface StallUserService {
 
   StallUserResponse getStallUserByUsername(String username);
 
-  StallUserResponse getStallUserByQrId(String qrId);
-
   List<StallUserResponse> getAllStallUsers();
 
   StallUserResponse updateStallUser(Long id, UpdateStallUserRequest request);

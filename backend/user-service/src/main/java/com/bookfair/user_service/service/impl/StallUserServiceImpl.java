@@ -63,13 +63,6 @@ public class StallUserServiceImpl implements StallUserService {
   }
 
   @Override
-  public StallUserResponse getStallUserByQrId(String qrId) {
-    StallUserEntity stallUserEntity = stallUserRepository.findByQrId(qrId)
-        .orElseThrow(() -> new RuntimeException("Stall User not found"));
-    return mapToResponse(stallUserEntity);
-  }
-
-  @Override
   public List<StallUserResponse> getAllStallUsers() {
     List<StallUserEntity> entities = stallUserRepository.findAll();
     return entities.stream()
