@@ -48,4 +48,6 @@ public class StallAllocationEntity {
 
   @Column(unique = true)
   private String reservationToken;
+
+
 }
