@@ -11,18 +11,18 @@ spring:
     gateway:
       # Route to Eureka-registered services using lb://SERVICE-ID
       routes:
-        - id: reservation
-          uri: lb://reservation-service
+        - id: notification
+          uri: lb://notification-service
           predicates:
-            - Path=/api/reservations/**,/api/availability/**
+            - Path=/api/email/**,/api/qr/**
         - id: stall
           uri: lb://stall-service
           predicates:
-            - Path=/api/stalls/**
+            - Path=/api/bookfairs/**,/api/stall-allocations/**,/api/stalls/**
         - id: vendor
           uri: lb://user-service
           predicates:
-            - Path=/api/me/**,/api/vendors/**
+            - Path=/api/me/**,/api/users/**,/auth/**,/api/stall-users/**,
       default-filters:
         # Good hygiene: strip cookies by default (adjust as needed)
         - name: RemoveRequestHeader
@@ -37,6 +37,13 @@ spring:
       # Optional: retry/load-balancer tuning
       ribbon:
         enabled: false
+
+security:
+  oauth2:
+    resourceserver:
+      jwt:
+        secret: ${SECURITY_JWT_SECRET}
+
 
 # Eureka client (gateway registers itself and discovers others)
 eureka:

@@ -1,44 +1,83 @@
-# General
+###############################################
+# 🌍 General
+###############################################
 .DS_Store
-.env
+Thumbs.db
 
-# Backend (Java/Maven/Spring Boot)
-backend/HELP.md
+# Environment files (real secrets)
+.env
+**/.env
+frontend/.env.local
+
+# Allow example env files
+!.env.example
+!**/.env.example
+!frontend/.env.example
+
+
+###############################################
+# ⚙️ Backend (Spring Boot / Maven / Java)
+###############################################
 backend/target/
 backend/.mvn/wrapper/maven-wrapper.jar
-!backend/**/src/main/**/target/ # Keep nested targets for inclusion if needed
-!backend/**/src/test/**/target/ # Keep nested targets for inclusion if needed
+backend/HELP.md
 
-# STS (IDE Specific for Backend)
-backend/.apt_generated
-backend/.classpath
-backend/.factorypath
-backend/.project
-backend/.settings
-backend/.springBeans
-backend/.sts4-cache
+# Keep nested target/build folders if explicitly included in code
+!backend/**/src/main/**/target/
+!backend/**/src/test/**/target/
+!backend/**/src/main/**/build/
+!backend/**/src/test/**/build/
 
-# IntelliJ IDEA (IDE Specific for both - this assumes .idea is at root, if per-module, adjust)
+
+###############################################
+# 💻 Frontend (React / Node.js)
+###############################################
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+
+###############################################
+# 🧰 IDE & Editor Settings
+###############################################
+
+# IntelliJ IDEA
 .idea/
-*.iws
 *.iml
+*.iws
 *.ipr
 
-# NetBeans (IDE Specific for Backend)
+# VS Code
+.vscode/
+
+# Eclipse / STS
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.springBeans
+backend/.factorypath
+backend/.apt_generated
+backend/.sts4-cache
+
+# NetBeans
 backend/nbproject/private/
 backend/nbbuild/
 backend/dist/
 backend/nbdist/
 backend/.nb-gradle/
 backend/build/
-!backend/**/src/main/**/build/
-!backend/**/src/test/**/build/
 
-# VS Code (IDE Specific for both - this assumes .vscode is at root, if per-module, adjust)
-.vscode/
 
-# Frontend (Node.js/React/Vue/Angular)
-frontend/node_modules/
-frontend/build/
-frontend/dist/ # Common for some frontend frameworks
-.npm
+###############################################
+# 🪣 Logs, Temp Files & Cache
+###############################################
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# OS-specific
+ehthumbs.db
+Icon?
+desktop.ini

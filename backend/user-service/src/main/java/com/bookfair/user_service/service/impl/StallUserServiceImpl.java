@@ -25,10 +25,10 @@ public class StallUserServiceImpl implements StallUserService {
   @Override
   public StallUserResponse createStallUser(CreateStallUserRequest request) {
     if (stallUserRepository.existsByUsername(request.getUsername())) {
-      throw new RuntimeException("Username already exists");
+      throw new IllegalArgumentException("Username already exists");
     }
     if (stallUserRepository.existsByPhoneNumber(request.getPhonenumber())) {
-      throw new RuntimeException("Phone number already exists");
+      throw new IllegalArgumentException("Phone number already exists");
     }
 
     StallUserEntity entity = StallUserEntity.builder()
@@ -51,14 +51,14 @@ public class StallUserServiceImpl implements StallUserService {
   @Override
   public StallUserResponse getStallUserById(Long id) {
     StallUserEntity entity = stallUserRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Stall User not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Stall User not found"));
     return mapToResponse(entity);
   }
 
   @Override
   public StallUserResponse getStallUserByUsername(String username) {
     StallUserEntity entity = stallUserRepository.findByUsername(username)
-        .orElseThrow(() -> new RuntimeException("Stall User not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Stall User not found"));
     return mapToResponse(entity);
   }
 
@@ -74,15 +74,15 @@ public class StallUserServiceImpl implements StallUserService {
   @Override
   public StallUserResponse updateStallUser(Long id, UpdateStallUserRequest request) {
     StallUserEntity entity = stallUserRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Stall User not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Stall User not found"));
 
     if (!entity.getPassword().equals(request.getOld_password())) {
-      throw new RuntimeException("Old password is incorrect");
+      throw new IllegalArgumentException("Old password is incorrect");
     }
 
     if (!entity.getUsername().equals(request.getUsername()) &&
         stallUserRepository.existsByUsername(request.getUsername())) {
-      throw new RuntimeException("Username already exists");
+      throw new IllegalArgumentException("Username already exists");
     }
 
     if (!entity.getPhoneNumber().equals(request.getPhonenumber()) &&
@@ -103,7 +103,7 @@ public class StallUserServiceImpl implements StallUserService {
   @Override
   public void deleteStallUser(Long id) {
     StallUserEntity entity = stallUserRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Stall User not found"));
+        .orElseThrow(() -> new IllegalArgumentException("Stall User not found"));
     stallUserRepository.delete(entity);
   }
 
