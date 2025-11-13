@@ -1,51 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react"
-import { useNavigate, Link, useSearchParams } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "../../store/store";
+import type { RootState } from "../../store/store";
+import PasswordInput from "../../components/common/PasswordInput";
+import toast from "react-hot-toast";
+import { login } from "../../features/auth/authSlice";
 
-interface User {
-  id: string
-  email: string
-  name: string
-  role: "publisher" | "organizer"
-  companyName?: string
-}
-
-const mockUserPublisher: User = {
-  id: "pub-1",
-  email: "pub@test.com",
-  name: "Mock Publisher",
-  role: "publisher",
-}
-const mockUserOrganizer: User = {
-  id: "org-1",
-  email: "org@test.com",
-  name: "Mock Organizer",
-  role: "organizer",
-}
-
-function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const login = useCallback(
-    async (email: string, password: string, role: "publisher" | "organizer") => {
-      setIsLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 800))
-      setIsLoading(false)
-
-      if (password === "password123") {
-        const mockUser = role === "publisher" ? mockUserPublisher : mockUserOrganizer
-        setUser(mockUser)
-      } else {
-        throw new Error("Invalid credentials")
-      }
-    },
-    [],
-  )
-
-  return { user, isLoading, login }
-}
-
-// 🔹 Button component (with gradient + hover)
 const Button = ({
   children,
   type = "button",
@@ -53,16 +14,16 @@ const Button = ({
   className = "",
   onClick,
 }: {
-  children: React.ReactNode
-  type?: "submit" | "button"
-  disabled?: boolean
-  className?: string
-  onClick?: (e: React.FormEvent) => void
+  children: React.ReactNode;
+  type?: "submit" | "button";
+  disabled?: boolean;
+  className?: string;
+  onClick?: (e: React.FormEvent) => void;
 }) => {
   const baseClasses =
-    "px-4 py-2 font-semibold rounded-lg transition-all duration-300 shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed"
+    "px-4 py-2 font-semibold rounded-lg transition-all duration-300 shadow-md text-white disabled:opacity-50 disabled:cursor-not-allowed";
   const gradient =
-    "bg-[linear-gradient(90deg,#0f056d_0%,#13e2e2_100%)] hover:opacity-90 hover:scale-[1.02]"
+    "bg-[linear-gradient(90deg,#0f056d_0%,#13e2e2_100%)] hover:opacity-90 hover:scale-[1.02]";
 
   return (
     <button
@@ -73,8 +34,8 @@ const Button = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 const Input = ({
   type = "text",
@@ -83,14 +44,14 @@ const Input = ({
   onChange,
   required,
 }: {
-  type: string
-  placeholder: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  required?: boolean
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 }) => {
   const classes =
-    "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+    "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors";
   return (
     <input
       type={type}
@@ -100,47 +61,46 @@ const Input = ({
       required={required}
       className={classes}
     />
-  )
-}
+  );
+};
 
-// --- MAIN LOGIN PAGE ---
 export default function LoginPage() {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const { login, isLoading } = useAuth()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-
-  const role = (searchParams.get("role") as "publisher" | "organizer") || "publisher"
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { loading } = useSelector((s: RootState) => s.auth);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-
+    e.preventDefault();
+    setError("");
     if (!email || !password) {
-      setError("Email and password are required.")
-      return
+      setError("Email and password are required.");
+      return;
     }
 
-    try {
-      await login(email, password, role)
-      navigate(role === "publisher" ? "/publisher/dashboard" : "/organizer/dashboard")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown login error occurred.")
+    const action = await dispatch(
+      login({ username: email, password })
+    );
+
+    if (login.fulfilled.match(action)) {
+      const message = action.payload?.message || "Login successful";
+      toast.success(message);
+      navigate("/publisher/dashboard");
+    } else if (login.rejected.match(action)) {
+      const msg = (action.payload as string) || action.error.message || "Login failed";
+      toast.error(msg);
+      setError(msg);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-[Calibri]">
       <div className="max-w-md w-full space-y-8 p-8 bg-white shadow-xl rounded-2xl border border-gray-100 transform transition-transform duration-300 hover:shadow-2xl">
         <div className="space-y-2 text-center">
           <h1 className="text-4xl font-extrabold text-gray-800 tracking-tight">Welcome Back</h1>
-          <p className="text-md text-gray-500 font-medium">
-           
-        Login to the portal
-          
-          </p>
+          <p className="text-md text-gray-500 font-medium">Login to the portal</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -168,23 +128,24 @@ export default function LoginPage() {
             <label htmlFor="password" className="text-sm font-medium text-gray-700 block">
               Password
             </label>
-            <Input
-              type="password"
-              placeholder="••••••••"
+            <PasswordInput
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
               required
+              autoComplete="current-password"
             />
           </div>
 
-          <Button type="submit" className="w-full text-lg py-3 mt-2" disabled={isLoading}>
-            {isLoading ? "Authenticating..." : "Sign In"}
+          <Button type="submit" className="w-full text-lg py-3 mt-2" disabled={loading}>
+            {loading ? "Authenticating..." : "Sign In"}
           </Button>
         </form>
 
         <div className="text-center space-y-3 pt-2">
           <p className="text-sm text-gray-500">
-            Don’t have an account?{" "}
+            Don't have an account? {" "}
             <Link
               to="/signup"
               className="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold"
@@ -196,10 +157,11 @@ export default function LoginPage() {
             to="/"
             className="text-sm text-gray-500 hover:text-indigo-600 hover:underline block"
           >
-            ← Back to home
+            ↩ Back to home
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
+

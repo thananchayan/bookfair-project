@@ -1,4 +1,4 @@
-package com.bookfair.gateway.security;
+package com.bookfair.gateway.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
