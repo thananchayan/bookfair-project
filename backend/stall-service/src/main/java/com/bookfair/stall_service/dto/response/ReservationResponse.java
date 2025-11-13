@@ -1,6 +1,6 @@
 package com.bookfair.stall_service.dto.response;
 
-import com.bookfair.stall_service.enums.StallAllocationStatus;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StallReservationResponse {
+public class ReservationResponse {
 
-    private Long stallAllocationId;
-    private String stallName;
-    private StallAllocationStatus status;
+    private Long userId;
+    private String bookfairName;
+    private List<StallReservationResponse> stallReservationResponses;
 }

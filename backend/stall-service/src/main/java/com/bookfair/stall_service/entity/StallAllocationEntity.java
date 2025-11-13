@@ -25,34 +25,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StallAllocationEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-  @OneToOne
-  @JoinColumn(name = "hall_stall_id", nullable = false)
-  private HallStallEntity hallStall;
+    @OneToOne
+    @JoinColumn(name = "hall_stall_id", nullable = false)
+    private HallStallEntity hallStall;
 
-  @ManyToOne
-  @JoinColumn(name = "stall_entity_id", nullable = false)
-  private StallEntity stall;
+    @ManyToOne
+    @JoinColumn(name = "stall_entity_id", nullable = false)
+    private StallEntity stall;
 
-  @ManyToOne
-  @JoinColumn(name = "book_fairs_id", nullable = false)
-  private BookFairEntity bookFair;
+    @ManyToOne
+    @JoinColumn(name = "book_fairs_id", nullable = false)
+    private BookFairEntity bookFair;
 
-  @Column(nullable = false)
-  private Long stallPrice;
+    @Column(nullable = false)
+    private Long stallPrice;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private StallAllocationStatus stallAllocationStatus;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StallAllocationStatus stallAllocationStatus;
 
-  @Column
-  private Long bookingUserId;
+    @Column
+    private Long bookingUserId;
 
-  @Column(unique = true)
-  private String reservationToken;
+    @Column
+    private String reservationToken;
 
 
 }
