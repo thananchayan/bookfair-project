@@ -59,6 +59,7 @@ public class SecurityConfig {
             .pathMatchers("/api/me/**").authenticated()
             .pathMatchers("/api/users/**").authenticated()
             .pathMatchers("/api/stall-users/**").authenticated()
+            .pathMatchers("/auth/change-password").authenticated()
 
             // anything else requires auth
             .anyExchange().authenticated()

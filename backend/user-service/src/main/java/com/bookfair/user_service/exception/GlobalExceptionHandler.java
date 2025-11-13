@@ -1,6 +1,6 @@
 package com.bookfair.user_service.exception;
 
-import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.enums.RequestStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.util.stream.Collectors;

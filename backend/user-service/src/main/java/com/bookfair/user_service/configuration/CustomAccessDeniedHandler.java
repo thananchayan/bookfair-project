@@ -1,6 +1,6 @@
 package com.bookfair.user_service.configuration;
 
-import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.dto.response.ContentResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

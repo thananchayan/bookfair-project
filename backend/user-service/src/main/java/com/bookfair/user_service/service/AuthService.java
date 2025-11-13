@@ -20,7 +20,7 @@ public interface AuthService {
   // Self (current user)
   StallUserResponse updateMyProfile(Object principal, UpdateProfileRequest req);
 
-  void changeMyPassword(Object principal, ChangePasswordRequest req);
+  void changeMyPassword(Authentication authentication, ChangePasswordRequest req);
 
   StallUserResponse getMe(Authentication authentication);
 }

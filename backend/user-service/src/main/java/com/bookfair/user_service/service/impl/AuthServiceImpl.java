@@ -133,8 +133,8 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   @Transactional
-  public void changeMyPassword(Object principal, ChangePasswordRequest req) {
-    StallUserEntity me = resolveCurrentUser(principal);
+  public void changeMyPassword(Authentication authentication, ChangePasswordRequest req) {
+    StallUserEntity me = resolveCurrentUser(authentication.getPrincipal());
 
     if (!encoder.matches(req.getOldPassword(), me.getPassword())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Old password is incorrect");

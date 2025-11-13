@@ -1,9 +1,10 @@
 package com.bookfair.user_service.controller;
 
-import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.dto.request.ChangePasswordRequest;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.LoginRequest;
 import com.bookfair.user_service.dto.response.AuthResponse;
+import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.dto.response.StallUserResponse;
 import com.bookfair.user_service.service.AuthService;
 import jakarta.validation.Valid;
@@ -41,6 +42,17 @@ public class AuthController {
     AuthResponse tokens = authService.login(req);
     return ResponseEntity.ok(
         new ContentResponse<>("login", "SUCCESS", "200", "Login successful", tokens)
+    );
+  }
+
+  @PostMapping("/change-password")
+  public ResponseEntity<ContentResponse<String>> changePassword(
+      Authentication authentication,
+      @Valid @RequestBody ChangePasswordRequest req) {
+    authService.changeMyPassword(authentication, req);
+    return ResponseEntity.ok(
+        new ContentResponse<>("change-password", "SUCCESS", "200", "Password changed successfully",
+            null)
     );
   }
 

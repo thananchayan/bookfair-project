@@ -1,6 +1,6 @@
 package com.bookfair.user_service.controller;
 
-import com.bookfair.user_service.dto.ContentResponse;
+import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.user_service.dto.response.PageResponse;
