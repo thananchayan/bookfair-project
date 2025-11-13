@@ -1,12 +1,14 @@
 // src/pages/Publisher/ProfileSettings.tsx
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../../../store/store";
-import { changePassword } from "../../../features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+
+import type { AppDispatch, RootState } from "../../../store/store";
+import { changePassword, fetchProfile, updateProfile as updateProfileThunk } from "../../../features/auth/authSlice";
 import toast from "react-hot-toast";
 import { Card } from "../../../components/Card";
 import { Button } from "../../../components/common/Button";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👈 eye icons
+import type { MeResponseData } from "../../../lib/api";
 
 type Profile = {
   publicationName: string;
@@ -264,47 +266,55 @@ const PasswordSection: React.FC = () => {
 };
 
 const ProfileSettings: React.FC = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  // New minimal profile from /auth/me
+  const dispatch = useDispatch<AppDispatch>();
+  const [me, setMe] = useState<MeResponseData | null>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  // Keep legacy state to avoid type errors in commented section
+  const [profile, setProfile] = useState<Profile>({
+    publicationName: "",
+    contactPerson: "",
+    email: "",
+    phone: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    country: "",
+    logoUrl: "",
+  });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
+  const saveProfile = async () => {};
+
+  const auth = useSelector((s: RootState) => s.auth);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [form, setForm] = useState<{ username: string; phonenumber: string; address: string }>({ username: "", phonenumber: "", address: "" });
 
   useEffect(() => {
     (async () => {
-      const data = await mockLoadProfile();
-      setProfile(data);
-    })();
-  }, []);
-
-  const saveProfile = async () => {
-    if (!profile) return;
-
-    setSaving(true);
-    try {
-      if (logoFile) {
-        const fd = new FormData();
-        fd.append("publicationName", profile.publicationName);
-        fd.append("contactPerson", profile.contactPerson);
-        fd.append("email", profile.email);
-        if (profile.phone) fd.append("phone", profile.phone);
-        if (profile.addressLine1) fd.append("addressLine1", profile.addressLine1);
-        if (profile.addressLine2) fd.append("addressLine2", profile.addressLine2);
-        if (profile.city) fd.append("city", profile.city);
-        if (profile.country) fd.append("country", profile.country);
-        fd.append("logo", logoFile);
-        const res = await mockUpdateProfile(fd);
-        if (res.ok) alert("Profile saved successfully.");
-      } else {
-        const res = await mockUpdateProfile(profile);
-        if (res.ok) alert("Profile saved successfully.");
+      try {
+        await dispatch(fetchProfile()).unwrap();
+      } catch (e: any) {
+        const msg = e?.message || "Failed to load profile";
+        toast.error(msg);
+      } finally {
+        setLoadingProfile(false);
       }
-    } catch (e) {
-      alert("Failed to save profile.");
-    } finally {
-      setSaving(false);
-    }
-  };
+    })();
+  }, [dispatch]);
 
-  if (!profile) {
+  useEffect(() => {
+    if (auth.profile) {
+      setMe(auth.profile);
+      setForm({
+        username: auth.profile.username,
+        phonenumber: auth.profile.phonenumber,
+        address: auth.profile.address,
+      });
+    }
+  }, [auth.profile]);
+
+  if (loadingProfile) {
     return (
       <div className="px-6 md:px-12 py-8">
         <Card className="p-6 bg-white shadow-md rounded-lg">
@@ -318,6 +328,129 @@ const ProfileSettings: React.FC = () => {
     <div className="space-y-8 px-6 md:px-12 py-8">
       <h1 className="text-3xl font-bold">Profile Settings</h1>
 
+      {/* Minimal profile card from /auth/me */}
+      <Card className="p-6 bg-white shadow-md rounded-lg space-y-6">
+        <h3 className="text-lg font-semibold text-foreground">My Profile</h3>
+        {me ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* <div>
+              <label className="block text-sm text-gray-600 mb-1">User ID</label>
+              <input value={me.id} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div> */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Username</label>
+              <input value={me.username} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Phone Number</label>
+              <input value={me.phonenumber} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Address</label>
+              <input value={me.address} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Profession</label>
+              <input value={me.profession} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Date</label>
+              <input value={me.date} disabled className="w-full px-3 py-2 rounded-md border border-gray-300 bg-gray-50" />
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">No profile data available.</p>
+        )}
+      </Card>
+
+      <Card className="p-6 bg-white shadow-md rounded-lg space-y-6">
+        <h3 className="text-lg font-semibold text-foreground">Edit Profile</h3>
+        {me ? (
+          <form
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!form.username || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.username)) {
+                toast.error("Please enter a valid email for username");
+                return;
+              }
+              if (!form.phonenumber || !/^\d{7,15}$/.test(form.phonenumber.replace(/[^\d]/g, ""))) {
+                toast.error("Please enter a valid phone number");
+                return;
+              }
+              if (!form.address) {
+                toast.error("Address is required");
+                return;
+              }
+              setSavingProfile(true);
+              try {
+                const action = await dispatch(
+                  updateProfileThunk({
+                    username: form.username,
+                    phonenumber: form.phonenumber,
+                    address: form.address,
+                    profession: me.profession,
+                  })
+                );
+                if (updateProfileThunk.fulfilled.match(action)) {
+                  const res = action.payload;
+                  toast.success(res.message || "Profile updated successfully");
+                } else if (updateProfileThunk.rejected.match(action)) {
+                  const msg = (action.payload as string) || action.error.message || "Failed to update profile";
+                  toast.error(msg);
+                }
+              } catch (err: any) {
+                const msg = err?.message || "Failed to update profile";
+                toast.error(msg);
+              } finally {
+                setSavingProfile(false);
+              }
+            }}
+          >
+            <div className="md:col-span-1">
+              <label className="block text-sm text-gray-600 mb-1">Username (email)</label>
+              <input
+                type="email"
+                value={form.username}
+                onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))}
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-sky-400 outline-none"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div className="md:col-span-1">
+              <label className="block text-sm text-gray-600 mb-1">Phone Number</label>
+              <input
+                value={form.phonenumber}
+                onChange={(e) => setForm((p) => ({ ...p, phonenumber: e.target.value }))}
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-sky-400 outline-none"
+                placeholder="0771234567"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm text-gray-600 mb-1">Address</label>
+              <input
+                value={form.address}
+                onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))}
+                className="w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-sky-400 outline-none"
+                placeholder="Your address"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Button type="submit" disabled={savingProfile} className="text-base font-semibold px-5 py-3 leading-none">
+                {savingProfile ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <p className="text-sm text-gray-500">No profile data available.</p>
+        )}
+      </Card>
+
+      {/* Commenting out extended fields until backend supports them */}
+      {false && (
       <Card className="p-6 bg-white shadow-md rounded-lg space-y-6">
         <h3 className="text-lg font-semibold text-foreground">Publisher Profile</h3>
 
@@ -437,6 +570,7 @@ const ProfileSettings: React.FC = () => {
           </p>
         </div>
       </Card>
+      )}
 
       
       <PasswordSection />
@@ -445,6 +579,10 @@ const ProfileSettings: React.FC = () => {
 };
 
 export default ProfileSettings;
+
+
+
+
 
 
 

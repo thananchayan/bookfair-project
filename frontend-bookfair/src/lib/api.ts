@@ -86,3 +86,39 @@ export async function changePasswordApi(
   const { data } = await api.post<ApiEnvelope<null>>("/auth/change-password", payload, { headers });
   return data;
 }
+
+// Me (profile)
+export interface MeResponseData {
+  id: number;
+  username: string;
+  phonenumber: string;
+  address: string;
+  profession: Profession | string;
+  date: string; // ISO date string
+}
+
+export async function getMeApi(token?: string | null, tokenType?: string | null) {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `${tokenType || "Bearer"} ${token}`;
+  const { data } = await api.get<ApiEnvelope<MeResponseData>>("/auth/me", { headers });
+  return data;
+}
+
+// Update profile
+export interface UpdateProfileRequest {
+  username: string;
+  phonenumber: string;
+  address: string;
+  profession: Profession | string;
+}
+
+export async function updateProfileApi(
+  payload: UpdateProfileRequest,
+  token?: string | null,
+  tokenType?: string | null,
+) {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `${tokenType || "Bearer"} ${token}`;
+  const { data } = await api.put<ApiEnvelope<MeResponseData>>("/auth/update-profile", payload, { headers });
+  return data;
+}
