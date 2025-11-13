@@ -3,6 +3,7 @@ package com.bookfair.user_service.controller;
 import com.bookfair.user_service.dto.request.ChangePasswordRequest;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.LoginRequest;
+import com.bookfair.user_service.dto.request.UpdateProfileRequest;
 import com.bookfair.user_service.dto.response.AuthResponse;
 import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.dto.response.StallUserResponse;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,6 +55,17 @@ public class AuthController {
     return ResponseEntity.ok(
         new ContentResponse<>("change-password", "SUCCESS", "200", "Password changed successfully",
             null)
+    );
+  }
+
+  @PutMapping("/update-profile")
+  public ResponseEntity<ContentResponse<StallUserResponse>> updateProfile(
+      Authentication authentication,
+      @Valid @RequestBody UpdateProfileRequest req) {
+    StallUserResponse updated = authService.updateMyProfile(authentication, req);
+    return ResponseEntity.ok(
+        new ContentResponse<>("update-profile", "SUCCESS", "200", "Profile updated successfully",
+            updated)
     );
   }
 

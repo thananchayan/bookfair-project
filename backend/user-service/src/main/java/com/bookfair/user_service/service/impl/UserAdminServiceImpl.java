@@ -12,11 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +31,10 @@ public class UserAdminServiceImpl implements UserAdminService {
     String phone = req.getPhonenumber().trim();
 
     if (repo.existsByUsername(email)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+      throw new IllegalArgumentException("Username already exists");
     }
     if (repo.existsByPhoneNumber(phone)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exists");
+      throw new IllegalArgumentException("Phone number already exists");
     }
 
     StallUserEntity u = StallUserEntity.builder()
@@ -61,7 +59,7 @@ public class UserAdminServiceImpl implements UserAdminService {
   public StallUserResponse getByUsername(String username) {
     return toResponse(
         repo.findByUsername(username.trim().toLowerCase())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
+            .orElseThrow(() -> new IllegalArgumentException("User not found"))
     );
   }
 
@@ -69,7 +67,7 @@ public class UserAdminServiceImpl implements UserAdminService {
   public StallUserResponse getByPhone(String phone) {
     return toResponse(
         repo.findByPhoneNumber(phone.trim())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
+            .orElseThrow(() -> new IllegalArgumentException("Phone number not found"))
     );
   }
 
@@ -97,11 +95,11 @@ public class UserAdminServiceImpl implements UserAdminService {
     // uniqueness checks (if changed)
     String newEmail = req.getUsername().trim().toLowerCase();
     if (!newEmail.equalsIgnoreCase(u.getUsername()) && repo.existsByUsername(newEmail)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+      throw new IllegalArgumentException("Username already exists");
     }
     String newPhone = req.getPhonenumber().trim();
     if (!newPhone.equals(u.getPhoneNumber()) && repo.existsByPhoneNumber(newPhone)) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Phone number already exists");
+      throw new IllegalArgumentException("Phone number already exists");
     }
 
     // update core fields
@@ -141,7 +139,7 @@ public class UserAdminServiceImpl implements UserAdminService {
   // ---------- HELPERS ----------
   private StallUserEntity findOr404(Long id) {
     return repo.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        .orElseThrow(() -> new IllegalArgumentException("User not found"));
   }
 
   private StallUserResponse toResponse(StallUserEntity u) {

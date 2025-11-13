@@ -18,7 +18,7 @@ public interface AuthService {
   StallUserResponse me(Object principal);
 
   // Self (current user)
-  StallUserResponse updateMyProfile(Object principal, UpdateProfileRequest req);
+  StallUserResponse updateMyProfile(Authentication authentication, UpdateProfileRequest req);
 
   void changeMyPassword(Authentication authentication, ChangePasswordRequest req);
 
