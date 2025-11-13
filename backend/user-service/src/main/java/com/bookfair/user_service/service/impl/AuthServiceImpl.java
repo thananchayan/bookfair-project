@@ -3,6 +3,7 @@ package com.bookfair.user_service.service.impl;
 
 import com.bookfair.user_service.dto.request.ChangePasswordRequest;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
+import com.bookfair.user_service.dto.request.EmailRequest;
 import com.bookfair.user_service.dto.request.LoginRequest;
 import com.bookfair.user_service.dto.request.UpdateProfileRequest;
 import com.bookfair.user_service.dto.response.AuthResponse;
@@ -17,6 +18,8 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,12 +30,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
   private final StallUserRepository repo;
   private final PasswordEncoder encoder;
   private final AuthenticationManager authManager;
   private final JwtService jwt;
+
+  private final RabbitTemplate rabbitTemplate;
 
   // ========= AUTH =========
 
@@ -65,6 +71,7 @@ public class AuthServiceImpl implements AuthService {
         .build();
 
     user = repo.save(user);
+    sendAccountCreationEmail(user);
     return toResponse(user);
   }
 
@@ -190,5 +197,26 @@ public class AuthServiceImpl implements AuthService {
         .profession(u.getProfession())
         .date(u.getDate())
         .build();
+  }
+
+  public void sendAccountCreationEmail(StallUserEntity user) {
+    EmailRequest emailRequest = EmailRequest.builder()
+        .email(user.getUsername())
+        .subject("BookFair - Account Created Successfully")
+        .body("Your account has been created successfully. Welcome to BookFair!")
+        .build();
+
+    try {
+      rabbitTemplate.convertAndSend(
+          "user.exchange",
+          "user.created",
+          emailRequest
+      );
+      log.info("User creation event published for: {}", user.getUsername());
+    } catch (Exception e) {
+      log.error("Failed to publish user creation event for {}: {}",
+          user.getUsername(), e.getMessage());
+      // Don't throw exception - email failure shouldn't break user creation
+    }
   }
 }

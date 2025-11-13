@@ -24,6 +24,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 
   private final StallUserRepository repo;
   private final PasswordEncoder encoder;
+  private final AuthServiceImpl authService;
 
   // ---------- CREATE ----------
   @Override
@@ -48,7 +49,9 @@ public class UserAdminServiceImpl implements UserAdminService {
         .enabled(true)
         .build();
 
-    return toResponse(repo.save(u));
+    repo.save(u);
+    authService.sendAccountCreationEmail(u);
+    return toResponse(u);
   }
 
   // ---------- READ ----------
