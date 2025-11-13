@@ -202,6 +202,7 @@ public class AuthServiceImpl implements AuthService {
   public void sendAccountCreationEmail(StallUserEntity user) {
     EmailRequest emailRequest = EmailRequest.builder()
         .email(user.getUsername())
+        .userProfession(user.getProfession())
         .subject("BookFair - Account Created Successfully")
         .body("Your account has been created successfully. Welcome to BookFair!")
         .build();

@@ -1,5 +1,6 @@
 package com.bookfair.notification_service.entity;
 
+import com.bookfair.notification_service.enums.UserProfession;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,9 @@ public class NotificationEntity {
   @Column(nullable = false, name = "receipient_email")
   @Email
   private String receipientEmail;
+
+  @Column(nullable = false)
+  private UserProfession role;
 
   @Column(nullable = false)
   private String subject;

@@ -55,10 +55,11 @@ public class EmailService {
 
   public void sendAccountCreationEmail(EmailRequest emailRequest) {
     String userEmail = emailRequest.getEmail();
-    String htmlBody = buildAccountCreationTemplate(userEmail);
+    String htmlBody = buildAccountCreationTemplate(emailRequest);
 
     EmailRequest request = new EmailRequest(
         userEmail,
+        emailRequest.getUserProfession(),
         emailRequest.getSubject(),
         htmlBody,
         true
@@ -103,6 +104,7 @@ public class EmailService {
       );
       EmailRequest request = new EmailRequest(
           stallAllocationRequest.getEmailRequest().getEmail(),
+          stallAllocationRequest.getEmailRequest().getUserProfession(),
           stallAllocationRequest.getEmailRequest().getSubject(),
           htmlBody,
           true
@@ -129,6 +131,7 @@ public class EmailService {
   private NotificationEntity mapToEntity(EmailRequest emailRequest) {
     return NotificationEntity.builder()
         .receipientEmail(emailRequest.getEmail())
+        .role(emailRequest.getUserProfession())
         .subject(emailRequest.getSubject())
         .body(emailRequest.getBody())
         .sentAt(java.time.LocalDateTime.now())
@@ -162,11 +165,13 @@ public class EmailService {
   }
 
   //html templates
-  private String buildAccountCreationTemplate(String userEmail) {
+  private String buildAccountCreationTemplate(EmailRequest request) {
     return """
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset="UTF-8">
+            <title>Account Creation - BookFair Management System</title>
             <style>
                 body {
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -216,6 +221,14 @@ public class EmailService {
                 .info-box strong {
                     color: #667eea;
                 }
+                .body-content {
+                    background-color: #fefefe;
+                    border: 1px solid #e9ecef;
+                    padding: 15px;
+                    border-radius: 6px;
+                    margin-top: 15px;
+                    white-space: pre-wrap;
+                }
                 .footer {
                     background-color: #f8f9fa;
                     padding: 30px;
@@ -237,19 +250,36 @@ public class EmailService {
                 <div class="content">
                     <p class="welcome-text">Welcome, %s!</p>
                     <div class="info-box">
-                        <p><strong>Account Created Successfully</strong></p>
+                        <p><strong>Account Details</strong></p>
+                        <p><strong>Email:</strong> %s</p>
+                        <p><strong>Role:</strong> %s</p>
+                        <p><strong>Created Date:</strong> %s</p>
                     </div>
-                    <p>Your account has been successfully created and you're all set to explore our platform.</p>
+                    <div class="info-box">
+                        <p><strong>Subject:</strong> %s</p>
+                    </div>
+                    <div class="body-content">
+                        %s
+                    </div>
+                    <p style="margin-top: 20px;">Your account has been successfully created and is now active on our system.</p>
                 </div>
                 <div class="footer">
                     <p><strong>BookFair Management System</strong></p>
-                    <p>This is an automated email. Please do not reply to this message. </p>
+                    <p>This is an automated email. Please do not reply to this message.</p>
                 </div>
             </div>
         </body>
         </html>
-        """.formatted(userEmail);
+        """.formatted(
+        request.getEmail(),
+        request.getEmail(),
+        request.getUserProfession(),
+        java.time.LocalDate.now(),
+        request.getSubject(),
+        request.getBody()
+    );
   }
+
 
   private String buildReservationConfirmationTemplate(String userName,
       StallAllocationRequest stallAllocation, String qrCid) {
