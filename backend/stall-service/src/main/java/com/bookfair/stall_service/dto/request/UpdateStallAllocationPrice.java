@@ -1,4 +1,4 @@
-package com.bookfair.stall_service.dto.response;
+package com.bookfair.stall_service.dto.request;
 
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import lombok.AllArgsConstructor;
@@ -10,15 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StallAllocationResponse {
+public class UpdateStallAllocationPrice {
 
-  private Long id;
-  private Long bookFairId;
-  private Long hallStallID;
-  private Long stallId;
-  private Long price;
   private StallAllocationStatus stallAllocationStatus;
-  private Long userId;
-  private String reservationToken;
-
+  private Long price;
 }
