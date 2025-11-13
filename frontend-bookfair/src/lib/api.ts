@@ -67,3 +67,22 @@ export async function loginApi(payload: LoginRequest) {
   const { data } = await api.post<ApiEnvelope<LoginResponseData>>("/auth/login", payload);
   return data;
 }
+
+// Change Password
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export async function changePasswordApi(
+  payload: ChangePasswordRequest,
+  token?: string | null,
+  tokenType?: string | null,
+) {
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `${tokenType || "Bearer"} ${token}`;
+  }
+  const { data } = await api.post<ApiEnvelope<null>>("/auth/change-password", payload, { headers });
+  return data;
+}

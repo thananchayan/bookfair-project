@@ -3,11 +3,13 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import {
   signupApi,
   loginApi,
+  changePasswordApi,
   type SignupRequest,
   type SignupResponseData,
   type ApiEnvelope,
   type LoginRequest,
   type LoginResponseData,
+  type ChangePasswordRequest,
 } from "../../lib/api";
 
 export interface AuthState {
@@ -68,6 +70,26 @@ export const login = createAsyncThunk<
   }
 });
 
+// Change Password
+export const changePassword = createAsyncThunk<
+  ApiEnvelope<null>,
+  ChangePasswordRequest,
+  { state: { auth: AuthState }; rejectValue: string }
+>("auth/changePassword", async (payload, { getState, rejectWithValue }) => {
+  try {
+    const { token, tokenType } = (getState() as { auth: AuthState }).auth;
+    const res = await changePasswordApi(payload, token, tokenType);
+    
+    if (String(res.statusCode) !== "200" && res.status !== "SUCCESS") {
+      return rejectWithValue(res.message || "Password change failed");
+    }
+    return res;
+  } catch (err: any) {
+    const message = err?.response?.data?.message || err?.message || "Password change failed";
+    return rejectWithValue(message);
+  }
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -76,6 +98,17 @@ const authSlice = createSlice({
       state.error = null;
     },
     clearMessage(state) {
+      state.lastMessage = null;
+    },
+    logout(state) {
+      state.user = null;
+      state.token = null;
+      state.tokenType = null;
+      state.userId = null;
+      state.role = null;
+      state.username = null;
+      state.loading = false;
+      state.error = null;
       state.lastMessage = null;
     },
   },
@@ -113,10 +146,23 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message || "Login failed";
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.lastMessage = null;
+      })
+      .addCase(changePassword.fulfilled, (state, action: PayloadAction<ApiEnvelope<null>>) => {
+        state.loading = false;
+        state.lastMessage = action.payload.message || "Password changed successfully";
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message || "Password change failed";
       });
   },
 });
 
-export const { clearError, clearMessage } = authSlice.actions;
+export const { clearError, clearMessage, logout } = authSlice.actions;
 
 export default authSlice.reducer;

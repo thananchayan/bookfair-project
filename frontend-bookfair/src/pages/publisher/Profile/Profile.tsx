@@ -1,5 +1,9 @@
 // src/pages/Publisher/ProfileSettings.tsx
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../../store/store";
+import { changePassword } from "../../../features/auth/authSlice";
+import toast from "react-hot-toast";
 import { Card } from "../../../components/Card";
 import { Button } from "../../../components/common/Button";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👈 eye icons
@@ -134,7 +138,8 @@ const PasswordField: React.FC<{
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
-}> = ({ label, value, onChange, placeholder }) => {
+  error?: string;
+}> = ({ label, value, onChange, placeholder, error }) => {
   const [show, setShow] = useState(false);
   return (
     <div>
@@ -144,7 +149,7 @@ const PasswordField: React.FC<{
           type={show ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 pr-10 rounded-md border border-gray-300 focus:ring-2 focus:ring-sky-400 outline-none"
+          className={`w-full px-3 py-2 pr-10 rounded-md focus:ring-2 focus:ring-sky-400 outline-none border ${error ? "border-red-500" : "border-gray-300"}`}
           placeholder={placeholder}
         />
         <button
@@ -157,35 +162,54 @@ const PasswordField: React.FC<{
           {show ? <FaEyeSlash /> : <FaEye />}
         </button>
       </div>
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 };
 
 const PasswordSection: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [currentPw, setCurrentPw] = useState("");
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ current?: string; next?: string; confirm?: string }>({});
 
-  const valid =
-    currentPw.trim().length >= 1 &&
-    newPw.length >= 8 &&
-    /\d/.test(newPw) &&
-    /[A-Za-z]/.test(newPw) &&
-    newPw === confirmPw;
+  const validate = () => {
+    const e: { current?: string; next?: string; confirm?: string } = {};
+    if (!currentPw.trim()) e.current = "Current password is required.";
+    if (!newPw) e.next = "New password is required.";
+    else {
+      if (newPw === currentPw) e.next = "New password must be different from current password.";
+      else if (newPw.length < 8) e.next = "New password must be at least 8 characters.";
+      else if (!/[a-z]/.test(newPw)) e.next = "Include at least one lowercase letter.";
+      else if (!/[A-Z]/.test(newPw)) e.next = "Include at least one uppercase letter.";
+      else if (!/\d/.test(newPw)) e.next = "Include at least one number.";
+      else if (!/[!@#$%^&*(),.?":{}|<>_\-\[\]\/\\;+='`~]/.test(newPw)) e.next = "Include at least one special character.";
+      else if (newPw.includes(" ")) e.next = "Password must not contain spaces.";
+    }
+    if (!confirmPw) e.confirm = "Please confirm your new password.";
+    else if (newPw !== confirmPw) e.confirm = "Passwords do not match.";
+    return e;
+  };
 
   const submit = async () => {
-    if (!valid) return;
+    const e = validate();
+    setErrors(e);
+    const hasErrors = !!(e.current || e.next || e.confirm);
+    if (hasErrors) return;
     setLoading(true);
-    const res = await mockChangePassword(currentPw, newPw);
+    const action = await dispatch(changePassword({ oldPassword: currentPw, newPassword: newPw }));
     setLoading(false);
-    if (res.ok) {
-      alert("Password updated successfully.");
+    if (changePassword.fulfilled.match(action)) {
+      toast.success(action.payload?.message || "Password changed successfully");
       setCurrentPw("");
       setNewPw("");
       setConfirmPw("");
-    } else {
-      alert(res.message || "Failed to change password.");
+      setErrors({});
+    } else if (changePassword.rejected.match(action)) {
+      const msg = (action.payload as string) || action.error.message || "Failed to change password";
+      toast.error(msg);
     }
   };
 
@@ -193,23 +217,30 @@ const PasswordSection: React.FC = () => {
     <Card className="p-6 bg-white shadow-md rounded-lg space-y-4">
       <h3 className="text-lg font-semibold text-foreground">Reset Password</h3>
 
+      {(errors.current || errors.next || errors.confirm) && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+          <p className="font-semibold mb-1">Can't update password</p>
+          <p>{errors.current || errors.next || errors.confirm}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <PasswordField
           label="Current Password"
           value={currentPw}
-          onChange={setCurrentPw}
+          onChange={(v) => { setCurrentPw(v); if (errors.current) setErrors((p) => ({ ...p, current: undefined })); }}
           placeholder="••••••••"
         />
         <PasswordField
           label="New Password"
           value={newPw}
-          onChange={setNewPw}
+          onChange={(v) => { setNewPw(v); if (errors.next) setErrors((p) => ({ ...p, next: undefined })); }}
           placeholder="At least 8 chars, letters & numbers"
         />
         <PasswordField
           label="Confirm New Password"
           value={confirmPw}
-          onChange={setConfirmPw}
+          onChange={(v) => { setConfirmPw(v); if (errors.confirm) setErrors((p) => ({ ...p, confirm: undefined })); }}
           placeholder="Re-type new password"
         />
       </div>
@@ -217,18 +248,16 @@ const PasswordSection: React.FC = () => {
    
       <div className="flex flex-col items-start">
         <Button
-          disabled={!valid || loading}
+          disabled={loading}
           onClick={submit}
           className="text-base font-semibold px-5 py-3 leading-none"
         >
           {loading ? "Updating..." : "Update Password"}
         </Button>
 
-        {!valid && (
-          <p className="mt-2 text-xs text-gray-500">
-            New password must be ≥ 8 chars, include letters & numbers, and match the confirmation.
-          </p>
-        )}
+        <p className="mt-2 text-xs text-gray-500">
+          New password must be at least 8 characters, include upper, lower, number and symbol, and match the confirmation.
+        </p>
       </div>
     </Card>
   );
@@ -416,3 +445,7 @@ const ProfileSettings: React.FC = () => {
 };
 
 export default ProfileSettings;
+
+
+
+

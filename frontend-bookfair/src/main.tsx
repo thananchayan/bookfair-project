@@ -5,7 +5,11 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import { Toaster } from "react-hot-toast";
 import App from "./App";
+import { setupAxiosInterceptors } from "./lib/axios-setup";
 
+
+// Set up axios interceptors (auth header + 401 handling)
+setupAxiosInterceptors(store);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
