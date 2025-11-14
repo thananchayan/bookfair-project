@@ -1,6 +1,7 @@
 package com.bookfair.stall_service.controller;
 
 import com.bookfair.stall_service.dto.ContentResponse;
+import com.bookfair.stall_service.dto.request.CreateMultipleStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
@@ -23,46 +24,52 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StallAllocationController {
 
-    private final StallAllocationService stallAllocationService;
+  private final StallAllocationService stallAllocationService;
 
-    @PostMapping
-    public ResponseEntity<ContentResponse<StallAllocationResponse>> createStallAllocation(
-            @Valid @RequestBody CreateStallAllocationRequest request) {
-        return ResponseEntity.ok(stallAllocationService.createStallAllocation(request));
-    }
+  @PostMapping
+  public ResponseEntity<ContentResponse<StallAllocationResponse>> createStallAllocation(
+      @Valid @RequestBody CreateStallAllocationRequest request) {
+    return ResponseEntity.ok(stallAllocationService.createStallAllocation(request));
+  }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ContentResponse<StallAllocationResponse>> getAllStallAllocationsById(
-            Long id) {
-        return ResponseEntity.ok(stallAllocationService.getStallAllocationById(id));
-    }
+  @PostMapping("/multipleStallAllocations")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> createMultipleStallAllocation(
+      @Valid @RequestBody CreateMultipleStallAllocationRequest request) {
+    return ResponseEntity.ok(stallAllocationService.createMultipleStallAllocation(request));
+  }
 
-    @GetMapping("/getAll")
-    public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getAllStallAllocations() {
-        return ResponseEntity.ok(stallAllocationService.getAllStallAllocation());
-    }
+  @GetMapping("/{id}")
+  public ResponseEntity<ContentResponse<StallAllocationResponse>> getAllStallAllocationsById(
+      Long id) {
+    return ResponseEntity.ok(stallAllocationService.getStallAllocationById(id));
+  }
 
-    @DeleteMapping
-    public ResponseEntity<ContentResponse<Void>> deleteStallAllocation(Long id) {
-        return ResponseEntity.ok(stallAllocationService.deleteStallAllocation(id));
-    }
+  @GetMapping("/getAll")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getAllStallAllocations() {
+    return ResponseEntity.ok(stallAllocationService.getAllStallAllocation());
+  }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ContentResponse<StallAllocationResponse>> updateStallAllocation(
-            @Valid @RequestBody UpdateStallAllocationPrice request, Long id) {
-        return ResponseEntity.ok(stallAllocationService.updateStallAllocationById(id, request));
-    }
+  @DeleteMapping
+  public ResponseEntity<ContentResponse<Void>> deleteStallAllocation(Long id) {
+    return ResponseEntity.ok(stallAllocationService.deleteStallAllocation(id));
+  }
 
-    @GetMapping("/bookfair/{bookFairId}")
-    public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getStallAllocationsByBoofairId(
-            Long bookFairId) {
-        return ResponseEntity.ok(stallAllocationService.getStallAllocationsByBoofairId(bookFairId));
-    }
+  @PutMapping("update/{id}")
+  public ResponseEntity<ContentResponse<StallAllocationResponse>> updateStallAllocation(
+      @Valid @RequestBody UpdateStallAllocationPrice request, Long id) {
+    return ResponseEntity.ok(stallAllocationService.updateStallAllocationById(id, request));
+  }
 
-    @GetMapping("/bookfair/status/{bookFairId}")
-    public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getActiveStallAllocationsByBoofairId(
-            Long bookFairId, StallAllocationStatus status) {
-        return ResponseEntity.ok(
-                stallAllocationService.getStallAllocationsByBoofairIdAndStatus(bookFairId, status));
-    }
+  @GetMapping("/bookfair/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getStallAllocationsByBoofairId(
+      Long bookFairId) {
+    return ResponseEntity.ok(stallAllocationService.getStallAllocationsByBoofairId(bookFairId));
+  }
+
+  @GetMapping("/bookfair/status/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getActiveStallAllocationsByBoofairId(
+      Long bookFairId, StallAllocationStatus status) {
+    return ResponseEntity.ok(
+        stallAllocationService.getStallAllocationsByBoofairIdAndStatus(bookFairId, status));
+  }
 }
