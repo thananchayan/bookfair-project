@@ -25,6 +25,9 @@ public class HallServiceImpl implements HallService {
 
   @Override
   public ContentResponse<HallResponse> createHall(CreateHallRequest request) {
+    if (request.getOuterRing() > request.getInnerRing()) {
+      throw new IllegalArgumentException("Outer ring stalls cannot be more than inner ring stalls");
+    }
     if (!bookFairRepository.existsById(request.getBookFairId())) {
       throw new IllegalArgumentException("Book fair ID does not exist");
     }
@@ -124,6 +127,9 @@ public class HallServiceImpl implements HallService {
     }
     if (!bookFairRepository.existsById(request.getBookFairId())) {
       throw new IllegalArgumentException("Book fair ID does not exist");
+    }
+    if (request.getOuterRing() > request.getInnerRing()) {
+      throw new IllegalArgumentException("Outer ring stalls cannot be more than inner ring stalls");
     }
     HallEntity hallEntity = hallRepository.findById(id).get();
     BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId()).get();

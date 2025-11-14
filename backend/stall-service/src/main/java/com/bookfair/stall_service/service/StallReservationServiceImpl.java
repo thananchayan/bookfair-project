@@ -170,7 +170,7 @@ public class StallReservationServiceImpl implements StallReservationService {
 
     entity.setBookingUserId(null);
     entity.setReservationToken(null);
-    entity.setStallAllocationStatus(StallAllocationStatus.CANCELLED);
+    entity.setStallAllocationStatus(StallAllocationStatus.PENDING);
 
     stallAllocationRepository.save(entity);
 
@@ -180,6 +180,38 @@ public class StallReservationServiceImpl implements StallReservationService {
         "200",
         "Reservation cancelled successfully",
         null
+    );
+  }
+
+  @Override
+  public ContentResponse<ReservationResponse> getReservationByToken(String token) {
+    List<StallAllocationEntity> entity = stallAllocationRepository.findByReservationToken(token);
+    if (entity.isEmpty()) {
+      throw new IllegalArgumentException("Reservation not found");
+    }
+
+    StallAllocationEntity firstEntity = entity.get(0);
+
+    List<StallReservationResponse> stallReservations = entity.stream()
+        .map(e -> StallReservationResponse.builder()
+            .stallAllocationId(e.getId())
+            .stallName(e.getStall().getStallName())
+            .status(e.getStallAllocationStatus())
+            .build())
+        .toList();
+
+    ReservationResponse response = ReservationResponse.builder()
+        .userId(firstEntity.getBookingUserId())
+        .bookfairName(firstEntity.getBookFair().getName())
+        .stallReservationResponses(stallReservations)
+        .build();
+
+    return new ContentResponse<>(
+        "Reservation",
+        "SUCCESS",
+        "200",
+        "Reservation fetched successfully",
+        response
     );
   }
 

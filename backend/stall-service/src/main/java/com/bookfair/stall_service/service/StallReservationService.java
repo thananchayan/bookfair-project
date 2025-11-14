@@ -20,4 +20,6 @@ public interface StallReservationService {
   ContentResponse<List<StallAllocationResponse>> getAllReservationsForBookFair(Long bookFairId);
 
   ContentResponse<Void> cancelReservation(Long id, Long userId);
+
+  ContentResponse<ReservationResponse> getReservationByToken(String token);
 }

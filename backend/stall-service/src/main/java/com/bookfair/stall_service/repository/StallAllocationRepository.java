@@ -25,4 +25,7 @@ public interface StallAllocationRepository extends JpaRepository<StallAllocation
 
   boolean existsByStall_IdAndBookFair_Id(@NotNull(message = "Stall ID is required") Long stallId,
       @NotNull(message = "Book Fair ID is required") Long bookFairId);
+
+
+  List<StallAllocationEntity> findByReservationToken(String token);
 }
