@@ -111,7 +111,8 @@ public class EmailService {
       // Append QR code image to email body
       String htmlBody = buildReservationConfirmationTemplate(
           userEmail,
-          stallAllocationRequest
+          stallAllocationRequest,
+          java.time.LocalDate.now().toString()
       );
 
       //create email request
@@ -321,7 +322,7 @@ public class EmailService {
 
 
   private String buildReservationConfirmationTemplate(String userName,
-      StallAllocationRequest stallAllocation) {
+      StallAllocationRequest stallAllocation, String reservationDate) {
 
     StringBuilder stallsList = new StringBuilder();
     var stalls = stallAllocation.getStallRequest();
@@ -361,6 +362,7 @@ public class EmailService {
         
                 <div style="background-color: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px;">
                     <p style="margin: 8px 0;"><strong style="color: #667eea;">Book Fair:</strong> %s</p>
+                    <p style="margin: 8px 0;"><strong style="color: #667eea;">Reservation Date:</strong> %s</p>
                     <p style="margin: 8px 0;"><strong style="color: #667eea;">Total Stalls Reserved:</strong> %d</p>
                 </div>
         
@@ -397,6 +399,7 @@ public class EmailService {
         userName,
         stallAllocation.getBookFairName(),
         stallAllocation.getBookFairName(),
+        reservationDate,
         stallAllocation.getStallRequest() == null ? 0 : stallAllocation.getStallRequest().size(),
         stallsList.toString()
     );
