@@ -4,12 +4,14 @@ import com.bookfair.notification_service.enums.UserProfession;
 import jakarta.validation.constraints.Email;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EmailRequest {
 
   @Email(message = "Invalid email format")

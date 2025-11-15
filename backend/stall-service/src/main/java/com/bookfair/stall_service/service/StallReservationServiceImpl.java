@@ -1,28 +1,35 @@
 package com.bookfair.stall_service.service;
 
+import com.bookfair.stall_service.configuration.RabbitMQConfig;
 import com.bookfair.stall_service.dto.ContentResponse;
+import com.bookfair.stall_service.dto.emailDto.ReservationEmailMessage;
 import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.dto.response.StallReservationResponse;
+import com.bookfair.stall_service.entity.BookFairEntity;
 import com.bookfair.stall_service.entity.StallAllocationEntity;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
+import com.bookfair.stall_service.enums.UserProfession;
 import com.bookfair.stall_service.repository.BookFairRepository;
 import com.bookfair.stall_service.repository.StallAllocationRepository;
 import com.bookfair.stall_service.repository.StallRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StallReservationServiceImpl implements StallReservationService {
 
   private final StallRepository stallRepository;
   private final BookFairRepository bookFairRepository;
   private final StallAllocationRepository stallAllocationRepository;
-
+  private final RabbitTemplate rabbitTemplate;
 
   @Override
   public ContentResponse<ReservationResponse> createReservation(
@@ -51,12 +58,16 @@ public class StallReservationServiceImpl implements StallReservationService {
 //Validate all allocations belong to the same book fair
 
     List<Long> distinctBookFairIds = stallAllocationEntity.stream()
-        .map(allocation -> allocation.getHallStall().getHallEntity().getBookFair().getId())
+        .map(allocation -> allocation.getBookFair().getId())
         .distinct()
         .toList();
     if (distinctBookFairIds.size() > 1) {
       throw new IllegalArgumentException("All stall allocations must belong to the same book fair");
     }
+    BookFairEntity bookFairEntity = bookFairRepository.findById(
+            distinctBookFairIds.get(0))
+        .orElseThrow(() -> new IllegalArgumentException(
+            "Book Fair with ID " + distinctBookFairIds.get(0) + " does not exist"));
 
     for (StallAllocationEntity allocation : stallAllocationEntity) {
       if (!allocation.getStallAllocationStatus().equals(StallAllocationStatus.PENDING)) {
@@ -74,6 +85,9 @@ public class StallReservationServiceImpl implements StallReservationService {
     }
 
     stallAllocationRepository.saveAll(stallAllocationEntity);
+
+    sendReservationEmail(request, bookFairEntity.getName(), stallAllocationEntity, token,
+        "sathurshans04@gmail.com", UserProfession.PUBLISHER);
 
     ReservationResponse response = ReservationResponse.builder()
         .userId(request.getUserId())
@@ -249,6 +263,35 @@ public class StallReservationServiceImpl implements StallReservationService {
 //
 //        return new ContentResponse<>("Reservation", "Reservation cancelled successfully", "SUCCESS", "200", null);
 //    }
+
+  private void sendReservationEmail(CreateStallReservationRequest request,
+      String bookFairEntityName, List<StallAllocationEntity> allocationEntities, String token,
+      String username, UserProfession profession) {
+    try {
+      List<ReservationEmailMessage.StallInfo> stallInfos = allocationEntities.stream()
+          .map(allocation -> ReservationEmailMessage.StallInfo.builder()
+              .hallName(allocation.getHallStall().getHallEntity().getHallName())
+              .stallName(allocation.getStall().getStallName())
+              .stallSize(allocation.getStall().getSize())
+              .build())
+          .toList();
+
+      ReservationEmailMessage message = ReservationEmailMessage.builder()
+          .email(username)
+          .userProfession(profession)
+          .subject("Stall Reservation Confirmation - " + bookFairEntityName)
+          .bookFairName(bookFairEntityName)
+          .reservationToken(token)
+          .stalls(stallInfos)
+          .build();
+
+      rabbitTemplate.convertAndSend(RabbitMQConfig.RESERVATION_EMAIL_QUEUE, message);
+      log.info("Reservation email message sent to queue for user: {}", username);
+    } catch (Exception e) {
+      log.error("Failed to send reservation email message to queue", e);
+      // Don't throw exception - email failure shouldn't break reservation
+    }
+  }
 
   private String generateReservationToken(String username) {
     String uniqueString = username + System.currentTimeMillis();

@@ -31,7 +31,7 @@ public class NotificationEntity {
   private String receipientEmail;
 
   @Column(nullable = false)
-  private UserProfession role;
+  private UserProfession userProfession;
 
   @Column(nullable = false)
   private String subject;

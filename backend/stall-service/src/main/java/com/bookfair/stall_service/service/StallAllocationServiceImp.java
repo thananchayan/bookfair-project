@@ -36,16 +36,15 @@ public class StallAllocationServiceImp implements StallAllocationService {
   public ContentResponse<StallAllocationResponse> createStallAllocation(
       CreateStallAllocationRequest request) {
 
+    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId())
+        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
+
     StallEntity stallEntity = stallRepository.findById(request.getStallId())
         .orElseThrow(() -> new IllegalArgumentException("Stall not found"));
 
     HallEntity hallEntity = hallStallRepository.findById(request.getHallStallID())
         .orElseThrow(() -> new IllegalArgumentException("Hall Stall not found"))
         .getHallEntity();
-
-//    BookFairEntity bookFairEntity = bookFairRepository.findById(hallEntity.getBookFair().getId()).get();
-    BookFairEntity bookFairEntity = bookFairRepository.findById(request.getBookFairId())
-        .orElseThrow(() -> new IllegalArgumentException("Book Fair not found"));
 
 //  if(stallAllocationRepository.existsByHallStall_IdAndStall_Id(request.getHallStallID(), request.getStallId())){
 //        throw new IllegalArgumentException("Stall is already allocated to this Hall Stall");

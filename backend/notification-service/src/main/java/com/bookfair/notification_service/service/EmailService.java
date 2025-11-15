@@ -114,7 +114,7 @@ public class EmailService {
       sendHtmlEmailWithAttachment(request, qrBytes,
           "reservation-" + reservationToken.substring(0, 8) + ".png");
 
-      sendHtmlEmail(request);
+//      sendHtmlEmail(request);
 
       NotificationEntity notificationEntity = mapToEntity(stallAllocationRequest.emailRequest);
       notificationEntity.setReservationToken(reservationToken);
@@ -131,9 +131,9 @@ public class EmailService {
   private NotificationEntity mapToEntity(EmailRequest emailRequest) {
     return NotificationEntity.builder()
         .receipientEmail(emailRequest.getEmail())
-        .role(emailRequest.getUserProfession())
+        .userProfession(emailRequest.getUserProfession())
         .subject(emailRequest.getSubject())
-        .body(emailRequest.getBody())
+        .body(emailRequest.getBody() != null ? emailRequest.getBody() : "Email body not available")
         .sentAt(java.time.LocalDateTime.now())
         .build();
   }
