@@ -5,6 +5,7 @@ import com.bookfair.stall_service.enums.StallAllocationStatus;
 import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StallAllocationRepository extends JpaRepository<StallAllocationEntity, Long> {
@@ -20,12 +21,18 @@ public interface StallAllocationRepository extends JpaRepository<StallAllocation
   boolean existsByHallStall_Id(Long hallStallID);
 
   List<StallAllocationEntity> findByBookFair_IdAndStallAllocationStatusIn(Long bookFairId,
-      Collection<StallAllocationStatus> statuses
+                                                                          Collection<StallAllocationStatus> statuses
   );
 
   boolean existsByStall_IdAndBookFair_Id(@NotNull(message = "Stall ID is required") Long stallId,
-      @NotNull(message = "Book Fair ID is required") Long bookFairId);
+                                         @NotNull(message = "Book Fair ID is required") Long bookFairId);
 
+  // Keep only one of these depending on your logic
+  // If token is unique per reservation:
+  Optional<StallAllocationEntity> findByReservationToken(String reservationToken);
 
-  List<StallAllocationEntity> findByReservationToken(String token);
+  // If multiple allocations can share the same token:
+  List<StallAllocationEntity> findAllByReservationToken(String reservationToken);
+
+  List<StallAllocationEntity> findAllByBookingUserId(Long userId);
 }

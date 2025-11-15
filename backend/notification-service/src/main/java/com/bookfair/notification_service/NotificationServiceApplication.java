@@ -2,8 +2,9 @@ package com.bookfair.notification_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.bookfair.notification_service.client")
 @SpringBootApplication
 public class NotificationServiceApplication {
 

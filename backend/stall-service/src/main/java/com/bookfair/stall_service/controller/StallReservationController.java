@@ -4,61 +4,47 @@ import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.dto.response.StallReservationResponse;
 import com.bookfair.stall_service.service.StallReservationService;
-import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/stall-reservation")
+@RequestMapping("/api/stall-reservations")
 @RequiredArgsConstructor
 public class StallReservationController {
 
-  private final StallReservationService reservationService;
+  private final StallReservationService stallReservationService;
 
   @PostMapping
-  public ResponseEntity<ContentResponse<ReservationResponse>> createReservation(
-      @Valid @RequestBody CreateStallReservationRequest request) {
-    return ResponseEntity.ok(reservationService.createReservation(request));
+  public ContentResponse<ReservationResponse> createReservation(@RequestBody CreateStallReservationRequest request) {
+    return stallReservationService.createReservation(request);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ContentResponse<ReservationResponse>> getById(@PathVariable Long id) {
-    return ResponseEntity.ok(reservationService.getReservationById(id));
+  public ContentResponse<ReservationResponse> getReservationById(@PathVariable Long id) {
+    return stallReservationService.getReservationById(id);
   }
 
   @GetMapping("/bookfair/{bookFairId}")
-  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getAllReservationsForBookFair(
-      @PathVariable Long bookFairId) {
-    return ResponseEntity.ok(reservationService.getAllReservationsForBookFair(bookFairId));
+  public ContentResponse<List<StallAllocationResponse>> getAllReservationsForBookFair(@PathVariable Long bookFairId) {
+    return stallReservationService.getAllReservationsForBookFair(bookFairId);
   }
 
-  //
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<ContentResponse<List<StallReservationResponse>>> getForUser(@PathVariable Long userId) {
-//        return ResponseEntity.ok(reservationService.getReservationsForUser(userId));
-//    }
-//
-  @DeleteMapping("/{userId}")
-  public ResponseEntity<ContentResponse<Void>> cancelReservation(@PathVariable Long userId,
-      @RequestParam Long hallStallId) {
-    return ResponseEntity.ok(reservationService.cancelReservation(hallStallId, userId));
+  @DeleteMapping("/{id}/user/{userId}")
+  public ContentResponse<Void> cancelReservation(@PathVariable Long id, @PathVariable Long userId) {
+    return stallReservationService.cancelReservation(id, userId);
   }
 
-  @GetMapping("token/{token}")
-  public ResponseEntity<ContentResponse<ReservationResponse>> getReservationByToken(
-      @PathVariable String token) {
-    return ResponseEntity.ok(reservationService.getReservationByToken(token));
+  @GetMapping("/token/{token}")
+  public ContentResponse<ReservationResponse> getReservationByToken(@PathVariable String token) {
+    return stallReservationService.getReservationByToken(token);
   }
 
-
+  @GetMapping("/stalls/{token}")
+  public ContentResponse<List<StallReservationResponse>> getStallsByReservationToken(@PathVariable String token) {
+    return stallReservationService.getStallsByReservationToken(token);
+  }
 }
