@@ -1,7 +1,7 @@
 package com.bookfair.notification_service.listener;
 
-import com.bookfair.notification_service.dto.request.EmailRequest;
 import com.bookfair.notification_service.dto.request.ReservationEmailMessage;
+import com.bookfair.notification_service.dto.request.ReservationEmailRequest;
 import com.bookfair.notification_service.dto.request.StallAllocationRequest;
 import com.bookfair.notification_service.dto.request.StallRequest;
 import com.bookfair.notification_service.service.EmailService;
@@ -23,14 +23,17 @@ public class ReservationEmailListener {
     try {
       log.info("Received reservation email request for: {}", message.getEmail());
 
-      EmailRequest emailRequest = EmailRequest.builder()
+      ReservationEmailRequest emailRequest = ReservationEmailRequest.builder()
           .email(message.getEmail())
           .userProfession(message.getUserProfession())
           .subject(message.getSubject())
+          .body("Your reservation token is: " + message.getReservationToken())
+          .reservationToken(message.getReservationToken())
           .build();
 
       List<StallRequest> stallRequests = message.getStalls().stream()
           .map(stall -> StallRequest.builder()
+              .hallName(stall.getHallName())
               .stallName(stall.getStallName())
               .stallSize(stall.getStallSize())
               .build())

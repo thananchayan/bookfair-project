@@ -1,6 +1,5 @@
-package com.bookfair.notification_service;
+package com.bookfair.notification_service.entity;
 
-import com.bookfair.notification_service.entity.NotificationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {

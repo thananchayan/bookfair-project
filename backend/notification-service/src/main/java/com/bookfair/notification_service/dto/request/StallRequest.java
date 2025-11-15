@@ -10,6 +10,7 @@ import lombok.Data;
 @Builder
 public class StallRequest {
 
+  public String hallName;
   public String stallName;
   public Size stallSize;
 }

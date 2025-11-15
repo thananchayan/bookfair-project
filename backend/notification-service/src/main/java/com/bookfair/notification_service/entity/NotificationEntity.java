@@ -45,8 +45,4 @@ public class NotificationEntity {
   @Column(name = "reservation_token", unique = true)
   private String reservationToken;
 
-  @Column(name = "qr_code_data", columnDefinition = "TEXT")
-  private String qrCodeData;
-
-
 }

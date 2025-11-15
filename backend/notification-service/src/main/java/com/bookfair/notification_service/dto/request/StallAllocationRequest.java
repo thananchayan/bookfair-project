@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class StallAllocationRequest {
 
-  public EmailRequest emailRequest;
+  public ReservationEmailRequest emailRequest;
   public String bookFairName;
   public List<StallRequest> stallRequest;
 
