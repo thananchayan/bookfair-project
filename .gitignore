@@ -38,7 +38,9 @@ backend/build/
 .vscode/
 
 # Frontend (Node.js/React/Vue/Angular)
-frontend/node_modules/
-frontend/build/
-frontend/dist/ # Common for some frontend frameworks
+frontend/*/node_modules/
+frontend/*/build/
+frontend/*/dist/ # Common for some frontend frameworks
 .npm
+Back-end
+docker
