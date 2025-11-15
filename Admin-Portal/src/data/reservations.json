@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "publisher": "ABC Publications",
+    "stall": "A-12",
+    "size": "Medium",
+    "date": "2025-11-02"
+  },
+  {
+    "id": 2,
+    "publisher": "BookWorld Ltd",
+    "stall": "B-07",
+    "size": "Large",
+    "date": "2025-11-03"
+  },
+  {
+    "id": 3,
+    "publisher": "EduPress",
+    "stall": "C-05",
+    "size": "Small",
+    "date": "2025-11-04"
+  }
+]
