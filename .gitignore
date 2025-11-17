@@ -44,3 +44,6 @@ frontend/*/dist/ # Common for some frontend frameworks
 .npm
 Back-end
 docker
+
+*/node_modules/
+node_modules
