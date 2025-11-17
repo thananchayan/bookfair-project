@@ -1,51 +1,48 @@
-import React, { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from 'react-router-dom'
 
-import { AuthProvider } from './lib/auth-context'
+import React,  { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 
-// Layouts
-import PublisherLayout from './layouts/PublisherLayout'
+import Stalls from "./Pages/Stalls_Manage";
+import Reservations from "./Pages/Reservation-Manage";
+import Publishers from "./Pages/Publisher-Manage";
+import Login from "./Pages/Admin-Login";
+import Dashboard from "./Pages/Admin_Dashboard/Dashboard";
+import AdminLayout from "./Layouts/AdminLayout";
+import { isAdminLoggedIn } from "./lib/auth";
+import "./App.css";
 
-// Pages
-import App from './App'
-import SignupPage, { LoginPage } from './pages/auth/SignupPage'
-import PublisherDashboard from './pages/publisher/PublisherDashboard'
 
-// Define your routes
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  return isAdminLoggedIn() ? <>{children}</> : <Navigate to="/adminlogin" replace />;
+};
+
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App />,
+    path: "/adminlogin",
+    element: <Login/>,
   },
   {
-    path: '/auth/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/auth/signup',
-    element: <SignupPage />,
-  },
-  {
-    path: '/publisher',
-    element: <PublisherLayout />,
+    path: "/admin",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
-      {
-        path: 'dashboard',
-        element: <PublisherDashboard />,
-      },
+      { index: true, element: <Dashboard /> },
+      { path: "stalls", element: <Stalls /> },
+      { path: "reservations", element: <Reservations /> },
+      { path: "publishers", element: <Publishers /> },
     ],
   },
-])
+ 
+]);
 
-// ✅ The important part: wrap your RouterProvider with AuthProvider
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <RouterProvider router={router} />
   </StrictMode>
-)
+);
+
+
