@@ -41,7 +41,8 @@ public class SecurityConfig {
                 "/actuator/health",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
-                "/swagger-ui.html").permitAll()
+                "/swagger-ui.html",
+                "/api/users/adminSite/**").permitAll()
             .anyRequest().authenticated()
         ).exceptionHandling(ex -> ex
             .accessDeniedHandler(customAccessDeniedHandler)  // Use your custom handler

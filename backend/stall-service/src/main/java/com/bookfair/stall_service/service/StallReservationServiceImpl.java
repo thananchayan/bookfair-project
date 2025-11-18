@@ -4,9 +4,11 @@ import com.bookfair.stall_service.configuration.RabbitMQConfig;
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.emailDto.ReservationEmailMessage;
 import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
+import com.bookfair.stall_service.dto.request.UserServiceRequest;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.dto.response.StallReservationResponse;
+import com.bookfair.stall_service.dto.response.UserServiceResponse;
 import com.bookfair.stall_service.entity.BookFairEntity;
 import com.bookfair.stall_service.entity.StallAllocationEntity;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
@@ -30,6 +32,8 @@ public class StallReservationServiceImpl implements StallReservationService {
   private final BookFairRepository bookFairRepository;
   private final StallAllocationRepository stallAllocationRepository;
   private final RabbitTemplate rabbitTemplate;
+  private final UserServiceClient userServiceClient;
+
 
   @Override
   public ContentResponse<ReservationResponse> createReservation(
@@ -42,6 +46,8 @@ public class StallReservationServiceImpl implements StallReservationService {
     if (!invalidIds.isEmpty()) {
       throw new IllegalArgumentException("Invalid stall allocation IDs: " + invalidIds);
     }
+
+    UserServiceRequest user = validateAndFetchUser(request.getUserId());
 
     List<StallAllocationEntity> stallAllocationEntity = stallAllocationRepository.findAllById(
         request.getStallAllocationId());
@@ -87,7 +93,7 @@ public class StallReservationServiceImpl implements StallReservationService {
     stallAllocationRepository.saveAll(stallAllocationEntity);
 
     sendReservationEmail(request, bookFairEntity.getName(), stallAllocationEntity, token,
-        "sathurshans04@gmail.com", UserProfession.PUBLISHER);
+        user.getUsername(), user.getProfession());
 
     ReservationResponse response = ReservationResponse.builder()
         .userId(request.getUserId())
@@ -289,12 +295,35 @@ public class StallReservationServiceImpl implements StallReservationService {
       log.info("Reservation email message sent to queue for user: {}", username);
     } catch (Exception e) {
       log.error("Failed to send reservation email message to queue", e);
-      // Don't throw exception - email failure shouldn't break reservation
     }
   }
 
   private String generateReservationToken(String username) {
     String uniqueString = username + System.currentTimeMillis();
     return UUID.nameUUIDFromBytes(uniqueString.getBytes()).toString();
+  }
+
+  private UserServiceRequest validateAndFetchUser(Long userId) {
+    try {
+      UserServiceResponse<UserServiceRequest> response =
+          userServiceClient.getUserById(userId);
+      log.info("User Id: " + userId);
+      log.info("user response: " + response);
+
+      if (response == null || response.getData() == null) {
+        throw new IllegalArgumentException("User with ID " + userId + " not found");
+      }
+
+      UserServiceRequest user = response.getData();
+      log.info("Fetched user: " + user);
+      if (Boolean.FALSE.equals(user.getEnabled())) {
+        throw new IllegalArgumentException("User account is disabled or inactive");
+      }
+
+      return user;
+    } catch (Exception e) {
+      log.error("Failed to fetch user from user-service: {}", e.getMessage());
+      throw new RuntimeException("Unable to validate user. Please try again later.");
+    }
   }
 }
