@@ -111,10 +111,6 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-oauth2-jose</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-openfeign</artifactId>
-    </dependency>
     <!-- OPENFEIGN -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
