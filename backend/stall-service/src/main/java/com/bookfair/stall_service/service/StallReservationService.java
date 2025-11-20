@@ -2,10 +2,10 @@ package com.bookfair.stall_service.service;
 
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
+import com.bookfair.stall_service.dto.response.QrReadResponse;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.dto.response.StallReservationResponse;
-
 import java.util.List;
 
 public interface StallReservationService {
@@ -23,7 +23,7 @@ public interface StallReservationService {
 
   ContentResponse<Void> cancelReservation(Long id, Long userId);
 
-  ContentResponse<ReservationResponse> getReservationByToken(String token);
+  ContentResponse<QrReadResponse> getReservationByToken(String token);
 
   ContentResponse<List<StallReservationResponse>> getStallsByReservationToken(String token);
 }

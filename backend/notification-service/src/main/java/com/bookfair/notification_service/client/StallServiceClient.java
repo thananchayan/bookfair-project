@@ -1,16 +1,14 @@
 package com.bookfair.notification_service.client;
+
+import com.bookfair.notification_service.dto.response.StallServiceResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.bookfair.notification_service.dto.ContentResponse;
-import com.bookfair.notification_service.dto.StallReservationResponse;
-import java.util.List;
 
-
-@FeignClient(name = "stall-service", url = "http://localhost:8081")
+@FeignClient(name = "stall-service", url = "${stall-service.url}")
 public interface StallServiceClient {
 
-    @GetMapping("/api/stall-reservation/by-token/{token}")
-    ContentResponse<List<StallReservationResponse>> getByToken(@PathVariable String token);
+  @GetMapping("/api/stall-reservation/token/{token}")
+  StallServiceResponse getReservationByToken(@PathVariable("token") String token);
 }

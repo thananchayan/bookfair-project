@@ -1,4 +1,4 @@
-package com.bookfair.stall_service.service;
+package com.bookfair.stall_service.client;
 
 import com.bookfair.stall_service.dto.request.UserServiceRequest;
 import com.bookfair.stall_service.dto.response.UserServiceResponse;

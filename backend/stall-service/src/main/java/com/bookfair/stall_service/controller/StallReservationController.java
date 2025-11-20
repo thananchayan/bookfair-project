@@ -2,6 +2,7 @@ package com.bookfair.stall_service.controller;
 
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
+import com.bookfair.stall_service.dto.response.QrReadResponse;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
 import com.bookfair.stall_service.service.StallReservationService;
@@ -55,7 +56,7 @@ public class StallReservationController {
   }
 
   @GetMapping("token/{token}")
-  public ResponseEntity<ContentResponse<ReservationResponse>> getReservationByToken(
+  public ResponseEntity<ContentResponse<QrReadResponse>> getReservationByToken(
       @PathVariable String token) {
     return ResponseEntity.ok(reservationService.getReservationByToken(token));
   }

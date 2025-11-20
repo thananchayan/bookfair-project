@@ -1,5 +1,8 @@
 package com.bookfair.notification_service.service;
 
+import com.bookfair.notification_service.client.StallServiceClient;
+import com.bookfair.notification_service.dto.response.QrReadResponse;
+import com.bookfair.notification_service.dto.response.StallServiceResponse;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.LuminanceSource;
@@ -14,16 +17,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class QRCodeService {
 
+  private final StallServiceClient stallServiceClient;
 
-  public String readQRCodeFromImage(MultipartFile file) throws IOException, NotFoundException {
+  public QrReadResponse readQRCodeFromImage(MultipartFile file)
+      throws IOException, NotFoundException {
     BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
 
     if (bufferedImage == null) {
@@ -39,7 +46,13 @@ public class QRCodeService {
 
       Result result = new MultiFormatReader().decode(bitmap, hints);
       String resultText = result.getText();
-      return extractReservationId(resultText);
+      String ReservationToken = extractReservationId(resultText);
+
+      StallServiceResponse response = stallServiceClient.getReservationByToken(ReservationToken);
+      if (response == null || response.getData() == null) {
+        throw new IllegalArgumentException("No reservation found for token");
+      }
+      return response.getData();
 
     } catch (NotFoundException e) {
       log.error("QR code not found in image: {}", e.getMessage());

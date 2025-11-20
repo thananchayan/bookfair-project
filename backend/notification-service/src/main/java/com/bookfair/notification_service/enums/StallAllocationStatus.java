@@ -1,4 +1,4 @@
-package com.bookfair.stall_service.enums;
+package com.bookfair.notification_service.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
