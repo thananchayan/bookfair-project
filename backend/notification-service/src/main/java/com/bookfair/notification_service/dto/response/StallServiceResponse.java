@@ -1,16 +1,19 @@
 package com.bookfair.notification_service.dto.response;
 
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class QRCodeReadResponse {
+@AllArgsConstructor
+public class StallServiceResponse {
 
-  private boolean success;
+  private String action;
+  private String status;
+  private String code;
   private String message;
   private QrReadResponse data;
 }

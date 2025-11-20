@@ -9,27 +9,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class EmailRequest {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReservationEmailRequest {
 
   @Email(message = "Invalid email format")
   private String email;
   private UserProfession userProfession;
   private String subject;
   private String body;
-  private boolean isHtml;
-
+  private String reservationToken;
   private Map<String, byte[]> inlineImages;
-
-  public EmailRequest(String email, UserProfession userProfession, String subject, String body,
-      boolean html) {
-    this.email = email;
-    this.userProfession = userProfession;
-    this.subject = subject;
-    this.body = body;
-    this.isHtml = html;
-  }
-
 }

@@ -43,7 +43,7 @@ public class HallController {
     return ResponseEntity.ok(response);
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("updateHall/{id}")
   public ResponseEntity<ContentResponse<HallResponse>> updateHall(
       @PathVariable Long id,
       @RequestBody CreateHallRequest request) {

@@ -114,4 +114,11 @@ public class UserAdminController {
     return ResponseEntity.ok(
         new ContentResponse<>("user-delete", "SUCCESS", "200", "User deleted", null));
   }
+
+  @GetMapping("adminSite/{id}")
+  public ResponseEntity<ContentResponse<StallUserResponse>> getUserById(@PathVariable Long id) {
+    StallUserResponse response = service.getById(id);
+    return ResponseEntity.ok(
+        new ContentResponse<>("user-get", "SUCCESS", "200", "User fetched", response));
+  }
 }

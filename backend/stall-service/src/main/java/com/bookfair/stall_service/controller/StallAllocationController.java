@@ -1,9 +1,11 @@
 package com.bookfair.stall_service.controller;
 
 import com.bookfair.stall_service.dto.ContentResponse;
+import com.bookfair.stall_service.dto.request.CreateMultipleStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.enums.StallAllocationStatus;
 import com.bookfair.stall_service.service.StallAllocationService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,6 +32,12 @@ public class StallAllocationController {
     return ResponseEntity.ok(stallAllocationService.createStallAllocation(request));
   }
 
+  @PostMapping("/multipleStallAllocations")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> createMultipleStallAllocation(
+      @Valid @RequestBody CreateMultipleStallAllocationRequest request) {
+    return ResponseEntity.ok(stallAllocationService.createMultipleStallAllocation(request));
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<ContentResponse<StallAllocationResponse>> getAllStallAllocationsById(
       Long id) {
@@ -46,9 +54,22 @@ public class StallAllocationController {
     return ResponseEntity.ok(stallAllocationService.deleteStallAllocation(id));
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("update/{id}")
   public ResponseEntity<ContentResponse<StallAllocationResponse>> updateStallAllocation(
       @Valid @RequestBody UpdateStallAllocationPrice request, Long id) {
     return ResponseEntity.ok(stallAllocationService.updateStallAllocationById(id, request));
+  }
+
+  @GetMapping("/bookfair/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getStallAllocationsByBoofairId(
+      Long bookFairId) {
+    return ResponseEntity.ok(stallAllocationService.getStallAllocationsByBoofairId(bookFairId));
+  }
+
+  @GetMapping("/bookfair/status/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallAllocationResponse>>> getActiveStallAllocationsByBoofairId(
+      Long bookFairId, StallAllocationStatus status) {
+    return ResponseEntity.ok(
+        stallAllocationService.getStallAllocationsByBoofairIdAndStatus(bookFairId, status));
   }
 }

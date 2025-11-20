@@ -1,5 +1,6 @@
 package com.bookfair.notification_service.entity;
 
+import com.bookfair.notification_service.enums.UserProfession;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +31,9 @@ public class NotificationEntity {
   private String receipientEmail;
 
   @Column(nullable = false)
+  private UserProfession userProfession;
+
+  @Column(nullable = false)
   private String subject;
 
   @Column(nullable = false)
@@ -40,9 +44,5 @@ public class NotificationEntity {
 
   @Column(name = "reservation_token", unique = true)
   private String reservationToken;
-
-  @Column(name = "qr_code_data", columnDefinition = "TEXT")
-  private String qrCodeData;
-
 
 }

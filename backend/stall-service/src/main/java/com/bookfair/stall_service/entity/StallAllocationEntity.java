@@ -51,6 +51,8 @@ public class StallAllocationEntity {
   @Column
   private Long bookingUserId;
 
-  @Column(unique = true)
+  @Column
   private String reservationToken;
+
+
 }

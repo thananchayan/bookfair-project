@@ -1,6 +1,7 @@
 package com.bookfair.notification_service.controller;
 
 import com.bookfair.notification_service.dto.response.QRCodeReadResponse;
+import com.bookfair.notification_service.dto.response.QrReadResponse;
 import com.bookfair.notification_service.service.QRCodeService;
 import com.google.zxing.NotFoundException;
 import java.io.IOException;
@@ -28,34 +29,34 @@ public class QRController {
       if (file.isEmpty()) {
         return ResponseEntity.badRequest().body(
             new QRCodeReadResponse(
-                null,
                 false,
-                "File is empty"
+                "File is empty",
+                null
             )
         );
       }
 
-      String decodedData = qrCodeService.readQRCodeFromImage(file);
+      QrReadResponse decodedData = qrCodeService.readQRCodeFromImage(file);
       return ResponseEntity.ok(
           new QRCodeReadResponse(
-              decodedData,
               true,
-              "QR Code read successfully"
+              "QR Code read successfully",
+              decodedData
           )
       );
     } catch (NotFoundException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(new QRCodeReadResponse(
-              null,
               false,
-              "No QR code found in the image"
+              "No QR code found in the image",
+              null
           ));
     } catch (IOException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(new QRCodeReadResponse(
-              null,
               false,
-              "Error reading the image file"
+              "Error reading the image file",
+              null
           ));
     }
   }
