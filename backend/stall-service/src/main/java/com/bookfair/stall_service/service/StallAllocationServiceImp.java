@@ -46,6 +46,10 @@ public class StallAllocationServiceImp implements StallAllocationService {
         .orElseThrow(() -> new IllegalArgumentException("Hall Stall not found"))
         .getHallEntity();
 
+    if (!bookFairEntity.getId().equals(hallEntity.getBookFair().getId())) {
+      throw new IllegalArgumentException("Hall does not belong to the Book Fair");
+    }
+
 //  if(stallAllocationRepository.existsByHallStall_IdAndStall_Id(request.getHallStallID(), request.getStallId())){
 //        throw new IllegalArgumentException("Stall is already allocated to this Hall Stall");
 //    }
@@ -104,6 +108,16 @@ public class StallAllocationServiceImp implements StallAllocationService {
       if (stallAllocationRepository.existsByHallStall_Id(hallStallAndStallIds.getHallStallId())) {
         throw new IllegalArgumentException(
             "Hall stall " + hallStallAndStallIds.getHallStallId() + " is already allocated");
+      }
+      //check if hall stall belongs to the book fair
+      var hallStall = hallStallRepository.findById(hallStallAndStallIds.getHallStallId())
+          .orElseThrow(() -> new IllegalArgumentException(
+              "Hall Stall not found: " + hallStallAndStallIds.getHallStallId()));
+
+      HallEntity hallEntity = hallStall.getHallEntity();
+      if (!bookFairEntity.getId().equals(hallEntity.getBookFair().getId())) {
+        throw new IllegalArgumentException("Hall Stall " + hallStallAndStallIds.getHallStallId()
+            + " does not belong to the Book Fair");
       }
     }
 
