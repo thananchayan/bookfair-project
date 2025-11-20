@@ -24,6 +24,6 @@ public interface StallReservationService {
   ContentResponse<Void> cancelReservation(Long id, Long userId);
 
   ContentResponse<ReservationResponse> getReservationByToken(String token);
-  //+
+
   ContentResponse<List<StallReservationResponse>> getStallsByReservationToken(String token);
 }
