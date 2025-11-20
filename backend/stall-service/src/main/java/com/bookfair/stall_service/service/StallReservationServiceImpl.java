@@ -178,6 +178,32 @@ public class StallReservationServiceImpl implements StallReservationService {
         );
 
     }
+    @Override
+    public ContentResponse<List<StallReservationResponse>> getStallsByReservationToken(String token) {
+
+        List<StallAllocationEntity> allocations =
+                stallAllocationRepository.findByReservationToken(token);
+
+        if (allocations.isEmpty()) {
+            throw new IllegalArgumentException("No stalls found for this reservation token");
+        }
+
+        List<StallReservationResponse> stalls = allocations.stream()
+                .map(e -> StallReservationResponse.builder()
+                        .stallAllocationId(e.getId())
+                        .stallName(e.getStall().getStallName())
+                        .status(e.getStallAllocationStatus())
+                        .build())
+                .toList();
+
+        return new ContentResponse<>(
+                "Stalls",
+                "SUCCESS",
+                "200",
+                "Stalls fetched successfully",
+                stalls
+        );
+    }
 
     @Override
     public ContentResponse<Void> cancelReservation(Long id, Long userId) {
