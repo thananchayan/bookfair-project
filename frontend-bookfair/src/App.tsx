@@ -9,11 +9,13 @@ import PublisherDashboard from "./pages/publisher/PublisherDashboard";
 import PublisherLayout from "./layouts/PublisherLayout";
 import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
 import ProfileSettings from "./pages/publisher/Profile/Profile";
+import OrganizerLayout from "./layouts/OrganizerLayout";
+import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
 
 function App() {
   return (
     <Routes>
-        <Route element={<SiteLayout />}>
+      <Route element={<SiteLayout />}>
         <Route index element={<WelcomePage />} />
         <Route path="stall-map" element={<StallMap />} />
 
@@ -32,7 +34,13 @@ function App() {
         </Route>
       </Route>
 
-       <Route path="login" element={<LoginPage />} />
+      {/* Organizer admin area */}
+      <Route path="organizer" element={<OrganizerLayout />}>
+        <Route index element={<Navigate to="stalls" replace />} />
+        <Route path="stalls" element={<OrganizerStallAllocationPage />} />
+      </Route>
+
+      <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />
 
 

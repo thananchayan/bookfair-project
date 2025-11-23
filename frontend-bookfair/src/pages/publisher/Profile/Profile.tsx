@@ -418,7 +418,7 @@ const ProfileSettings: React.FC = () => {
                 required
               />
             </div>
-            <div className="md:col-span-1">
+            <div className="md:col-span-1">b
               <label className="block text-sm text-gray-600 mb-1">Phone Number</label>
               <input
                 value={form.phonenumber}
