@@ -18,6 +18,7 @@ export default function AdminSubNavbar() {
     { to: "/admin/reservations", label: "Manage Stalls" },
     { to: "/admin/recentreservations", label: "Reservations" },
     { to: "/admin/createstalls", label: "Create-Stalls" },
+        { to: "/admin/viewpublishers", label: "Publishers/Vendors" },
     { to: "/admin/settings", label: "Settings" },
   ];
 

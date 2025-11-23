@@ -119,7 +119,7 @@ const CreateStalls = () => {
               {stalls.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-5 py-6 text-center text-gray-500 text-lg">
-                    <span className="text-xl mr-2">😔</span> No stalls have been configured yet.
+                    <span className="text-xl mr-2"></span> No stalls have been configured yet.
                   </td>
                 </tr>
               )}

@@ -15,22 +15,23 @@ import RecentReservations from "./pages/admin/RecentReservations";
 import AdminLayout from "./layouts/OrganizerLayout";
 import Reservations from "./pages/admin/Reservation-Manage";
 import CreateStalls from "./pages/admin/Stalls_Manage";
+import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
 
 function App() {
   return (
     <Routes>
-        <Route element={<SiteLayout />}>
+      <Route element={<SiteLayout />}>
         <Route index element={<WelcomePage />} />
         <Route path="stall-map" element={<StallMap />} />
 
- 
+
         <Route path="publisher" element={<PublisherLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-           <Route path="dashboard" element={<PublisherDashboard />} />
-           <Route path="reserve-stall" element={<ReserveStall />} />
-         <Route path="profile" element={<ProfileSettings />} />
-         
-         
+          <Route path="dashboard" element={<PublisherDashboard />} />
+          <Route path="reserve-stall" element={<ReserveStall />} />
+          <Route path="profile" element={<ProfileSettings />} />
+
+
           {/* 
           <Route path="reservations" element={<PublisherReservations />} />
           
@@ -39,21 +40,22 @@ function App() {
 
         <Route path="admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-           <Route path="dashboard" element={<AdminDashboard />} />
-             <Route path="reservations" element={<Reservations/>} />
-           <Route path="recentreservations" element={<RecentReservations/>} />
-         <Route path="createstalls" element={<CreateStalls />} />
-         
-         
+
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="reservations" element={<Reservations />} />
+          <Route path="recentreservations" element={<RecentReservations />} />
+          <Route path="createstalls" element={<CreateStalls />} />
+
+
           {/* 
           <Route path="reservations" element={<PublisherReservations />} />
           
           */}
         </Route>
-     <Route path="admin" element={<Dashboard/>}/>
+        <Route path="admin" element={<Dashboard />} />
       </Route>
- 
-       <Route path="login" element={<LoginPage />} />
+      <Route path="loginadmin" element={<LoginPageAdmin />} />
+      <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />
 
 
