@@ -1,22 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/common/Button";
 import { Card } from "../../components/Card";
 import LiteraryGenresCard from "../../components/LiteraryGenresCard/LiteraryGenresCard";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchProfile } from "../../features/auth/authSlice";
+import { api } from "../../lib/api";
 
 
 
 const PublisherDashboard: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { username, role, profile } = useAppSelector((s) => s.auth);
+  const { username, role, profile, userId } = useAppSelector((s) => s.auth);
+  const [activeReservations, setActiveReservations] = useState<number | null>(null);
+  const [upcoming, setUpcoming] = useState<
+    { id: number; name: string; startDate: string; endDate: string; organizer: string; location: string }[]
+  >([]);
 
   useEffect(() => {
     if (!profile) dispatch(fetchProfile());
   }, [dispatch, profile]);
 
+  useEffect(() => {
+    if (!userId) return;
+    api
+      .get(`http://localhost:8087/api/stall-reservation/user/${userId}`)
+      .then((res) => setActiveReservations(res.data?.data?.length ?? 0))
+      .catch(() => setActiveReservations(null));
+  }, [userId]);
+
+  useEffect(() => {
+    api
+      .get("http://localhost:8087/api/bookfairs/getUpcoming")
+      .then((res) => setUpcoming(res.data?.data || []))
+      .catch(() => setUpcoming([]));
+  }, []);
+
   const displayUsername = username || "Publisher";
+  const activeLabel = activeReservations ?? 0;
+  const displayRole = (role || profile?.profession || "").replace(/^ROLE_/, "");
 
   return (
     <div className="space-y-8 font-[Calibri] px-6 md:px-12">
@@ -31,7 +53,7 @@ const PublisherDashboard: React.FC = () => {
           <h3 className="text-sm font-semibold text-muted-foreground uppercase">
             Active Reservations
           </h3>
-          <p className="text-3xl font-bold text-primary">2</p>
+          <p className="text-3xl font-bold text-primary">{activeLabel}</p>
           <p className="text-sm text-muted-foreground">
             Currently active stall bookings
           </p>
@@ -39,11 +61,11 @@ const PublisherDashboard: React.FC = () => {
 
         <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase">
-            Pending Approvals
+            UpComing Book fairs
           </h3>
-          <p className="text-3xl font-bold text-accent">1</p>
+          <p className="text-3xl font-bold text-accent">{upcoming.length}</p>
           <p className="text-sm text-muted-foreground">
-            Awaiting organizer review
+            UpComing book fairs for reservation
           </p>
         </Card>
 
@@ -95,7 +117,7 @@ const PublisherDashboard: React.FC = () => {
               <div>
                 <p className="text-muted-foreground">Role: </p>
                 <p className="font-medium text-foreground capitalize">
-                  {role || profile?.profession}
+                  {displayRole}
                 </p>
               </div>
               <div>

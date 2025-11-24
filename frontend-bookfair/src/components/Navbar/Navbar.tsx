@@ -2,17 +2,14 @@
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import "./Navbar.css";
 import BFLogoA from "../../assets/BFLogoA.png";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { logout } from "../../features/auth/authSlice";
 
 type NavbarProps = {
   bigLogoSrc?: string;
   smallLogoSrc?: string;
   logoAlt?: string;
   fixed?: boolean;
-};
-
-const SAMPLE_USER = {
-  name: "Silva",
-  email: "silva@example.com",
 };
 
 const Navbar: React.FC<NavbarProps> = ({
@@ -23,11 +20,12 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { username, profile, token } = useAppSelector((s) => s.auth);
   const [elevated, setElevated] = useState(false);
 
-  // Mock auth state (derived from route for now)
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [userName, setUserName] = useState(SAMPLE_USER.name);
+  const loggedIn = Boolean(token);
+  const displayName = profile?.username || username || "";
 
   useEffect(() => {
     const onScroll = () => setElevated(window.scrollY > 8);
@@ -36,22 +34,10 @@ const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Pages where we want "Login" (and hide username)
   const isAuthPage =
     location.pathname === "/" ||
     location.pathname === "/login" ||
     location.pathname === "/signup";
-
-  // 🔧 Mock: whenever we navigate, pretend we're logged in on non-auth pages
-  useEffect(() => {
-    if (isAuthPage) {
-      setLoggedIn(false);
-      setUserName(""); // hide on auth pages
-    } else {
-      setLoggedIn(true);
-      setUserName(SAMPLE_USER.name);
-    }
-  }, [isAuthPage]);
 
   const buttonText = isAuthPage ? "Login" : "Logout";
 
@@ -60,9 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({
       navigate("/login");
       return;
     }
-    // Mock logout then go home
-    setLoggedIn(false);
-    setUserName("");
+    dispatch(logout());
     navigate("/");
   };
 
@@ -75,10 +59,9 @@ const Navbar: React.FC<NavbarProps> = ({
         </Link>
 
         <div className="nav-actions flex items-center gap-4">
-          {/* Show sample username on all non-auth pages */}
-          {!isAuthPage && loggedIn && (
+          {!isAuthPage && loggedIn && displayName && (
             <span className="text-gray-700 font-medium hidden sm:inline">
-              {userName}
+              {displayName}
             </span>
           )}
           <button className="btn-login" onClick={handleAuth}>
