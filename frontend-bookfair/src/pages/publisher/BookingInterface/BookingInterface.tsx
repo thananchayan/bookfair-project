@@ -343,7 +343,8 @@ export default function BookingInterface() {
     const stall = stalls.find((s) => s.id === id);
     if (!stall) return;
     const curr = status[id];
-    if (curr === "booked" || curr === "processing" || curr === "approved" || curr === "pending") return;
+    // Approved / processing / booked are locked
+    if (curr === "booked" || curr === "processing" || curr === "approved") return;
     if (curr === "held") {
       setStatus((prev) => ({ ...prev, [id]: "available" }));
       if (showSummary && selectedIds.length - 1 <= 0) setShowSummary(false);
@@ -387,7 +388,7 @@ export default function BookingInterface() {
       .filter(Boolean) as number[];
     if (!selectedAllocations.length) return;
     try {
-      await api.post("http://localhost:8081/api/stall-reservation", {
+      await api.post("http://localhost:8087/api/stall-reservation", {
         userId,
         stallAllocationId: selectedAllocations,
       });
@@ -428,11 +429,8 @@ export default function BookingInterface() {
     <div className="stall-wrap">
       <div className="toolbar">
         <div className="legend">
-          <span className="pill pill-available">Available (blue)</span>
-          <span className="pill pill-held">Selected (green)</span>
-          <span className="pill pill-pending">Pending</span>
-          <span className="pill pill-approved">Approved</span>
-          <span className="pill pill-processing">Processing</span>
+          <span className="pill pill-available">Available</span>
+          <span className="pill pill-held">Selected</span>
           <span className="pill pill-booked">Reserved</span>
         </div>
         <div className="text-sm font-semibold text-gray-700">Selected: {selectedIds.length} / 3</div>
