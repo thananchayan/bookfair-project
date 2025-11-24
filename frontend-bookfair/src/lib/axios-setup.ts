@@ -7,6 +7,13 @@ import toast from "react-hot-toast";
 export function setupAxiosInterceptors(store: Store<RootState>) {
   // Inject Authorization header from Redux auth state
   api.interceptors.request.use((config) => {
+    const url = (config.url || "").toString();
+    const isAuthEndpoint = url.includes("/auth/login") || url.includes("/auth/signup");
+    // Don't attach Authorization header for login/signup endpoints
+    if (isAuthEndpoint) {
+      return config;
+    }
+
     const state = store.getState();
     const token = state.auth.token;
     const tokenType = state.auth.tokenType || "Bearer";
