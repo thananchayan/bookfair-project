@@ -15,8 +15,8 @@ export default function AdminSubNavbar() {
   const adminLinks = [
     { to: "/admin/dashboard", label: "Dashboard" },
     { to: "/admin/reservations", label: "Manage Bookfair" },
-    { to: "/admin/recentreservations", label: "Reservations" },
     { to: "/admin/createstalls", label: "Stall management" },
+    { to: "/admin/recentreservations", label: "Reservations" },
     { to: "/admin/usermanagement", label: "User Management" },
     { to: "/admin/settings", label: "Settings" },
   ];
@@ -29,8 +29,8 @@ export default function AdminSubNavbar() {
       aria-label="Secondary"
     >
       <div className="mx-auto max-w-7xl px-4 h-11 flex items-center justify-between">
-        
-     
+
+
         <ul className="hidden md:flex items-center gap-6 text-sm text-gray-600">
           {adminLinks.map((l) => (
             <li key={l.to}>
@@ -52,7 +52,7 @@ export default function AdminSubNavbar() {
           ))}
         </ul>
 
-       
+
         <div className="md:hidden ml-auto">
           <button
             type="button"
