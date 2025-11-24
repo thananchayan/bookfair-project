@@ -1,5 +1,7 @@
-// StallMap.tsx
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useAppSelector } from "../../../store/hooks";
+import { api } from "../../../lib/api";
 import "./BookingInterface.css";
 
 /* =============== Types =============== */
@@ -27,6 +29,17 @@ type ArcStall = {
   size: StallSize;
 };
 type Stall = RectStall | ArcStall;
+
+type HallSizeConfig = {
+  topRows: number;
+  topCols: number;
+  leftRows: number;
+  leftCols: number;
+  rightRows: number;
+  rightCols: number;
+  innerRing: number;
+  outerRing: number;
+};
 
 const d2r = (deg: number) => (deg * Math.PI) / 180;
 const polar = (cx: number, cy: number, r: number, deg: number) => ({
@@ -56,7 +69,6 @@ function arcPath(
 }
 
 /* =============== Stall generators =============== */
-/** Grid with small gutters + rotating sizes (S/M/L) */
 function makeRectGrid(
   prefix: string,
   x: number,
@@ -92,7 +104,6 @@ function makeRectGrid(
   return out;
 }
 
-/** Full 360° ring, tiny angular gap so slices don’t touch visually */
 function makeArcRing(
   prefix: string,
   cx: number,
@@ -225,13 +236,14 @@ function BookingSummary({
   );
 }
 
-
 export default function StallMap() {
+  const location = useLocation();
+  const { token, tokenType } = useAppSelector((s) => s.auth);
+  const bookFairId = location.state?.bookFairId;
+
   // Canvas
-  const W = 1000,
-    H = 600;
-  const CX = W / 2,
-    CY = H * 0.62;
+  const W = 1000, H = 600;
+  const CX = W / 2, CY = H * 0.62;
 
   // Rings geometry
   const INNER_R_INNER = 40;
@@ -245,34 +257,59 @@ export default function StallMap() {
   const LEFT = { x: 45, y: 320, w: 260, h: 200 };
   const RIGHT = { x: 695, y: 320, w: 260, h: 200 };
 
-  // Counts
-  const COUNTS = {
-    topRows: 2,
-    topCols: 10,
-    leftRows: 3,
-    leftCols: 3,
-    rightRows: 3,
-    rightCols: 3,
-    innerRing: 12,
-    outerRing: 18,
-  };
-
   const LABELS = { top: "H1", left: "H2", right: "H3", center: "H4" };
 
-  // Build stalls
+  // State for hall config
+  const [hallConfig, setHallConfig] = useState<HallSizeConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch hall configuration
+  useEffect(() => {
+    if (!bookFairId) {
+      setError("No book fair selected");
+      setLoading(false);
+      return;
+    }
+
+    api
+      .get(`/api/halls/hallSize/${bookFairId}`, {
+        headers: {
+          Authorization: `${tokenType} ${token}`,
+        },
+      })
+      .then((res) => {
+        setHallConfig(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err?.response?.data?.message || "Failed to load hall configuration");
+        setLoading(false);
+      });
+  }, [bookFairId, token, tokenType]);
+
+  // Build stalls based on fetched config
   const stalls: Stall[] = useMemo(() => {
-    const top = makeRectGrid("T", TOP.x, TOP.y, TOP.w, TOP.h, COUNTS.topRows, COUNTS.topCols, 6, 6);
-    const left = makeRectGrid("L", LEFT.x, LEFT.y, LEFT.w, LEFT.h, COUNTS.leftRows, COUNTS.leftCols, 6, 6);
-    const right = makeRectGrid("R", RIGHT.x, RIGHT.y, RIGHT.w, RIGHT.h, COUNTS.rightRows, COUNTS.rightCols, 6, 6);
-    const innerRing = makeArcRing("I", CX, CY, INNER_R_INNER, INNER_R_OUTER, COUNTS.innerRing, 1);
-    const outerRing = makeArcRing("O", CX, CY, OUTER_R_INNER, OUTER_R_OUTER, COUNTS.outerRing, 1);
+    if (!hallConfig) return [];
+
+    const top = makeRectGrid("T", TOP.x, TOP.y, TOP.w, TOP.h, hallConfig.topRows, hallConfig.topCols, 6, 6);
+    const left = makeRectGrid("L", LEFT.x, LEFT.y, LEFT.w, LEFT.h, hallConfig.leftRows, hallConfig.leftCols, 6, 6);
+    const right = makeRectGrid("R", RIGHT.x, RIGHT.y, RIGHT.w, RIGHT.h, hallConfig.rightRows, hallConfig.rightCols, 6, 6);
+    const innerRing = makeArcRing("I", CX, CY, INNER_R_INNER, INNER_R_OUTER, hallConfig.innerRing, 1);
+    const outerRing = makeArcRing("O", CX, CY, OUTER_R_INNER, OUTER_R_OUTER, hallConfig.outerRing, 1);
+    
     return [...top, ...left, ...right, ...innerRing, ...outerRing];
-  }, []);
+  }, [hallConfig]);
 
   // Selection state
-  const [status, setStatus] = useState<Record<string, StallStatus>>(
-    Object.fromEntries(stalls.map((s) => [s.id, "available"]))
-  );
+  const [status, setStatus] = useState<Record<string, StallStatus>>({});
+  
+  useEffect(() => {
+    if (stalls.length > 0) {
+      setStatus(Object.fromEntries(stalls.map((s) => [s.id, "available"])));
+    }
+  }, [stalls]);
+
   const selectedIds = useMemo(
     () => Object.entries(status).filter(([, v]) => v === "held").map(([k]) => k),
     [status]
@@ -289,12 +326,10 @@ export default function StallMap() {
     }
   }, [showSummary]);
 
-  // Toggle behavior (held -> available), confirm flow (available -> held)
   const handleStallClick = (id: string) => {
     const curr = status[id];
 
     if (curr === "held") {
-      // Deselect immediately
       setStatus((prev) => ({ ...prev, [id]: "available" }));
       if (showSummary && selectedIds.length - 1 <= 0) setShowSummary(false);
       return;
@@ -305,9 +340,8 @@ export default function StallMap() {
         alert("Maximum stall allocations are 3.");
         return;
       }
-      setPendingId(id); // open confirm modal
+      setPendingId(id);
     }
-    
   };
 
   const confirmSelect = () => {
@@ -339,6 +373,36 @@ export default function StallMap() {
     const ids = items.map((i) => i.id).join(", ");
     alert(`Booking submitted for: ${ids}\n(Stub action — wire to API)`);
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="stall-wrap">
+        <div className="p-6 text-center text-gray-600">
+          <div className="animate-pulse">Loading hall configuration...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !hallConfig) {
+    return (
+      <div className="stall-wrap">
+        <div className="p-6 text-center">
+          <div className="text-rose-600 font-semibold mb-4">
+            {error || "Failed to load hall configuration"}
+          </div>
+          <button 
+            className="btn primary"
+            onClick={() => window.history.back()}
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="stall-wrap">
@@ -413,7 +477,7 @@ export default function StallMap() {
         </button>
       </div>
 
-      {/* Booking Summary under the map — with scroll target */}
+      {/* Booking Summary */}
       {showSummary && selectedIds.length > 0 && (
         <div ref={summaryRef}>
           <BookingSummary
