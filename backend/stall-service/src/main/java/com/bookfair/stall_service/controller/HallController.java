@@ -63,4 +63,12 @@ public class HallController {
     HallSizeResponse response = hallService.getHallsize(bookFairId);
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/bookfair/{bookFairId}")
+  public ResponseEntity<List<HallResponse>> getHallsByBookfairId(@PathVariable Long bookFairId) {
+    List<HallResponse> response = hallService.getHallsByBookfairId(bookFairId);
+    return ResponseEntity.ok(response);
+  }
+
+
 }

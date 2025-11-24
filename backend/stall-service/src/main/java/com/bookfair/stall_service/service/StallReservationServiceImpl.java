@@ -370,19 +370,22 @@ public class StallReservationServiceImpl implements StallReservationService {
 
   private UserServiceRequest validateAndFetchUser(Long userId) {
     try {
+      log.info("Fetching user with ID: {} from user-service", userId);
       UserServiceResponse<UserServiceRequest> response =
           userServiceClient.getUserById(userId);
 
       if (response == null || response.getData() == null) {
+        log.error("User service returned null response for userId: {}", userId);
         throw new IllegalArgumentException("User with ID " + userId + " not found");
       }
 
       UserServiceRequest user = response.getData();
 
       if (Boolean.FALSE.equals(user.getEnabled())) {
+        log.warn("User {} is disabled", userId);
         throw new IllegalArgumentException("User account is disabled or inactive");
       }
-
+      log.info("Successfully validated user: {}", user.getUsername());
       return user;
     } catch (Exception e) {
       log.error("Failed to fetch user from user-service: {}", e.getMessage());

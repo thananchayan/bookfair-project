@@ -20,4 +20,7 @@ public interface HallService {
   ContentResponse<HallResponse> updateHall(Long id, CreateHallRequest request);
 
   HallSizeResponse getHallsize(Long bookFairId);
+
+  List<HallResponse> getHallsByBookfairId(Long bookFairId);
+
 }

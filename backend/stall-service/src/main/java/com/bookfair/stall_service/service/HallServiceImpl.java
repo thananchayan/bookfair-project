@@ -203,6 +203,18 @@ public class HallServiceImpl implements HallService {
         .build();
   }
 
+  @Override
+  public List<HallResponse> getHallsByBookfairId(Long bookFairId) {
+    List<HallEntity> hallEntities = hallRepository.findByBookFairId(bookFairId);
+    if (hallEntities.isEmpty()) {
+      throw new IllegalArgumentException("No halls found for the given book fair ID");
+    }
+    return hallEntities.stream()
+        .map(this::mapToResponse)
+        .toList();
+  }
+
+
   //mapToResponse implementation
   private HallResponse mapToResponse(HallEntity hallEntity) {
     return HallResponse.builder()
