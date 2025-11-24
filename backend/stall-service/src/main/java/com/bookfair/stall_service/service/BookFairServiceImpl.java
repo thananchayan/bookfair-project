@@ -143,6 +143,22 @@ public class BookFairServiceImpl implements BookFairService {
 
   }
 
+  @Override
+  public ContentResponse<List<BookFairResponse>> getBookfairBystatus(BookFairStatus status) {
+    List<BookFairEntity> bookFairEntities = bookFairRepository
+        .findByStatus(status);
+    List<BookFairResponse> bookFairResponses = bookFairEntities.stream()
+        .map(this::mapToRespnse)
+        .toList();
+    return new ContentResponse<>(
+        "BookFair",
+        "SUCCESS",
+        "200",
+        "Upcoming book fairs retrieved successfully",
+        bookFairResponses
+    );
+  }
+
   private BookFairEntity mapToEntity(CreateBookFairRequest createBookFairRequest) {
     return BookFairEntity.builder()
         .name(createBookFairRequest.getName())

@@ -23,4 +23,6 @@ public interface BookFairService {
 
   //set status of book fair
   BookFairResponse setBookFairStatus(Long id, BookFairStatus status);
+
+  ContentResponse<List<BookFairResponse>> getBookfairBystatus(BookFairStatus status);
 }

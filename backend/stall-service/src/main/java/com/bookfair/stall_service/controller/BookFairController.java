@@ -67,6 +67,16 @@ public class BookFairController {
             bookFairResponse
         )
     );
-
   }
+
+  @GetMapping("/getUpcoming")
+  public ResponseEntity<ContentResponse<List<BookFairResponse>>> getUpcomingBookFairs() {
+    return ResponseEntity.ok(bookFairService.getBookfairBystatus(BookFairStatus.UPCOMING));
+  }
+
+  @GetMapping("/getOngoing")
+  public ResponseEntity<ContentResponse<List<BookFairResponse>>> getOngingBookFairs() {
+    return ResponseEntity.ok(bookFairService.getBookfairBystatus(BookFairStatus.ONGOING));
+  }
+
 }
