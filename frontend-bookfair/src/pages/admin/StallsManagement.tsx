@@ -11,8 +11,7 @@ const CreateStalls = () => {
   const [stalls, setStalls] = useState<Stall[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Dummy data (Replace API data)
-  const dummyStalls: Stall[] = [
+   const dummyStalls: Stall[] = [
     { id: 1, stall_name: "A1", size: "Small", status: "Available" },
     { id: 2, stall_name: "A2", size: "Medium", status: "Reserved" },
     { id: 3, stall_name: "B1", size: "Large", status: "Maintenance" },
@@ -21,8 +20,7 @@ const CreateStalls = () => {
   useEffect(() => {
     setLoading(true);
 
-    // Simulate loading while removing actual backend call
-    setTimeout(() => {
+       setTimeout(() => {
       setStalls(dummyStalls);
       setLoading(false);
     }, 300);

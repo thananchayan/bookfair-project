@@ -14,8 +14,10 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import RecentReservations from "./pages/admin/RecentReservations";
 import AdminLayout from "./layouts/OrganizerLayout";
 import Reservations from "./pages/admin/Reservation-Manage";
-import CreateStalls from "./pages/admin/Stalls_Manage";
+import CreateStalls from "./pages/admin/StallsManagement";
 import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
+import AdminStallManagement from "./pages/admin/StallsManagement";
+import UserManagement from "./pages/admin/UserManagement";
 
 function App() {
   return (
@@ -32,10 +34,7 @@ function App() {
           <Route path="profile" element={<ProfileSettings />} />
 
 
-          {/* 
-          <Route path="reservations" element={<PublisherReservations />} />
-          
-          */}
+
         </Route>
 
         <Route path="admin" element={<AdminLayout />}>
@@ -44,13 +43,11 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="reservations" element={<Reservations />} />
           <Route path="recentreservations" element={<RecentReservations />} />
-          <Route path="createstalls" element={<CreateStalls />} />
+          <Route path="createstalls" element={<AdminStallManagement />} />
+          <Route path="usermanagement" element={<UserManagement />} />
 
 
-          {/* 
-          <Route path="reservations" element={<PublisherReservations />} />
-          
-          */}
+
         </Route>
         <Route path="admin" element={<Dashboard />} />
       </Route>

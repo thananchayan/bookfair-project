@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-// Temporary mock admin user
+
 const mockAdminUser = {
   role: "admin" as const,
   name: "Admin User",
@@ -12,13 +12,12 @@ export default function AdminSubNavbar() {
   const [open, setOpen] = useState(false);
   const user = mockAdminUser;
 
-  // --- ADMIN NAV LINKS ---
   const adminLinks = [
     { to: "/admin/dashboard", label: "Dashboard" },
     { to: "/admin/reservations", label: "Manage Stalls" },
     { to: "/admin/recentreservations", label: "Reservations" },
-    { to: "/admin/createstalls", label: "Create-Stalls" },
-        { to: "/admin/viewpublishers", label: "Publishers/Vendors" },
+    { to: "/admin/createstalls", label: "Stall management" },
+    { to: "/admin/usermanagement", label: "User Management" },
     { to: "/admin/settings", label: "Settings" },
   ];
 
@@ -31,7 +30,7 @@ export default function AdminSubNavbar() {
     >
       <div className="mx-auto max-w-7xl px-4 h-11 flex items-center justify-between">
         
-        {/* Desktop tabs */}
+     
         <ul className="hidden md:flex items-center gap-6 text-sm text-gray-600">
           {adminLinks.map((l) => (
             <li key={l.to}>
@@ -53,7 +52,7 @@ export default function AdminSubNavbar() {
           ))}
         </ul>
 
-        {/* Mobile hamburger */}
+       
         <div className="md:hidden ml-auto">
           <button
             type="button"
@@ -76,7 +75,6 @@ export default function AdminSubNavbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown */}
       <div
         className={[
           "md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out bg-gray-50 border-t border-gray-200",
