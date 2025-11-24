@@ -18,7 +18,7 @@ spring:
         - id: stall
           uri: lb://stall-service
           predicates:
-            - Path=/api/bookfairs/**,/api/stall-allocations/**,/api/stalls/**,/api/stall-reservation/**,/api/halls/**,
+            - Path=/api/bookfairs/**,/api/stall-allocations/**,/api/stalls/**,/api/stall-reservation/**,/api/halls/**,/api/hall-stalls/**,
         - id: vendor
           uri: lb://user-service
           predicates:

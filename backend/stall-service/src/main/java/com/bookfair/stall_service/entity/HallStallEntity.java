@@ -26,6 +26,10 @@ public class HallStallEntity {
   private Long id;
 
   @ManyToOne
+  @JoinColumn(name = "book_fairs_id", nullable = false)
+  private BookFairEntity bookFair;
+
+  @ManyToOne
   @JoinColumn(name = "hall_id", nullable = false)
   private HallEntity hallEntity;
 

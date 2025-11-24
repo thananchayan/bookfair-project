@@ -27,8 +27,8 @@ public class HallServiceImpl implements HallService {
 
   @Override
   public ContentResponse<HallResponse> createHall(CreateHallRequest request) {
-    if (request.getOuterRing() > request.getInnerRing()) {
-      throw new IllegalArgumentException("Outer ring stalls cannot be more than inner ring stalls");
+    if (request.getOuterRing() < request.getInnerRing()) {
+      throw new IllegalArgumentException("Inner ring stalls cannot be more than outer ring stalls");
     }
     if (!bookFairRepository.existsById(request.getBookFairId())) {
       throw new IllegalArgumentException("Book fair ID does not exist");
@@ -176,7 +176,7 @@ public class HallServiceImpl implements HallService {
 
     for (HallEntity h : hallEntities) {
       // grid-style hall (rows x columns)
-      if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName()==Hall.TOP) {
+      if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName() == Hall.TOP) {
         topRows += h.getRows();
         topCols += h.getColumns();
       } else if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName() == Hall.LEFT) {
@@ -185,7 +185,7 @@ public class HallServiceImpl implements HallService {
       } else if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName() == Hall.RIGHT) {
         rightRows += h.getRows();
         rightCols += h.getColumns();
-      }else {
+      } else {
         innerRing += h.getInnerRing();
         outerRing += h.getOuterRing();
       }
@@ -229,6 +229,7 @@ public class HallServiceImpl implements HallService {
           hallStalls.add(HallStallEntity.builder()
               .hallEntity(hallEntity)
               .stallName(stallLocation)
+              .bookFair(hallEntity.getBookFair())
               .build());
         }
       }
@@ -238,6 +239,7 @@ public class HallServiceImpl implements HallService {
         hallStalls.add(HallStallEntity.builder()
             .hallEntity(hallEntity)
             .stallName(stallLocation)
+            .bookFair(hallEntity.getBookFair())
             .build());
       }
       for (int o = 1; o <= request.getOuterRing(); o++) {
@@ -245,6 +247,7 @@ public class HallServiceImpl implements HallService {
         hallStalls.add(HallStallEntity.builder()
             .hallEntity(hallEntity)
             .stallName(stallLocation)
+            .bookFair(hallEntity.getBookFair())
             .build());
       }
     }
