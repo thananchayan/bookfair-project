@@ -10,6 +10,4 @@ public enum StallAllocationStatus {
   APPROVED,
   CANCELLED,
   COMPLETED;
-
-
 }

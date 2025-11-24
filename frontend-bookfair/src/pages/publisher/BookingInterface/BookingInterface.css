@@ -1,4 +1,4 @@
-
+﻿
 .map {
     background: white;
     border: 1px solid rgba(194, 194, 193, 0.45);
@@ -550,3 +550,29 @@ font-size: 14px;
   .pill { font-size: 9.5px; padding: 2px 5px; }
   .continue-btn { font-size: 13.5px; }
 }
+
+
+
+/* Pending/Approved statuses */
+.stall.pending {
+  fill: #fff2d1;
+  stroke: #f5b000;
+}
+
+.stall.approved {
+  fill: #dbeafe;
+  stroke: #2563eb;
+}
+
+.pill-pending {
+  background: #fff2d1;
+  color: #854d0e;
+  border-color: #f5b000;
+}
+
+.pill-approved {
+  background: #dbeafe;
+  color: #1e3a8a;
+  border-color: #2563eb;
+}
+

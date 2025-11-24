@@ -1,14 +1,14 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAppSelector } from "../../../store/hooks";
 import { api } from "../../../lib/api";
 import "./BookingInterface.css";
 
-/* =============== Types =============== */
 type StallSize = "SMALL" | "MEDIUM" | "LARGE";
-type StallStatus = "available" | "held" | "processing" | "booked";
+type StallStatus = "available" | "held" | "processing" | "booked" | "approved" | "pending";
 
-type RectStall = {
+// Geometry types
+interface RectStall {
   id: string;
   shape: "rect";
   x: number;
@@ -16,8 +16,14 @@ type RectStall = {
   width: number;
   height: number;
   size: StallSize;
-};
-type ArcStall = {
+  hallStallId: number;
+  allocationId?: number;
+  label: string;
+  price?: number;
+  serverStatus?: StallStatus;
+}
+
+interface ArcStall {
   id: string;
   shape: "arc";
   cx: number;
@@ -27,33 +33,57 @@ type ArcStall = {
   startDeg: number;
   endDeg: number;
   size: StallSize;
-};
+  hallStallId: number;
+  allocationId?: number;
+  label: string;
+  price?: number;
+  serverStatus?: StallStatus;
+}
+
 type Stall = RectStall | ArcStall;
 
-type HallSizeConfig = {
-  topRows: number;
-  topCols: number;
-  leftRows: number;
-  leftCols: number;
-  rightRows: number;
-  rightCols: number;
+// API types
+interface Hall {
+  id: number;
+  bookFairId: number;
+  hallName: string;
+  row: number;
+  column: number;
   innerRing: number;
   outerRing: number;
-};
+  hallSize: number;
+}
+
+interface HallStall {
+  id: number;
+  bookFairId: number;
+  stallName: string;
+  hallId: number;
+  hallName: string;
+}
+
+interface Allocation {
+  id: number; // stallAllocationId
+  bookFairId: number;
+  hallStallID: number;
+  stallId: number;
+  price: number;
+  stallAllocationStatus: string;
+  userId: number | null;
+  reservationToken: string | null;
+}
+
+interface AllocationEnvelope {
+  data: Allocation[];
+}
 
 const d2r = (deg: number) => (deg * Math.PI) / 180;
 const polar = (cx: number, cy: number, r: number, deg: number) => ({
   x: cx + r * Math.cos(d2r(deg)),
   y: cy + r * Math.sin(d2r(deg)),
 });
-function arcPath(
-  cx: number,
-  cy: number,
-  rInner: number,
-  rOuter: number,
-  start: number,
-  end: number
-) {
+
+function arcPath(cx: number, cy: number, rInner: number, rOuter: number, start: number, end: number) {
   const large = end - start <= 180 ? 0 : 1;
   const p1 = polar(cx, cy, rOuter, start);
   const p2 = polar(cx, cy, rOuter, end);
@@ -68,61 +98,78 @@ function arcPath(
   ].join(" ");
 }
 
-/* =============== Stall generators =============== */
-function makeRectGrid(
-  prefix: string,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  rows: number,
-  cols: number,
-  gapX = 6,
-  gapY = 6
-): RectStall[] {
-  const sizes: StallSize[] = ["SMALL", "MEDIUM", "LARGE"];
-  const innerW = w - gapX * (cols - 1);
-  const innerH = h - gapY * (rows - 1);
+const sizeLetter = (sz: StallSize) => (sz === "SMALL" ? "s" : sz === "MEDIUM" ? "m" : "l");
+
+const mapServerStatus = (alloc?: Allocation): StallStatus => {
+  if (!alloc) return "available";
+  const status = (alloc.stallAllocationStatus || "").toUpperCase();
+  if (status === "APPROVED") return "approved";
+  if (status === "PENDING") return "pending";
+  if (status === "PROCESSING") return "processing";
+  if (alloc.userId) return "booked";
+  return "available";
+};
+
+const PRICE_FALLBACK: Record<StallSize, number> = {
+  SMALL: 100000,
+  MEDIUM: 125000,
+  LARGE: 150000,
+};
+
+function rectPlacements(area: { x: number; y: number; w: number; h: number }, stalls: HallStall[]): RectStall[] {
+  if (stalls.length === 0) return [];
+  const cols = Math.min(stalls.length, 6);
+  const rows = Math.ceil(stalls.length / cols);
+  const gapX = 6;
+  const gapY = 6;
+  const innerW = area.w - gapX * (cols - 1);
+  const innerH = area.h - gapY * (rows - 1);
   const cellW = innerW / cols;
   const cellH = innerH / rows;
-  const out: RectStall[] = [];
-  let n = 1;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      out.push({
-        id: `${prefix}-${n}`,
-        shape: "rect",
-        x: x + c * (cellW + gapX),
-        y: y + r * (cellH + gapY),
-        width: cellW,
-        height: cellH,
-        size: sizes[(n - 1) % sizes.length],
-      });
-      n++;
-    }
-  }
-  return out;
+
+  return stalls.map((st, idx) => {
+    const r = Math.floor(idx / cols);
+    const c = idx % cols;
+    const size: StallSize = idx % 3 === 0 ? "SMALL" : idx % 3 === 1 ? "MEDIUM" : "LARGE";
+    return {
+      id: st.stallName,
+      label: st.stallName,
+      hallStallId: st.id,
+      shape: "rect",
+      x: area.x + c * (cellW + gapX),
+      y: area.y + r * (cellH + gapY),
+      width: cellW,
+      height: cellH,
+      size,
+    };
+  });
 }
 
-function makeArcRing(
-  prefix: string,
+function arcPlacements(
   cx: number,
   cy: number,
   rInner: number,
   rOuter: number,
   count: number,
-  gapDeg = 1
+  stalls: HallStall[],
+  prefix: string
 ): ArcStall[] {
-  const sizes: StallSize[] = ["SMALL", "MEDIUM", "LARGE"];
-  const startDeg = -90,
-    endDeg = 270;
+  if (count === 0 || stalls.length === 0) return [];
+  const startDeg = -90;
+  const endDeg = 270;
   const sweep = (endDeg - startDeg) / count;
+  const gapDeg = 1;
   const pad = gapDeg / 2;
-  return Array.from({ length: count }, (_, i) => {
+
+  return Array.from({ length: Math.min(count, stalls.length) }, (_, i) => {
     const s = startDeg + i * sweep + pad;
     const e = s + sweep - gapDeg;
+    const size: StallSize = i % 3 === 0 ? "SMALL" : i % 3 === 1 ? "MEDIUM" : "LARGE";
+    const st = stalls[i];
     return {
-      id: `${prefix}-${i + 1}`,
+      id: st.stallName,
+      label: st.stallName,
+      hallStallId: st.id,
       shape: "arc",
       cx,
       cy,
@@ -130,49 +177,30 @@ function makeArcRing(
       rOuter,
       startDeg: s,
       endDeg: e,
-      size: sizes[i % sizes.length],
+      size,
     };
   });
 }
 
-const sizeLetter = (sz: StallSize) => (sz === "SMALL" ? "s" : sz === "MEDIUM" ? "m" : "l");
-
-/* ---------- Pricing + utils ---------- */
-const PRICES_LKR: Record<StallSize, number> = {
-  SMALL: 50000,
-  MEDIUM: 80000,
-  LARGE: 120000,
-};
-const VAT_RATE = 0.15;
-const SERVICE_FEE = 5000;
-
-const hallOf = (id: string): "H1" | "H2" | "H3" | "H4" => {
-  if (id.startsWith("T")) return "H1";
-  if (id.startsWith("L")) return "H2";
-  if (id.startsWith("R")) return "H3";
-  return "H4";
-};
-
-const fmtLKR = (n: number) =>
-  new Intl.NumberFormat("en-LK", {
-    style: "currency",
-    currency: "LKR",
-    maximumFractionDigits: 0,
-  }).format(n);
-
-/* ---------- Booking Summary ---------- */
 function BookingSummary({
   items,
   onEdit,
   onConfirm,
 }: {
-  items: { id: string; size: StallSize; hall: string; price: number }[];
+  items: { id: string; size: StallSize; price: number }[];
   onEdit: () => void;
   onConfirm: () => void;
 }) {
   const subtotal = items.reduce((s, it) => s + it.price, 0);
-  const vat = Math.round(subtotal * VAT_RATE);
-  const total = subtotal + vat + SERVICE_FEE;
+  const vat = Math.round(subtotal * 0.15);
+  const total = subtotal + vat;
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat("en-LK", {
+      style: "currency",
+      currency: "LKR",
+      maximumFractionDigits: 0,
+    }).format(n);
 
   return (
     <div className="summary-card">
@@ -180,146 +208,131 @@ function BookingSummary({
         <h3>Booking Summary</h3>
         <span className="summary-count">{items.length} selected</span>
       </div>
-
       <div className="summary-list">
         {items.map((it) => (
           <div className="summary-row" key={it.id}>
             <div className="summary-left">
               <div className="summary-title">
-                <span className="badge">{it.hall}</span>
                 <span className="id">{it.id}</span>
               </div>
-              <div className="summary-sub">
-                Size: <b>{it.size}</b>
-              </div>
+              <div className="summary-sub">Size: <b>{it.size}</b></div>
             </div>
-            <div className="summary-price">{fmtLKR(it.price)}</div>
+            <div className="summary-price">{fmt(it.price || 0)}</div>
           </div>
         ))}
       </div>
-
       <div className="summary-totals">
-        <div>
-          <span>Subtotal</span>
-          <b>{fmtLKR(subtotal)}</b>
-        </div>
-        <div>
-          <span>Service fee</span>
-          <b>{fmtLKR(SERVICE_FEE)}</b>
-        </div>
-        <div>
-          <span>VAT ({Math.round(VAT_RATE * 100)}%)</span>
-          <b>{fmtLKR(vat)}</b>
-        </div>
+        <div><span>Subtotal</span><b>{fmt(subtotal)}</b></div>
+        <div><span>VAT (15%)</span><b>{fmt(vat)}</b></div>
         <hr />
-        <div className="grand">
-          <span>Grand Total</span>
-          <b>{fmtLKR(total)}</b>
-        </div>
+        <div className="grand"><span>Grand Total</span><b>{fmt(total)}</b></div>
       </div>
-
-      <div className="summary-notes">
-        <p>• You can reserve up to <b>3 stalls</b> per publisher.</p>
-        <p>• Final allocation is subject to organizer approval.</p>
-        <p>• Prices shown are indicative; taxes & fees may vary.</p>
-      </div>
-
       <div className="summary-actions">
-        <button className="btn ghost" onClick={onEdit}>
-          Edit Selection
-        </button>
-        <button className="btn primary" onClick={onConfirm}>
-          Confirm Booking
-        </button>
+        <button className="btn ghost" onClick={onEdit}>Edit Selection</button>
+        <button className="btn primary" onClick={onConfirm}>Confirm Booking</button>
       </div>
     </div>
   );
 }
 
-export default function StallMap() {
+export default function BookingInterface() {
   const location = useLocation();
-  const { token, tokenType } = useAppSelector((s) => s.auth);
-  const bookFairId = location.state?.bookFairId;
+  const { userId } = useAppSelector((s) => s.auth);
+  const bookFairId = location.state?.bookFairId || 1;
 
-  // Canvas
   const W = 1000, H = 600;
   const CX = W / 2, CY = H * 0.62;
 
-  // Rings geometry
   const INNER_R_INNER = 40;
   const INNER_R_OUTER = 100;
   const OUTER_R_INNER = 115;
   const OUTER_R_OUTER = 174;
   const CLEARANCE_TO_RING = 18;
-
-  // Rectangular zones
   const TOP = { x: 170, y: 30, w: 660, h: 180 - CLEARANCE_TO_RING };
   const LEFT = { x: 45, y: 320, w: 260, h: 200 };
   const RIGHT = { x: 695, y: 320, w: 260, h: 200 };
 
-  const LABELS = { top: "H1", left: "H2", right: "H3", center: "H4" };
-
-  // State for hall config
-  const [hallConfig, setHallConfig] = useState<HallSizeConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch hall configuration
-  useEffect(() => {
-    if (!bookFairId) {
-      setError("No book fair selected");
-      setLoading(false);
-      return;
-    }
-
-    api
-      .get(`/api/halls/hallSize/${bookFairId}`, {
-        headers: {
-          Authorization: `${tokenType} ${token}`,
-        },
-      })
-      .then((res) => {
-        setHallConfig(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err?.response?.data?.message || "Failed to load hall configuration");
-        setLoading(false);
-      });
-  }, [bookFairId, token, tokenType]);
-
-  // Build stalls based on fetched config
-  const stalls: Stall[] = useMemo(() => {
-    if (!hallConfig) return [];
-
-    const top = makeRectGrid("T", TOP.x, TOP.y, TOP.w, TOP.h, hallConfig.topRows, hallConfig.topCols, 6, 6);
-    const left = makeRectGrid("L", LEFT.x, LEFT.y, LEFT.w, LEFT.h, hallConfig.leftRows, hallConfig.leftCols, 6, 6);
-    const right = makeRectGrid("R", RIGHT.x, RIGHT.y, RIGHT.w, RIGHT.h, hallConfig.rightRows, hallConfig.rightCols, 6, 6);
-    const innerRing = makeArcRing("I", CX, CY, INNER_R_INNER, INNER_R_OUTER, hallConfig.innerRing, 1);
-    const outerRing = makeArcRing("O", CX, CY, OUTER_R_INNER, OUTER_R_OUTER, hallConfig.outerRing, 1);
-    
-    return [...top, ...left, ...right, ...innerRing, ...outerRing];
-  }, [hallConfig]);
-
-  // Selection state
+  const [hallData, setHallData] = useState<Hall[]>([]);
+  const [hallStalls, setHallStalls] = useState<HallStall[]>([]);
+  const [allocations, setAllocations] = useState<Allocation[]>([]);
+  const [approvedAllocations, setApprovedAllocations] = useState<Allocation[]>([]);
   const [status, setStatus] = useState<Record<string, StallStatus>>({});
-  
-  useEffect(() => {
-    if (stalls.length > 0) {
-      setStatus(Object.fromEntries(stalls.map((s) => [s.id, "available"])));
-    }
-  }, [stalls]);
-
-  const selectedIds = useMemo(
-    () => Object.entries(status).filter(([, v]) => v === "held").map(([k]) => k),
-    [status]
-  );
-
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [showSummary, setShowSummary] = useState(false);
-
-  // Scroll-to-summary ref
   const summaryRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    Promise.all([
+      api.get<Hall[]>(`http://localhost:8087/api/halls/bookfair/${bookFairId}`),
+      api.get<HallStall[]>(`http://localhost:8087/api/hall-stalls/hallStalls/${bookFairId}`),
+      api.get<AllocationEnvelope>(`http://localhost:8087/api/stall-reservation/bookfair/${bookFairId}`),
+      api.get<AllocationEnvelope>(`http://localhost:8087/api/stall-allocations/bookfair/status/${bookFairId}?status=APPROVED`),
+    ])
+      .then(([hallsRes, hallStallsRes, allocRes, approvedRes]) => {
+        setHallData(hallsRes.data || []);
+        setHallStalls(hallStallsRes.data || []);
+        setAllocations(allocRes.data?.data || []);
+        setApprovedAllocations(approvedRes.data?.data || []);
+      })
+      .catch((err) => {
+        setError(err?.response?.data?.message || "Failed to load stall data");
+      })
+      .finally(() => setLoading(false));
+  }, [bookFairId]);
+
+  const stalls = useMemo<Stall[]>(() => {
+    if (!hallData.length || !hallStalls.length) return [];
+
+    const allocByHallStall = new Map<number, Allocation>();
+    // Approved should override other statuses
+    approvedAllocations.forEach((a) => allocByHallStall.set(a.hallStallID, a));
+    allocations.forEach((a) => {
+      if (!allocByHallStall.has(a.hallStallID)) {
+        allocByHallStall.set(a.hallStallID, a);
+      }
+    });
+
+    const ringHall = hallData.find((h) => h.hallName.toUpperCase() === "RING");
+    const topHallStalls = hallStalls.filter((s) => s.hallName.toUpperCase() === "TOP");
+    const leftHallStalls = hallStalls.filter((s) => s.hallName.toUpperCase() === "LEFT");
+    const rightHallStalls = hallStalls.filter((s) => s.hallName.toUpperCase() === "RIGHT");
+    const ringStalls = hallStalls.filter((s) => s.hallName.toUpperCase() === "RING");
+
+    const top = rectPlacements(TOP, topHallStalls);
+    const left = rectPlacements(LEFT, leftHallStalls);
+    const right = rectPlacements(RIGHT, rightHallStalls);
+
+    const innerCount = ringHall?.innerRing || 0;
+    const outerCount = ringHall?.outerRing || 0;
+    const innerRing = arcPlacements(CX, CY, INNER_R_INNER, INNER_R_OUTER, innerCount, ringStalls, "IR");
+    const outerRing = arcPlacements(CX, CY, OUTER_R_INNER, OUTER_R_OUTER, outerCount, ringStalls.slice(innerCount), "OR");
+
+    const all = [...top, ...left, ...right, ...innerRing, ...outerRing];
+
+    return all.map((s) => {
+      const alloc = allocByHallStall.get(s.hallStallId);
+      return {
+        ...s,
+        allocationId: alloc?.id,
+        price: alloc?.price,
+        serverStatus: mapServerStatus(alloc),
+      } as Stall;
+    });
+  }, [hallData, hallStalls, allocations, approvedAllocations]);
+
+  useEffect(() => {
+    if (!stalls.length) return;
+    const initial = Object.fromEntries(stalls.map((s) => [s.id, s.serverStatus || "available"]));
+    setStatus(initial);
+  }, [stalls]);
+
+  const selectedIds = useMemo(() => Object.entries(status).filter(([, v]) => v === "held").map(([k]) => k), [status]);
+
   useEffect(() => {
     if (showSummary && summaryRef.current) {
       summaryRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -327,14 +340,15 @@ export default function StallMap() {
   }, [showSummary]);
 
   const handleStallClick = (id: string) => {
+    const stall = stalls.find((s) => s.id === id);
+    if (!stall) return;
     const curr = status[id];
-
+    if (curr === "booked" || curr === "processing" || curr === "approved" || curr === "pending") return;
     if (curr === "held") {
       setStatus((prev) => ({ ...prev, [id]: "available" }));
       if (showSummary && selectedIds.length - 1 <= 0) setShowSummary(false);
       return;
     }
-
     if (curr === "available") {
       if (selectedIds.length >= 3) {
         alert("Maximum stall allocations are 3.");
@@ -356,49 +370,55 @@ export default function StallMap() {
     setShowSummary(true);
   };
 
-  const computeSummaryItems = () =>
+  const summaryItems = () =>
     selectedIds.map((id) => {
       const s = stalls.find((x) => x.id === id)!;
-      const size = s.size;
-      return {
-        id,
-        size,
-        hall: hallOf(id),
-        price: PRICES_LKR[size],
-      };
+      const price = s.price ?? PRICE_FALLBACK[s.size];
+      return { id: s.label, size: s.size, price };
     });
 
-  const handleConfirmBooking = () => {
-    const items = computeSummaryItems();
-    const ids = items.map((i) => i.id).join(", ");
-    alert(`Booking submitted for: ${ids}\n(Stub action — wire to API)`);
+  const handleConfirmBooking = async () => {
+    if (!userId) {
+      alert("Please login again to book stalls.");
+      return;
+    }
+    const selectedAllocations = selectedIds
+      .map((id) => stalls.find((s) => s.id === id)?.allocationId)
+      .filter(Boolean) as number[];
+    if (!selectedAllocations.length) return;
+    try {
+      await api.post("http://localhost:8081/api/stall-reservation", {
+        userId,
+        stallAllocationId: selectedAllocations,
+      });
+      alert("Reservation submitted!");
+      setShowSummary(false);
+      setStatus((prev) => {
+        const next = { ...prev };
+        selectedIds.forEach((id) => (next[id] = "booked"));
+        return next;
+      });
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Failed to reserve stalls");
+    }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="stall-wrap">
         <div className="p-6 text-center text-gray-600">
-          <div className="animate-pulse">Loading hall configuration...</div>
+          <div className="animate-pulse">Loading stall map...</div>
         </div>
       </div>
     );
   }
 
-  // Error state
-  if (error || !hallConfig) {
+  if (error || !stalls.length) {
     return (
       <div className="stall-wrap">
         <div className="p-6 text-center">
-          <div className="text-rose-600 font-semibold mb-4">
-            {error || "Failed to load hall configuration"}
-          </div>
-          <button 
-            className="btn primary"
-            onClick={() => window.history.back()}
-          >
-            Go Back
-          </button>
+          <div className="text-rose-600 font-semibold mb-4">{error || "No stalls found"}</div>
+          <button className="btn primary" onClick={() => window.history.back()}>Go Back</button>
         </div>
       </div>
     );
@@ -410,6 +430,8 @@ export default function StallMap() {
         <div className="legend">
           <span className="pill pill-available">Available (blue)</span>
           <span className="pill pill-held">Selected (green)</span>
+          <span className="pill pill-pending">Pending</span>
+          <span className="pill pill-approved">Approved</span>
           <span className="pill pill-processing">Processing</span>
           <span className="pill pill-booked">Reserved</span>
         </div>
@@ -417,38 +439,25 @@ export default function StallMap() {
       </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="map">
-        {/* Area labels */}
-        <text x={TOP.x + TOP.w / 2} y={TOP.y - 8} textAnchor="middle" className="area-title">
-          {LABELS.top}
-        </text>
-        <text x={LEFT.x + LEFT.w / 2} y={LEFT.y - 10} textAnchor="middle" className="area-title">
-          {LABELS.left}
-        </text>
-        <text x={RIGHT.x + RIGHT.w / 2} y={RIGHT.y - 10} textAnchor="middle" className="area-title">
-          {LABELS.right}
-        </text>
-        <text x={CX} y={CY} textAnchor="middle" className="area-title center-title">
-          {LABELS.center}
-        </text>
+        <text x={TOP.x + TOP.w / 2} y={TOP.y - 8} textAnchor="middle" className="area-title">TOP</text>
+        <text x={LEFT.x + LEFT.w / 2} y={LEFT.y - 10} textAnchor="middle" className="area-title">LEFT</text>
+        <text x={RIGHT.x + RIGHT.w / 2} y={RIGHT.y - 10} textAnchor="middle" className="area-title">RIGHT</text>
+        <text x={CX} y={CY} textAnchor="middle" className="area-title center-title">RING</text>
 
-        {/* Optional guide rings */}
         <circle cx={CX} cy={CY} r={OUTER_R_OUTER} className="guide" />
         <circle cx={CX} cy={CY} r={OUTER_R_INNER} className="guide" />
         <circle cx={CX} cy={CY} r={INNER_R_OUTER} className="guide" />
         <circle cx={CX} cy={CY} r={INNER_R_INNER} className="guide" />
 
-        {/* Stalls */}
         {stalls.map((st) => {
           const cls = `stall ${status[st.id]} ${st.size.toLowerCase()}`;
-          const label = `${st.id} • ${sizeLetter(st.size)}`;
+          const label = `${st.label} - ${sizeLetter(st.size)}`;
 
           if (st.shape === "rect") {
             return (
               <g key={st.id} onClick={() => handleStallClick(st.id)} className="stall-hit">
                 <rect x={st.x} y={st.y} width={st.width} height={st.height} className={cls} />
-                <text x={st.x + st.width / 2} y={st.y + st.height / 2} className="stall-label">
-                  {label}
-                </text>
+                <text x={st.x + st.width / 2} y={st.y + st.height / 2} className="stall-label">{label}</text>
               </g>
             );
           }
@@ -456,53 +465,40 @@ export default function StallMap() {
           const d = arcPath(st.cx, st.cy, st.rInner, st.rOuter, st.startDeg, st.endDeg);
           const mid = (st.startDeg + st.endDeg) / 2;
           const p = polar(st.cx, st.cy, (st.rInner + st.rOuter) / 2, mid);
-
           return (
             <g key={st.id} onClick={() => handleStallClick(st.id)} className="stall-hit">
               <path d={d} className={cls} />
-              <text x={p.x} y={p.y} className="stall-label">
-                {label}
-              </text>
+              <text x={p.x} y={p.y} className="stall-label">{label}</text>
             </g>
           );
         })}
       </svg>
 
       <div className="actions-bar">
-        <span className="note">
-          Note: <b>Maximum stall allocations are 3.</b>
-        </span>
+        <span className="note">Note: <b>Maximum stall allocations are 3.</b></span>
         <button className="continue-btn" onClick={onContinue} disabled={selectedIds.length === 0}>
           Continue ({selectedIds.length})
         </button>
       </div>
 
-      {/* Booking Summary */}
       {showSummary && selectedIds.length > 0 && (
         <div ref={summaryRef}>
           <BookingSummary
-            items={computeSummaryItems()}
+            items={summaryItems()}
             onEdit={() => setShowSummary(false)}
             onConfirm={handleConfirmBooking}
           />
         </div>
       )}
 
-      {/* Confirm modal */}
       {pendingId && (
         <div className="modal-backdrop">
           <div className="modal-card">
             <h4 className="text-m font-semibold">Confirm Selection</h4>
-            <p className="text-sm text-gray-600 mt-1">
-              Do you want to select <b>{pendingId}</b>?
-            </p>
+            <p className="text-sm text-gray-600 mt-1">Do you want to select <b>{pendingId}</b>?</p>
             <div className="modal-actions">
-              <button className="btn primary" onClick={confirmSelect}>
-                Confirm
-              </button>
-              <button className="btn ghost" onClick={cancelSelect}>
-                Cancel
-              </button>
+              <button className="btn primary" onClick={confirmSelect}>Confirm</button>
+              <button className="btn ghost" onClick={cancelSelect}>Cancel</button>
             </div>
           </div>
         </div>
@@ -510,3 +506,4 @@ export default function StallMap() {
     </div>
   );
 }
+
