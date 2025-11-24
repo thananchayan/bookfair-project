@@ -45,7 +45,7 @@ const ReservationManage: React.FC = () => {
     api
       .get("http://localhost:8087/api/bookfairs/getAll")
       .then((res) => setBookFairs(res.data?.data || []))
-      .catch((err) => setError(err?.response?.data?.message || "Failed to load book fairs"))
+      .catch((err) => setError(err?.response?.data?.message || "Failed to load bookfairs"))
       .finally(() => setLoading(false));
   };
 
@@ -160,8 +160,8 @@ const ReservationManage: React.FC = () => {
     <div className="p-8 bg-gray-50 min-h-screen space-y-6">
       <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold text-gray-900">Manage Book Fairs</h2>
-          <p className="text-sm text-gray-600">Create, update, and remove upcoming book fairs.</p>
+          <h2 className="text-3xl font-extrabold text-gray-900">Manage BookFairs</h2>
+          <p className="text-sm text-gray-600">Create, update, and remove upcoming bookfairs.</p>
         </div>
         <button
           className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
@@ -249,7 +249,7 @@ const ReservationManage: React.FC = () => {
                   {filtered.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-6 text-center text-gray-500 text-sm">
-                        No book fairs found.
+                        No bookfairs found.
                       </td>
                     </tr>
                   )}
