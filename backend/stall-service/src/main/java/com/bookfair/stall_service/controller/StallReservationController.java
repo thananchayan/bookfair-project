@@ -53,8 +53,8 @@ public class StallReservationController {
 
   @DeleteMapping("/{userId}")
   public ResponseEntity<ContentResponse<Void>> cancelReservation(@PathVariable Long userId,
-      @RequestParam Long hallStallId) {
-    return ResponseEntity.ok(reservationService.cancelReservation(hallStallId, userId));
+      @RequestParam Long stallAllocationId) {
+    return ResponseEntity.ok(reservationService.cancelReservation(stallAllocationId, userId));
   }
 
   @GetMapping("token/{token}")

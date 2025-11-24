@@ -1,5 +1,6 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAppSelector } from "../../../store/hooks";
 import { api } from "../../../lib/api";
 import "./BookingInterface.css";
@@ -350,9 +351,9 @@ export default function BookingInterface() {
       if (showSummary && selectedIds.length - 1 <= 0) setShowSummary(false);
       return;
     }
-    if (curr === "available") {
+    if (curr === "available" || curr === "pending") {
       if (selectedIds.length >= 3) {
-        alert("Maximum stall allocations are 3.");
+        toast.error("Maximum stall allocations are 3.");
         return;
       }
       setPendingId(id);
@@ -380,7 +381,7 @@ export default function BookingInterface() {
 
   const handleConfirmBooking = async () => {
     if (!userId) {
-      alert("Please login again to book stalls.");
+      toast.error("Please login again to book stalls.");
       return;
     }
     const selectedAllocations = selectedIds
@@ -392,7 +393,7 @@ export default function BookingInterface() {
         userId,
         stallAllocationId: selectedAllocations,
       });
-      alert("Reservation submitted!");
+      toast.success("Reservation submitted!");
       setShowSummary(false);
       setStatus((prev) => {
         const next = { ...prev };
@@ -400,7 +401,8 @@ export default function BookingInterface() {
         return next;
       });
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to reserve stalls");
+      const resMessage = err?.response?.data?.data || err?.response?.data?.message || err?.message;
+      toast.error(resMessage || "Failed to reserve stalls");
     }
   };
 

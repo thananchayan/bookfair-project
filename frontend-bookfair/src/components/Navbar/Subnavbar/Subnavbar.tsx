@@ -13,7 +13,7 @@ export default function AppSubNavbar() {
 
   const publisherLinks = [
     { to: "/publisher/dashboard", label: "Dashboard" },
-    { to: "/publisher/reserve-stall", label: "Reservations" },
+    // { to: "/publisher/reserve-stall", label: "Reservations" },
     { to: "/publisher/profile", label: "Profile" },
   ];
 
