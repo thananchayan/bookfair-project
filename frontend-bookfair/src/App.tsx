@@ -9,30 +9,50 @@ import PublisherDashboard from "./pages/publisher/PublisherDashboard";
 import PublisherLayout from "./layouts/PublisherLayout";
 import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
 import ProfileSettings from "./pages/publisher/Profile/Profile";
+import Dashboard from "./pages/admin/Dashboard";
+import AdminDashboard from "./pages/admin/Dashboard";
+import RecentReservations from "./pages/admin/RecentReservations";
+import AdminLayout from "./layouts/OrganizerLayout";
+import Reservations from "./pages/admin/Reservation-Manage";
+import CreateStalls from "./pages/admin/StallsManagement";
+import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
+import AdminStallManagement from "./pages/admin/StallsManagement";
+import UserManagement from "./pages/admin/UserManagement";
 
 function App() {
   return (
     <Routes>
-        <Route element={<SiteLayout />}>
+      <Route element={<SiteLayout />}>
         <Route index element={<WelcomePage />} />
         <Route path="stall-map" element={<StallMap />} />
 
-        {/* Publisher area */}
+
         <Route path="publisher" element={<PublisherLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-           <Route path="dashboard" element={<PublisherDashboard />} />
-           <Route path="reserve-stall" element={<ReserveStall />} />
-         <Route path="profile" element={<ProfileSettings />} />
-         
-         
-          {/* 
-          <Route path="reservations" element={<PublisherReservations />} />
-          
-          */}
-        </Route>
-      </Route>
+          <Route path="dashboard" element={<PublisherDashboard />} />
+          <Route path="reserve-stall" element={<ReserveStall />} />
+          <Route path="profile" element={<ProfileSettings />} />
 
-       <Route path="login" element={<LoginPage />} />
+
+
+        </Route>
+
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="reservations" element={<Reservations />} />
+          <Route path="recentreservations" element={<RecentReservations />} />
+          <Route path="createstalls" element={<AdminStallManagement />} />
+          <Route path="usermanagement" element={<UserManagement />} />
+
+
+
+        </Route>
+        <Route path="admin" element={<Dashboard />} />
+      </Route>
+      <Route path="loginadmin" element={<LoginPageAdmin />} />
+      <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />
 
 

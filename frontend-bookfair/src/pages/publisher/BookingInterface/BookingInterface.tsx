@@ -28,7 +28,6 @@ type ArcStall = {
 };
 type Stall = RectStall | ArcStall;
 
-/* =============== Geometry helpers =============== */
 const d2r = (deg: number) => (deg * Math.PI) / 180;
 const polar = (cx: number, cy: number, r: number, deg: number) => ({
   x: cx + r * Math.cos(d2r(deg)),
