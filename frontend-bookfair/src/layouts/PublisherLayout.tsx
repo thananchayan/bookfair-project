@@ -1,6 +1,6 @@
 
 import { Outlet } from "react-router-dom";
-import AppSubNavbar from "../components/Navbar/Subnavbar/Subnavbar"; // the subnav you built
+import AppSubNavbar from "../components/Navbar/Subnavbar/Subnavbar"; 
 
 export default function PublisherLayout() {
   return (

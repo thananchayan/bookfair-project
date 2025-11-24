@@ -9,14 +9,11 @@ import PublisherDashboard from "./pages/publisher/PublisherDashboard";
 import PublisherLayout from "./layouts/PublisherLayout";
 import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
 import ProfileSettings from "./pages/publisher/Profile/Profile";
-import OrganizerLayout from "./layouts/OrganizerLayout";
-import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
-import ReservationsPage from "./pages/publisher/Reservation/reservations";
 
 function App() {
   return (
     <Routes>
-      <Route element={<SiteLayout />}>
+        <Route element={<SiteLayout />}>
         <Route index element={<WelcomePage />} />
         <Route path="stall-map" element={<StallMap />} />
 
@@ -33,8 +30,30 @@ function App() {
           <Route path="reservations" element={<PublisherReservations />} />
           
           */}
+          <Route path="dashboard" element={<PublisherDashboard />} />
+          <Route path="reserve-stall" element={<ReserveStall />} />
+          <Route path="profile" element={<ProfileSettings />} />
+
+
+
         </Route>
+
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="reservations" element={<Reservations />} />
+          <Route path="recentreservations" element={<RecentReservations />} />
+          <Route path="createstalls" element={<AdminStallManagement />} />
+          <Route path="usermanagement" element={<UserManagement />} />
+
+
+
+        </Route>
+        <Route path="admin" element={<Dashboard />} />
       </Route>
+      <Route path="loginadmin" element={<LoginPageAdmin />} />
+      <Route path="login" element={<LoginPage />} />
 
       {/* Organizer admin area */}
       <Route path="organizer" element={<OrganizerLayout />}>
