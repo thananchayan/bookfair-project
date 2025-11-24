@@ -11,6 +11,7 @@ import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
 import ProfileSettings from "./pages/publisher/Profile/Profile";
 import OrganizerLayout from "./layouts/OrganizerLayout";
 import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
+import ReservationsPage from "./pages/publisher/Reservation/reservations";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
            <Route path="dashboard" element={<PublisherDashboard />} />
            <Route path="reserve-stall" element={<ReserveStall />} />
+           <Route path="reservations" element={< ReservationsPage/>} />
          <Route path="profile" element={<ProfileSettings />} />
          
          

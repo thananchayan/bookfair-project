@@ -10,6 +10,7 @@ import com.bookfair.stall_service.dto.response.QrReadResponse;
 import com.bookfair.stall_service.dto.response.QrReadResponse.StallInfo;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.dto.response.StallAllocationUserResponse;
 import com.bookfair.stall_service.dto.response.StallReservationResponse;
 import com.bookfair.stall_service.dto.response.UserServiceResponse;
 import com.bookfair.stall_service.entity.BookFairEntity;
@@ -207,6 +208,29 @@ public class StallReservationServiceImpl implements StallReservationService {
         "200",
         "Stalls fetched successfully",
         stalls
+    );
+  }
+
+  @Override
+  public ContentResponse<List<StallAllocationUserResponse>> getReservationsByUserId(Long userId) {
+    List<StallAllocationEntity> allocationEntities = stallAllocationRepository.findByBookingUserId(
+        userId);
+    List<StallAllocationUserResponse> responseList = allocationEntities.stream()
+        .map(entity -> StallAllocationUserResponse.builder()
+            .bookFairName(entity.getBookFair().getName())
+            .hallName(entity.getHallStall().getHallEntity().getHallName())
+            .stallName(entity.getStall().getStallName())
+            .stallSize(entity.getStall().getSize())
+            .price(entity.getStallPrice())
+            .stallAllocationStatus(entity.getStallAllocationStatus())
+            .build())
+        .toList();
+    return new ContentResponse<>(
+        "StallAllocations",
+        "SUCCESS",
+        "200",
+        "Stall allocations for user fetched successfully",
+        responseList
     );
   }
 

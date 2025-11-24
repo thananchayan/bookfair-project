@@ -5,6 +5,7 @@ import com.bookfair.stall_service.dto.request.CreateStallReservationRequest;
 import com.bookfair.stall_service.dto.response.QrReadResponse;
 import com.bookfair.stall_service.dto.response.ReservationResponse;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.dto.response.StallAllocationUserResponse;
 import com.bookfair.stall_service.service.StallReservationService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -43,12 +44,13 @@ public class StallReservationController {
     return ResponseEntity.ok(reservationService.getAllReservationsForBookFair(bookFairId));
   }
 
-  //
-//    @GetMapping("/user/{userId}")
-//    public ResponseEntity<ContentResponse<List<StallReservationResponse>>> getForUser(@PathVariable Long userId) {
-//        return ResponseEntity.ok(reservationService.getReservationsForUser(userId));
-//    }
-//
+
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<ContentResponse<List<StallAllocationUserResponse>>> getForUser(
+      @PathVariable Long userId) {
+    return ResponseEntity.ok(reservationService.getReservationsByUserId(userId));
+  }
+
   @DeleteMapping("/{userId}")
   public ResponseEntity<ContentResponse<Void>> cancelReservation(@PathVariable Long userId,
       @RequestParam Long hallStallId) {
