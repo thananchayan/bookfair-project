@@ -450,8 +450,9 @@ export default function BookingInterface() {
         <circle cx={CX} cy={CY} r={INNER_R_INNER} className="guide" />
 
         {stalls.map((st) => {
+          const price = st.price ?? PRICE_FALLBACK[st.size];
           const cls = `stall ${status[st.id]} ${st.size.toLowerCase()}`;
-          const label = `${st.label} - ${sizeLetter(st.size)}`;
+          const label = `${sizeLetter(st.size)} • ${price}`;
 
           if (st.shape === "rect") {
             return (
