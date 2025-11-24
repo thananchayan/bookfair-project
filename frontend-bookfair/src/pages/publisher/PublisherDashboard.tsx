@@ -61,13 +61,13 @@ const PublisherDashboard: React.FC = () => {
 
         <div className="space-y-6">
           <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-bold text-foreground">Reserve a Stall</h2>
+            <h2 className="text-2xl font-bold text-foreground">Reserve Stalls</h2>
             <p className="text-muted-foreground">
               Browse available stalls at the Colombo International Book Fair and
               make your reservation.
             </p>
-            <Link to="/publisher/reserve-stall">
-              <Button className="w-full">Browse Available Stalls</Button>
+            <Link to="/publisher/upcoming-book-fairs">
+              <Button className="w-full">Browse Upcoming Book fair</Button>
             </Link>
           </Card>
 

@@ -9,6 +9,17 @@ import PublisherDashboard from "./pages/publisher/PublisherDashboard";
 import PublisherLayout from "./layouts/PublisherLayout";
 import ReserveStall from "./pages/publisher/BookingInterface/BookingInterface";
 import ProfileSettings from "./pages/publisher/Profile/Profile";
+import ReservationsPage from "./pages/publisher/Reservation/reservations";
+import AdminLayout from "./layouts/OrganizerLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import Reservations from "./pages/admin/Reservation-Manage";
+import RecentReservations from "./pages/admin/RecentReservations";
+import AdminStallManagement from "./pages/admin/StallsManagement";
+import UserManagement from "./pages/admin/UserManagement";
+import { GrDashboard } from "react-icons/gr";
+import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
+import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
+import UpcomingBookFairsPage from "./pages/publisher/Reservation/UpcomingBookFairsPage";
 
 function App() {
   return (
@@ -23,6 +34,7 @@ function App() {
            <Route path="dashboard" element={<PublisherDashboard />} />
            <Route path="reserve-stall" element={<ReserveStall />} />
            <Route path="reservations" element={< ReservationsPage/>} />
+           <Route path="/publisher/upcoming-book-fairs" element={<UpcomingBookFairsPage />} />
          <Route path="profile" element={<ProfileSettings />} />
          
          
@@ -50,16 +62,16 @@ function App() {
 
 
         </Route>
-        <Route path="admin" element={<Dashboard />} />
+        <Route path="admin" element={<GrDashboard />} />
       </Route>
       <Route path="loginadmin" element={<LoginPageAdmin />} />
       <Route path="login" element={<LoginPage />} />
 
       {/* Organizer admin area */}
-      <Route path="organizer" element={<OrganizerLayout />}>
+      {/* <Route path="organizer" element={<OrganizerLayout />}>
         <Route index element={<Navigate to="stalls" replace />} />
         <Route path="stalls" element={<OrganizerStallAllocationPage />} />
-      </Route>
+      </Route> */}
 
       <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />

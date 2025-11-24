@@ -1,5 +1,6 @@
 package com.bookfair.stall_service.dto.response;
 
+import com.bookfair.stall_service.enums.Hall;
 import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import java.util.List;
@@ -25,7 +26,7 @@ public class QrReadResponse {
   @AllArgsConstructor
   public static class StallInfo {
 
-    private String hallName;
+    private Hall hallName;
     private String stallName;
     private Size stallSize;
   }

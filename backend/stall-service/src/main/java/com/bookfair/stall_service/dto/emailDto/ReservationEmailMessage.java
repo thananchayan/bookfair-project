@@ -1,5 +1,6 @@
 package com.bookfair.stall_service.dto.emailDto;
 
+import com.bookfair.stall_service.enums.Hall;
 import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.UserProfession;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ReservationEmailMessage {
   @AllArgsConstructor
   public static class StallInfo {
 
-    private String hallName;
+    private Hall hallName;
     private String stallName;
     private Size stallSize;
   }

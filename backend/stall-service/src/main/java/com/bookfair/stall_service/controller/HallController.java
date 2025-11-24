@@ -3,6 +3,7 @@ package com.bookfair.stall_service.controller;
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateHallRequest;
 import com.bookfair.stall_service.dto.response.HallResponse;
+import com.bookfair.stall_service.dto.response.HallSizeResponse;
 import com.bookfair.stall_service.service.HallService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,4 +58,9 @@ public class HallController {
     return ResponseEntity.ok(response);
   }
 
+  @GetMapping("/hallSize/{bookFairId}")
+  public ResponseEntity<HallSizeResponse> getHallsize(@PathVariable Long bookFairId) {
+    HallSizeResponse response = hallService.getHallsize(bookFairId);
+    return ResponseEntity.ok(response);
+  }
 }

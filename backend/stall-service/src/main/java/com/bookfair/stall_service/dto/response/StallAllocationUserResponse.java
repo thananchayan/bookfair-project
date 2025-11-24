@@ -1,5 +1,6 @@
 package com.bookfair.stall_service.dto.response;
 
+import com.bookfair.stall_service.enums.Hall;
 import com.bookfair.stall_service.enums.Size;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import lombok.AllArgsConstructor;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class StallAllocationUserResponse {
   private String bookFairName;
-  private String hallName;
+  private Hall hallName;
   private String stallName;
   private Size stallSize;
   private Long price;

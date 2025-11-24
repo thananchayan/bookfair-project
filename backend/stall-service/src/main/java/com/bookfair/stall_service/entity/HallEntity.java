@@ -1,8 +1,11 @@
 package com.bookfair.stall_service.entity;
 
+import com.bookfair.stall_service.enums.Hall;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,8 +35,9 @@ public class HallEntity {
   @JoinColumn(name = "book_fairs_id", nullable = false)
   private BookFairEntity bookFair;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private String hallName;
+  private Hall hallName;
 
   @Column
   private int rows;

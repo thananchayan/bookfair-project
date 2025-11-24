@@ -3,10 +3,12 @@ package com.bookfair.stall_service.service;
 import com.bookfair.stall_service.dto.ContentResponse;
 import com.bookfair.stall_service.dto.request.CreateHallRequest;
 import com.bookfair.stall_service.dto.response.HallResponse;
+import com.bookfair.stall_service.dto.response.HallSizeResponse;
 import com.bookfair.stall_service.entity.BookFairEntity;
 import com.bookfair.stall_service.entity.HallEntity;
 import com.bookfair.stall_service.entity.HallStallEntity;
 import com.bookfair.stall_service.enums.BookFairStatus;
+import com.bookfair.stall_service.enums.Hall;
 import com.bookfair.stall_service.repository.BookFairRepository;
 import com.bookfair.stall_service.repository.HallRepository;
 import com.bookfair.stall_service.repository.HallStallRepository;
@@ -159,6 +161,48 @@ public class HallServiceImpl implements HallService {
     );
   }
 
+  @Override
+  public HallSizeResponse getHallsize(Long bookFairId) {
+    List<HallEntity> hallEntities = hallRepository.findByBookFairId(bookFairId);
+
+    int topRows = 0;
+    int topCols = 0;
+    int leftRows = 0;
+    int leftCols = 0;
+    int rightRows = 0;
+    int rightCols = 0;
+    int innerRing = 0;
+    int outerRing = 0;
+
+    for (HallEntity h : hallEntities) {
+      // grid-style hall (rows x columns)
+      if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName()==Hall.TOP) {
+        topRows += h.getRows();
+        topCols += h.getColumns();
+      } else if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName() == Hall.LEFT) {
+        leftRows += h.getRows();
+        leftCols += h.getColumns();
+      } else if (h.getRows() > 0 && h.getColumns() > 0 && h.getHallName() == Hall.RIGHT) {
+        rightRows += h.getRows();
+        rightCols += h.getColumns();
+      }else {
+        innerRing += h.getInnerRing();
+        outerRing += h.getOuterRing();
+      }
+    }
+
+    return HallSizeResponse.builder()
+        .topRows(topRows)
+        .topCols(topCols)
+        .leftRows(leftRows)
+        .leftCols(leftCols)
+        .rightRows(rightRows)
+        .rightCols(rightCols)
+        .innerRing(innerRing)
+        .outerRing(outerRing)
+        .build();
+  }
+
   //mapToResponse implementation
   private HallResponse mapToResponse(HallEntity hallEntity) {
     return HallResponse.builder()
@@ -176,7 +220,7 @@ public class HallServiceImpl implements HallService {
   private List<HallStallEntity> generateHallStalls(HallEntity hallEntity,
       CreateHallRequest request) {
     List<HallStallEntity> hallStalls = new ArrayList<>();
-    String hallName = hallEntity.getHallName();
+    Hall hallName = hallEntity.getHallName();
 
     if (request.getRow() > 0 && request.getColumn() > 0) {
       for (int r = 1; r <= request.getRow(); r++) {
