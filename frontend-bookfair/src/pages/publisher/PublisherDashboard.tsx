@@ -1,26 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/common/Button";
 import { Card } from "../../components/Card";
 import LiteraryGenresCard from "../../components/LiteraryGenresCard/LiteraryGenresCard";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { fetchProfile } from "../../features/auth/authSlice";
+
+
 
 const PublisherDashboard: React.FC = () => {
-  const dummyUser = {
-    name: "Silva",
-    email: "silva@example.com",
-    companyName: "Sunrise Publications",
-    role: "publisher",
-    memberSince: "January 2025",
-  };
+  const dispatch = useAppDispatch();
+  const { username, role, profile } = useAppSelector((s) => s.auth);
+
+  useEffect(() => {
+    if (!profile) dispatch(fetchProfile());
+  }, [dispatch, profile]);
+
+  const displayUsername = username || "Publisher";
 
   return (
     <div className="space-y-8 font-[Calibri] px-6 md:px-12">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">
-          Welcome, {dummyUser.name}
-        </h1>
-        <p className="text-lg text-muted-foreground">{dummyUser.companyName}</p>
+        <h1>Welcome, {displayUsername}</h1>
       </div>
 
       {/* KPI Cards (min column width 300px) */}
@@ -54,7 +56,7 @@ const PublisherDashboard: React.FC = () => {
         </Card>
       </div>
 
-    
+
       <div className="grid gap-8 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
 
         <div className="space-y-6">
@@ -88,18 +90,18 @@ const PublisherDashboard: React.FC = () => {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="text-muted-foreground">Email</p>
-                <p className="font-medium text-foreground">{dummyUser.email}</p>
+                <p className="font-medium text-foreground">{displayUsername}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Account Type</p>
+                <p className="text-muted-foreground">Role: </p>
                 <p className="font-medium text-foreground capitalize">
-                  {dummyUser.role}
+                  {role || profile?.profession}
                 </p>
               </div>
               <div>
-                <p className="text-muted-foreground">Member Since</p>
+                <p className="text-muted-foreground">Contact No</p>
                 <p className="font-medium text-foreground">
-                  {dummyUser.memberSince}
+                  {profile?.phonenumber}
                 </p>
               </div>
             </div>
