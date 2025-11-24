@@ -30,9 +30,6 @@ public class CreateBookFairRequest {
   @NotBlank(message = "Location is required")
   private String location;
 
-  @PositiveOrZero(message = "Duration must be zero or positive")
-  private Integer durationDays;
-
   private String description;
 
 }

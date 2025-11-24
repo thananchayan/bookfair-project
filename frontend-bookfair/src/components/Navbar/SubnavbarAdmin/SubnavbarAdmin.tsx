@@ -14,7 +14,7 @@ export default function AdminSubNavbar() {
 
   const adminLinks = [
     { to: "/admin/dashboard", label: "Dashboard" },
-    { to: "/admin/reservations", label: "Manage Stalls" },
+    { to: "/admin/reservations", label: "Manage Bookfair" },
     { to: "/admin/recentreservations", label: "Reservations" },
     { to: "/admin/createstalls", label: "Stall management" },
     { to: "/admin/usermanagement", label: "User Management" },

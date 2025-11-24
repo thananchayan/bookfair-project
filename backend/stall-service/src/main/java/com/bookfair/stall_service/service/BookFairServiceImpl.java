@@ -75,11 +75,23 @@ public class BookFairServiceImpl implements BookFairService {
     if (bookFairRepository.existsByName(updateBookFairRequest.getName())) {
       throw new IllegalArgumentException("Book fair with this name already exists");
     }
+    java.time.LocalDate start = updateBookFairRequest.getStartDate();
+    java.time.LocalDate end = updateBookFairRequest.getEndDate();
+
+    if (start == null || end == null) {
+      throw new IllegalArgumentException("Start date and end date are required");
+    }
+    if (end.isBefore(start)) {
+      throw new IllegalArgumentException("End date cannot be before start date");
+    }
+
+    int durationDays = (int) java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
+
     existingEntity.setName(updateBookFairRequest.getName());
     existingEntity.setStartDate(updateBookFairRequest.getStartDate());
     existingEntity.setEndDate(updateBookFairRequest.getEndDate());
     existingEntity.setOrganizer(updateBookFairRequest.getOrganizer());
-    existingEntity.setDurationDays(updateBookFairRequest.getDurationDays());
+    existingEntity.setDurationDays(durationDays);
     existingEntity.setDescription(updateBookFairRequest.getDescription());
     existingEntity.setLocation(updateBookFairRequest.getLocation());
 
@@ -160,17 +172,27 @@ public class BookFairServiceImpl implements BookFairService {
   }
 
   private BookFairEntity mapToEntity(CreateBookFairRequest createBookFairRequest) {
+    java.time.LocalDate start = createBookFairRequest.getStartDate();
+    java.time.LocalDate end = createBookFairRequest.getEndDate();
+    if (start == null || end == null) {
+      throw new IllegalArgumentException("Start date and end date are required");
+    }
+    if (end.isBefore(start)) {
+      throw new IllegalArgumentException("End date cannot be before start date");
+    }
+
+    int durationDays = (int) java.time.temporal.ChronoUnit.DAYS.between(start, end) + 1;
+
     return BookFairEntity.builder()
         .name(createBookFairRequest.getName())
         .startDate(createBookFairRequest.getStartDate())
         .endDate(createBookFairRequest.getEndDate())
         .organizer(createBookFairRequest.getOrganizer())
-        .durationDays(createBookFairRequest.getDurationDays())
+        .durationDays(durationDays)
         .description(createBookFairRequest.getDescription())
         .status(BookFairStatus.UPCOMING)
         .location(createBookFairRequest.getLocation())
         .build();
-
   }
 
   private BookFairResponse mapToRespnse(BookFairEntity bookFairEntity) {
