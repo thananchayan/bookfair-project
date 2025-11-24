@@ -281,7 +281,12 @@ export default function BookingInterface() {
         setApprovedAllocations(approvedRes.data?.data || []);
       })
       .catch((err) => {
-        setError(err?.response?.data?.message || "Failed to load stall data");
+        setError(
+          err?.response?.data?.data ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to load stall data"
+        );
       })
       .finally(() => setLoading(false));
   }, [bookFairId]);
