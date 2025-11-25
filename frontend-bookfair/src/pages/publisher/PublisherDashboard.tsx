@@ -78,7 +78,6 @@ const PublisherDashboard: React.FC = () => {
           <h3 className="text-sm font-semibold text-muted-foreground uppercase">
             Literary genres
           </h3>
-
           <LiteraryGenresCard />
         </Card>
       </div>

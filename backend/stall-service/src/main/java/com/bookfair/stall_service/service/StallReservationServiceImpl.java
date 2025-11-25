@@ -268,14 +268,14 @@ public class StallReservationServiceImpl implements StallReservationService {
       throw new IllegalArgumentException("Reservation not found");
     }
     // update entity status to USED
-    for (StallAllocationEntity allocation : entity) {
-      if (allocation.getStallAllocationStatus() != StallAllocationStatus.APPROVED) {
-        throw new IllegalArgumentException("Reservation already used or cancelled");
-      } else {
-        allocation.setStallAllocationStatus(StallAllocationStatus.COMPLETED);
-        stallAllocationRepository.save(allocation);
-      }
-    }
+//    for (StallAllocationEntity allocation : entity) {
+//      if (allocation.getStallAllocationStatus() != StallAllocationStatus.APPROVED) {
+//        throw new IllegalArgumentException("Reservation already used or cancelled");
+//      } else {
+//        allocation.setStallAllocationStatus(StallAllocationStatus.COMPLETED);
+//        stallAllocationRepository.save(allocation);
+//      }
+//    }
     List<StallInfo> stalls = entity.stream()
         .map(allocation -> StallInfo.builder()
             .hallName(allocation.getHallStall().getHallEntity().getHallName())

@@ -21,6 +21,7 @@ import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
 import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
 import UpcomingBookFairsPage from "./pages/publisher/Reservation/UpcomingBookFairsPage";
 import AllocationMapAdmin from "./pages/admin/AllocationMapAdmin";
+import QRRead from "./pages/admin/QRRead";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
           <Route path="createstalls" element={<AdminStallManagement />} />
           <Route path="usermanagement" element={<UserManagement />} />
           <Route path="allocation" element={<AllocationMapAdmin />} />
+          <Route path="qr-read" element={<QRRead />} />
 
 
 

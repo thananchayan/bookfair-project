@@ -62,13 +62,13 @@ const ReservationsPage: React.FC = () => {
         </Button>
       </div>
 
-      <Card className="overflow-hidden shadow-md">
+      <Card className="overflow-hidden shadow-lg border border-gray-100">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-indigo-900 text-white">
               <tr>
                 {["Book Fair", "Hall", "Stall Name", "Size", "Price", "Status"].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide">
                     {h}
                   </th>
                 ))}

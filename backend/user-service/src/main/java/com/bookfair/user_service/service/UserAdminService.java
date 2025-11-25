@@ -4,6 +4,8 @@ package com.bookfair.user_service.service;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.user_service.dto.response.StallUserResponse;
+import com.bookfair.user_service.enums.BookGenres;
+import java.util.List;
 import org.springframework.data.domain.Page;
 
 public interface UserAdminService {
@@ -23,4 +25,10 @@ public interface UserAdminService {
   void setEnabled(Long id, boolean enabled);
 
   void delete(Long id);
+
+  StallUserResponse addBookGenresToUser(Long userId, BookGenres bookGenres);
+
+  StallUserResponse getBookGenre(Long userId);
+
+  StallUserResponse updateBookGenresToUser(Long userId, BookGenres bookGenres);
 }

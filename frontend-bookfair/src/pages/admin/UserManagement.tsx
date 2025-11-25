@@ -9,6 +9,7 @@ interface UserRow {
   address: string | null;
   profession: string | null;
   date: string | null;
+  bookGenres: string | null;
 }
 
 interface PagedUsers {
@@ -81,7 +82,7 @@ const UserManagement: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-indigo-900 text-white">
               <tr>
-                {["ID", "Username", "Phone", "Address", "Profession", "Date", "Actions"].map((h) => (
+                {["Username", "Phone", "Address", "Profession", "Date","Genre", "Actions"].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide">
                     {h}
                   </th>
@@ -114,7 +115,6 @@ const UserManagement: React.FC = () => {
                 !error &&
                 rows.map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">{u.id}</td>
                     <td className="px-4 py-3 text-sm text-gray-800">{u.username}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{u.phonenumber || "-"}</td>
                     <td className="px-4 py-3 text-sm text-gray-700 truncate max-w-xs">{u.address || "-"}</td>
@@ -124,6 +124,7 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">{u.date || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">{u.bookGenres || "-"}</td>
                     <td className="px-4 py-3 text-sm text-right space-x-2">
                       <button
                         className="px-3 py-1 text-xs rounded-md border border-red-300 text-red-700 hover:bg-red-50"

@@ -1,10 +1,11 @@
 package com.bookfair.user_service.controller;
 
-import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
+import com.bookfair.user_service.dto.response.ContentResponse;
 import com.bookfair.user_service.dto.response.PageResponse;
 import com.bookfair.user_service.dto.response.StallUserResponse;
+import com.bookfair.user_service.enums.BookGenres;
 import com.bookfair.user_service.service.UserAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -120,5 +121,35 @@ public class UserAdminController {
     StallUserResponse response = service.getById(id);
     return ResponseEntity.ok(
         new ContentResponse<>("user-get", "SUCCESS", "200", "User fetched", response));
+  }
+
+  @PostMapping("/bookGenres/{userId}")
+  public ResponseEntity<ContentResponse<StallUserResponse>> addBookGenresToUser(
+      @PathVariable Long userId,
+      @RequestParam BookGenres bookGenres) {
+    StallUserResponse response = service.addBookGenresToUser(userId, bookGenres);
+    return ResponseEntity.ok(
+        new ContentResponse<>("add-book-genres", "SUCCESS", "200", "Book genres added to user",
+            response));
+  }
+
+  @GetMapping("/bookGenres/{userId}")
+  public ResponseEntity<ContentResponse<StallUserResponse>> getBookGenre(
+      @PathVariable Long userId) {
+    StallUserResponse response = service.getBookGenre(userId);
+    return ResponseEntity.ok(
+        new ContentResponse<>("get-book-genres", "SUCCESS", "200", "Book genres added to user",
+            response));
+  }
+
+  @PutMapping("/bookGenres/update/{userId}")
+  public ResponseEntity<ContentResponse<StallUserResponse>> updateBookGenresToUser(
+      @PathVariable Long userId,
+      @RequestParam BookGenres bookGenres
+  ) {
+    StallUserResponse response = service.updateBookGenresToUser(userId,bookGenres);
+    return ResponseEntity.ok(
+        new ContentResponse<>("update-book-genres", "SUCCESS", "200", "Book genres updated to user",
+            response));
   }
 }

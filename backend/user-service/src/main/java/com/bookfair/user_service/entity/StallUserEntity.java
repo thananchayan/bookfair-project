@@ -1,5 +1,6 @@
 package com.bookfair.user_service.entity;
 
+import com.bookfair.user_service.enums.BookGenres;
 import com.bookfair.user_service.enums.UserProfession;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,5 +47,7 @@ public class StallUserEntity {
   @Column(nullable = false)
   private Boolean enabled = true;
 
-
+  @Column
+  @Enumerated(EnumType.STRING)
+  private BookGenres bookGenre;
 }

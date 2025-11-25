@@ -4,9 +4,11 @@ import com.bookfair.user_service.dto.request.CreateStallUserRequest;
 import com.bookfair.user_service.dto.request.UpdateStallUserRequest;
 import com.bookfair.user_service.dto.response.StallUserResponse;
 import com.bookfair.user_service.entity.StallUserEntity;
+import com.bookfair.user_service.enums.BookGenres;
 import com.bookfair.user_service.repository.StallUserRepository;
 import com.bookfair.user_service.service.UserAdminService;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -139,6 +141,40 @@ public class UserAdminServiceImpl implements UserAdminService {
     repo.delete(u);
   }
 
+  @Override
+  public StallUserResponse addBookGenresToUser(Long userId,BookGenres bookGenres) {
+    StallUserEntity user = findOr404(userId);
+
+    if (bookGenres == null) {
+      throw new IllegalArgumentException("Book genres list cannot be empty");
+    }
+
+    user.setBookGenre(bookGenres);
+    repo.save(user);
+
+    return toResponse(user);
+  }
+
+  @Override
+  public StallUserResponse getBookGenre(Long userId) {
+    StallUserEntity user = findOr404(userId);
+    return toResponse(user);
+  }
+
+  @Override
+  public StallUserResponse updateBookGenresToUser(Long userId, BookGenres bookGenres) {
+    StallUserEntity user = findOr404(userId);
+
+    if (bookGenres == null) {
+      throw new IllegalArgumentException("Book genres list cannot be empty");
+    }
+
+    user.setBookGenre(bookGenres);
+    repo.save(user);
+
+    return toResponse(user);
+  }
+
   // ---------- HELPERS ----------
   private StallUserEntity findOr404(Long id) {
     return repo.findById(id)
@@ -153,6 +189,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         .address(u.getAddress())
         .profession(u.getProfession())
         .date(u.getDate())
+        .bookGenres(u.getBookGenre())
         .build();
   }
 }
