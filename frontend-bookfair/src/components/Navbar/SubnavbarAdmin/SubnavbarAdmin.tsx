@@ -16,9 +16,9 @@ export default function AdminSubNavbar() {
     { to: "/admin/dashboard", label: "Dashboard" },
     { to: "/admin/reservations", label: "Manage Bookfair" },
     { to: "/admin/createstalls", label: "Stall management" },
-    { to: "/admin/recentreservations", label: "Reservations" },
+    // { to: "/admin/recentreservations", label: "Reservations" },
     { to: "/admin/usermanagement", label: "User Management" },
-    { to: "/admin/settings", label: "Settings" },
+    // { to: "/admin/settings", label: "Settings" },
   ];
 
   if (!user) return null;
