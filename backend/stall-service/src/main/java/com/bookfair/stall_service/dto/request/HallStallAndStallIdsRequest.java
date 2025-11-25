@@ -16,5 +16,7 @@ public class HallStallAndStallIdsRequest {
   private Long hallStallId;
   @NotNull(message = "Stall ID is required")
   private Long stallId;
+  @NotNull(message = "Price is required")
+  private Long price;
 
 }

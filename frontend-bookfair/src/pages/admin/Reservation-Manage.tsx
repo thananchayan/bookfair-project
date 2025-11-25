@@ -298,9 +298,9 @@ const ReservationManage: React.FC = () => {
                 <thead className="bg-indigo-900 text-white">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Dates</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Organizer</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Location</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Duration(Days)</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Hall</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Allocation</th>
@@ -312,11 +312,9 @@ const ReservationManage: React.FC = () => {
                     return (
                       <tr key={bf.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 text-sm font-semibold text-gray-900">{bf.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700">
-                          {bf.startDate} - {bf.endDate}
-                        </td>
                         <td className="px-4 py-3 text-sm text-gray-700">{bf.organizer}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{bf.location}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{bf.durationDays}</td>
                         <td className="px-4 py-3 text-sm">
                           <span className="inline-flex items-center rounded-full bg-indigo-100 text-indigo-800 px-3 py-1 text-xs font-semibold">
                             {bf.status || "UPCOMING"}
@@ -438,30 +436,7 @@ const ReservationManage: React.FC = () => {
                   className="mt-1 w-full border rounded-lg px-3 py-2 focus:border-indigo-500 focus:outline-none"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Duration (days)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={form.durationDays}
-                    onChange={(e) => setForm({ ...form, durationDays: Number(e.target.value) })}
-                    className="mt-1 w-full border rounded-lg px-3 py-2 focus:border-indigo-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="mt-1 w-full border rounded-lg px-3 py-2 focus:border-indigo-500 focus:outline-none"
-                  >
-                    <option value="UPCOMING">UPCOMING</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                    <option value="CANCELLED">CANCELLED</option>
-                  </select>
-                </div>
-              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description</label>
                 <textarea

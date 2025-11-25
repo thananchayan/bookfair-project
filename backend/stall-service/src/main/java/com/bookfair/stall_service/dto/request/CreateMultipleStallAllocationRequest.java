@@ -19,5 +19,4 @@ public class CreateMultipleStallAllocationRequest {
   @NotNull(message = "Hall IDs and Stall IDs are required")
   private List<HallStallAndStallIdsRequest> hallStallAndStallIds;
 
-  private Long price;
 }

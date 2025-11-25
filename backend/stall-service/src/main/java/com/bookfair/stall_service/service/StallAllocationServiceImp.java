@@ -98,7 +98,7 @@ public class StallAllocationServiceImp implements StallAllocationService {
           "Cannot allocate stall to a completed or cancelled Book Fair");
     }
 
-    // Validate all hall stall IDs exist
+    // Validate all hall stall IDs exist and belong to book fair, and that prices are provided
     for (var hallStallAndStallIds : request.getHallStallAndStallIds()) {
       if (!hallStallRepository.existsById(hallStallAndStallIds.getHallStallId())) {
         throw new IllegalArgumentException(
@@ -109,7 +109,7 @@ public class StallAllocationServiceImp implements StallAllocationService {
         throw new IllegalArgumentException(
             "Hall stall " + hallStallAndStallIds.getHallStallId() + " is already allocated");
       }
-      //check if hall stall belongs to the book fair
+
       var hallStall = hallStallRepository.findById(hallStallAndStallIds.getHallStallId())
           .orElseThrow(() -> new IllegalArgumentException(
               "Hall Stall not found: " + hallStallAndStallIds.getHallStallId()));
@@ -118,6 +118,17 @@ public class StallAllocationServiceImp implements StallAllocationService {
       if (!bookFairEntity.getId().equals(hallEntity.getBookFair().getId())) {
         throw new IllegalArgumentException("Hall Stall " + hallStallAndStallIds.getHallStallId()
             + " does not belong to the Book Fair");
+      }
+
+      // Validate price provided for each hall-stall
+      var price = hallStallAndStallIds.getPrice();
+      if (price == null) {
+        throw new IllegalArgumentException(
+            "Price is required for Hall Stall: " + hallStallAndStallIds.getHallStallId());
+      }
+      if (price instanceof Number && ((Number) price).doubleValue() < 0) {
+        throw new IllegalArgumentException(
+            "Price must be non-negative for Hall Stall: " + hallStallAndStallIds.getHallStallId());
       }
     }
 
@@ -143,7 +154,7 @@ public class StallAllocationServiceImp implements StallAllocationService {
               .bookFair(bookFairEntity)
               .hallStall(hallStallRepository.findById(hallStallAndStallIds.getHallStallId()).get())
               .stall(stallEntity)
-              .stallPrice(request.getPrice())
+              .stallPrice(hallStallAndStallIds.getPrice())
               .stallAllocationStatus(StallAllocationStatus.PENDING)
               .build();
         })
@@ -163,7 +174,6 @@ public class StallAllocationServiceImp implements StallAllocationService {
         responses
     );
   }
-
 
   @Override
   public ContentResponse<StallAllocationResponse> getStallAllocationById(Long id) {
