@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
 
 interface BookFair {
@@ -57,6 +58,7 @@ const emptyHall: HallForm = {
 };
 
 const ReservationManage: React.FC = () => {
+  const navigate = useNavigate();
   const [bookFairs, setBookFairs] = useState<BookFair[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -301,6 +303,7 @@ const ReservationManage: React.FC = () => {
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Location</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Hall</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Allocation</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -333,6 +336,14 @@ const ReservationManage: React.FC = () => {
                             View Hall
                           </button>
                         </td>
+                        <td className="px-4 py-3 text-sm">
+                          <button
+                            className="px-3 py-1 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50"
+                            // onClick={() => navigate("/publisher/reserve-stall", { state: { bookFairId: bf.id } })}
+                          >
+                            Allocation
+                          </button>
+                        </td>
                         <td className="px-4 py-3 text-right text-sm space-x-2">
                           <button
                             className="px-3 py-1 text-xs rounded-md border border-gray-300 hover:bg-gray-100"
@@ -352,7 +363,7 @@ const ReservationManage: React.FC = () => {
                   })}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-4 py-6 text-center text-gray-500 text-sm">
+                      <td colSpan={8} className="px-4 py-6 text-center text-gray-500 text-sm">
                         No book fairs found.
                       </td>
                     </tr>
