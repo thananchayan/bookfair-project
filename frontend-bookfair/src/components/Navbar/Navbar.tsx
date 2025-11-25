@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [elevated, setElevated] = useState(false);
 
   const loggedIn = Boolean(token);
-  const displayName = profile?.username || username || "";
+  const displayName =  username || "";
 
   useEffect(() => {
     const onScroll = () => setElevated(window.scrollY > 8);

@@ -125,7 +125,7 @@ export default function LoginPageAdmin() {
 
     try {
       await login(email, password, role)
-      navigate(role === "publisher" ? "/publisher/dashboard" : "/organizer/dashboard")
+      navigate("/admin")
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown login error occurred.")
     }

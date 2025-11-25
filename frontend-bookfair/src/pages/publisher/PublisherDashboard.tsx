@@ -43,8 +43,13 @@ const PublisherDashboard: React.FC = () => {
   return (
     <div className="space-y-8 font-[Calibri] px-6 md:px-12">
       {/* Header */}
-      <div className="space-y-2">
-        <h1>Welcome, {displayUsername}</h1>
+      <div className="space-y-2 py-6">
+        <h1 className="text-4xl font-bold text-gray-900">
+          Welcome, <span className="text-primary">{displayUsername}</span>
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          Manage your stall reservations and bookings
+        </p>
       </div>
 
       {/* KPI Cards (min column width 300px) */}
@@ -120,12 +125,7 @@ const PublisherDashboard: React.FC = () => {
                   {displayRole}
                 </p>
               </div>
-              <div>
-                <p className="text-muted-foreground">Contact No</p>
-                <p className="font-medium text-foreground">
-                  {profile?.phonenumber}
-                </p>
-              </div>
+              
             </div>
           </Card>
 
