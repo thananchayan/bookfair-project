@@ -166,7 +166,7 @@ public class BookFairServiceImpl implements BookFairService {
         "BookFair",
         "SUCCESS",
         "200",
-        "Upcoming book fairs retrieved successfully",
+        "Ongoing book fairs retrieved successfully",
         bookFairResponses
     );
   }

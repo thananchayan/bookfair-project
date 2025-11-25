@@ -1,34 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { api } from "../../lib/api";
 
-interface DashboardData {
-  totalRevenue: number;
-  stallsBooked: number;
-  totalStalls: number;
-  activeVendors: number;
-  newVendorsThisWeek: number;
-  upcomingFairs: number;
-  nextFairName: string;
+interface BookFairResponse {
+  data?: any[];
 }
 
 const AdminDashboard: React.FC = () => {
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [upcomingCount, setUpcomingCount] = useState<number | null>(null);
+  const [ongoingCount, setOngoingCount] = useState<number | null>(null);
+  const [totalCount, setTotalCount] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const dummy: DashboardData = {
-      totalRevenue: 45231.89,
-      stallsBooked: 345,
-      totalStalls: 500,
-      activeVendors: 128,
-      newVendorsThisWeek: 12,
-      upcomingFairs: 3,
-      nextFairName: "Summer Book Fest",
-    };
-
-    setData(dummy);
+    setError(null);
+    Promise.all([
+      api.get<BookFairResponse>("http://localhost:8087/api/bookfairs/getUpcoming"),
+      api.get<BookFairResponse>("http://localhost:8087/api/bookfairs/getOngoing"),
+      api.get<BookFairResponse>("http://localhost:8087/api/bookfairs/getAll"),
+    ])
+      .then(([upcomingRes, ongoingRes, totalRes]) => {
+        setUpcomingCount(upcomingRes.data?.data?.length ?? 0);
+        setOngoingCount(ongoingRes.data?.data?.length ?? 0);
+        setTotalCount(totalRes.data?.data?.length ?? 0);
+      })
+      .catch((err) => {
+        const msg = err?.response?.data?.data || err?.response?.data?.message || err?.message || "Failed to load dashboard";
+        setError(msg);
+      });
   }, []);
 
-  if (!data) {
+  if (error) {
+    return <div className="p-6 text-rose-600">{error}</div>;
+  }
+
+  if (upcomingCount === null || ongoingCount === null || totalCount === null) {
     return <div className="p-6 text-gray-500">Loading Dashboard...</div>;
   }
 
@@ -39,46 +44,42 @@ const AdminDashboard: React.FC = () => {
         Real-time insights and performance metrics for the BookFair Reservation System.
       </p>
 
-       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
 
         <div className="bg-white border border-gray-300 rounded-xl p-5 shadow">
-          <p className="text-gray-500 text-sm">Stalls Booked</p>
+          <p className="text-gray-500 text-sm">Upcoming Bookfairs</p>
           <h3 className="text-2xl font-bold mt-2 text-gray-900">
-            {data.stallsBooked}/{data.totalStalls}
+            {upcomingCount}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
-            {Math.round((data.stallsBooked / data.totalStalls) * 100)}% total occupancy
-          </p>
+
         </div>
 
-       
         <div className="bg-white border border-gray-300 rounded-xl p-5 shadow">
-          <p className="text-gray-500 text-sm">Active Vendors</p>
+          <p className="text-gray-500 text-sm">Ongoing Bookfairs</p>
           <h3 className="text-2xl font-bold mt-2 text-gray-900">
-            +{data.activeVendors}
+            {ongoingCount}
           </h3>
-          <p className="text-green-600 text-xs mt-1">
-            +{data.newVendorsThisWeek} new this week
-          </p>
+
         </div>
 
- 
+
         <div className="bg-white border border-gray-300 rounded-xl p-5 shadow">
-          <p className="text-gray-500 text-sm">Upcoming Fairs</p>
+          <p className="text-gray-500 text-sm">Total Bookfairs</p>
           <h3 className="text-2xl font-bold mt-2 text-gray-900">
-            {data.upcomingFairs}
+            {totalCount}
           </h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Next: {data.nextFairName}
-          </p>
+
         </div>
+
+
+
 
       </div>
 
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        
+
 
 
         <div className="bg-white border border-gray-300 rounded-xl p-5 shadow h-72">

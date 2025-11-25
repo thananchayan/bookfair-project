@@ -87,7 +87,12 @@ export default function LoginPage() {
     if (login.fulfilled.match(action)) {
       const message = action.payload?.message || "Login successful";
       toast.success(message);
-      navigate("/publisher/dashboard");
+      const role = (action.payload?.data as any)?.role || "";
+      if (String(role).includes("ADMIN")) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/publisher/dashboard");
+      }
     } else if (login.rejected.match(action)) {
       const msg = (action.payload as string) || action.error.message || "Login failed";
       toast.error(msg);
