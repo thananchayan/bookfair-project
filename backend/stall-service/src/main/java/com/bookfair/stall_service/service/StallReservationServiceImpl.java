@@ -388,8 +388,8 @@ public class StallReservationServiceImpl implements StallReservationService {
       log.info("Successfully validated user: {}", user.getUsername());
       return user;
     } catch (Exception e) {
-      log.error("Failed to fetch user from user-service: {}", e.getMessage());
-      throw new RuntimeException("Unable to validate user. Please try again later.");
+      log.error("Failed to fetch user from user-service: {e}", e.getMessage());
+      throw new RuntimeException("Unable to validate user. Please try again later." + e.getMessage());
     }
   }
 }
