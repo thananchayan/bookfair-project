@@ -46,6 +46,11 @@
   stroke: #9ca3af;         
 }
 
+.stall.blocked {
+  fill: #fecdd3;
+  stroke: #f43f5e;
+}
+
 .pill {
   font-size: 12px;
   padding: 4px 12px;
@@ -92,9 +97,17 @@
 
 
 .pill-booked {
+.pill-blocked {
   background: #e5e7eb;
   color: #111827;          
   border-color: #9ca3af;
+}
+}
+
+.pill-blocked {
+  background: #fecdd3;
+  color: #9f1239;          
+  border-color: #f43f5e;
 }
 .stall-label {
     font-size: 11px;

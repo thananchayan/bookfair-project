@@ -6,7 +6,7 @@ import { api } from "../../../lib/api";
 import "./BookingInterface.css";
 
 type StallSize = "SMALL" | "MEDIUM" | "LARGE";
-type StallStatus = "available" | "held" | "processing" | "booked" | "approved" | "pending";
+type StallStatus = "available" | "held" | "processing" | "booked" | "approved" | "pending" | "blocked";
 
 // Geometry types
 interface RectStall {
@@ -102,19 +102,13 @@ function arcPath(cx: number, cy: number, rInner: number, rOuter: number, start: 
 const sizeLetter = (sz: StallSize) => (sz === "SMALL" ? "s" : sz === "MEDIUM" ? "m" : "l");
 
 const mapServerStatus = (alloc?: Allocation): StallStatus => {
-  if (!alloc) return "available";
+  if (!alloc) return "blocked";
   const status = (alloc.stallAllocationStatus || "").toUpperCase();
   if (status === "APPROVED") return "approved";
   if (status === "PENDING") return "pending";
   if (status === "PROCESSING") return "processing";
   if (alloc.userId) return "booked";
   return "available";
-};
-
-const PRICE_FALLBACK: Record<StallSize, number> = {
-  SMALL: 100000,
-  MEDIUM: 125000,
-  LARGE: 150000,
 };
 
 function rectPlacements(area: { x: number; y: number; w: number; h: number }, stalls: HallStall[]): RectStall[] {
@@ -349,8 +343,8 @@ export default function BookingInterface() {
     const stall = stalls.find((s) => s.id === id);
     if (!stall) return;
     const curr = status[id];
-    // Approved / processing / booked are locked
-    if (curr === "booked" || curr === "processing" || curr === "approved") return;
+    // Blocked / Approved / processing / booked are locked
+    if (curr === "blocked" || curr === "booked" || curr === "processing" || curr === "approved") return;
     if (curr === "held") {
       setStatus((prev) => ({ ...prev, [id]: "available" }));
       if (showSummary && selectedIds.length - 1 <= 0) setShowSummary(false);
@@ -380,8 +374,7 @@ export default function BookingInterface() {
   const summaryItems = () =>
     selectedIds.map((id) => {
       const s = stalls.find((x) => x.id === id)!;
-      const price = s.price ?? PRICE_FALLBACK[s.size];
-      return { id: s.label, size: s.size, price };
+      return { id: s.label, size: s.size, price: s.price ?? 0 };
     });
 
   const handleConfirmBooking = async () => {
@@ -439,6 +432,7 @@ export default function BookingInterface() {
           <span className="pill pill-available">Available</span>
           <span className="pill pill-held">Selected</span>
           <span className="pill pill-booked">Reserved</span>
+          <span className="pill pill-blocked">Blocked</span>
         </div>
         <div className="text-sm font-semibold text-gray-700">Selected: {selectedIds.length} / 3</div>
       </div>
@@ -455,7 +449,7 @@ export default function BookingInterface() {
         <circle cx={CX} cy={CY} r={INNER_R_INNER} className="guide" />
 
         {stalls.map((st) => {
-          const price = st.price ?? PRICE_FALLBACK[st.size];
+          const price = st.price ?? 0;
           const cls = `stall ${status[st.id]} ${st.size.toLowerCase()}`;
           const label = `${sizeLetter(st.size)} • ${price}`;
 
