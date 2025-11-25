@@ -53,8 +53,8 @@ const PublisherDashboard: React.FC = () => {
       </div>
 
       {/* KPI Cards (min column width 300px) */}
-      <div className="grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
-        <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
+      <div className="grid gap-6 items-stretch [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+        <Card className="min-w-[300px] h-full p-6 space-y-4 bg-white shadow-md rounded-lg flex flex-col">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase">
             Active Reservations
           </h3>
@@ -64,17 +64,19 @@ const PublisherDashboard: React.FC = () => {
           </p>
         </Card>
 
-        <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase">
-            UpComing Book fairs
-          </h3>
-          <p className="text-3xl font-bold text-accent">{upcoming.length}</p>
-          <p className="text-sm text-muted-foreground">
-            UpComing book fairs for reservation
-          </p>
-        </Card>
+        <Link to="/publisher/upcoming-book-fairs" className="block h-full">
+          <Card className="min-w-[300px] h-full p-6 space-y-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow flex flex-col">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase">
+              UpComing Book fairs
+            </h3>
+            <p className="text-3xl font-bold text-accent">{upcoming.length}</p>
+            <p className="text-sm text-muted-foreground">
+              UpComing book fairs for reservation
+            </p>
+          </Card>
+        </Link>
 
-        <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
+        <Card className="min-w-[300px] h-full p-6 space-y-4 bg-white shadow-md rounded-lg flex flex-col">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase">
             Literary genres
           </h3>
@@ -89,28 +91,13 @@ const PublisherDashboard: React.FC = () => {
           <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
             <h2 className="text-2xl font-bold text-foreground">Reserve Stalls</h2>
             <p className="text-muted-foreground">
-              Browse available stalls at the Colombo International Book Fair and
-              make your reservation.
+              Browse available stalls at the Colombo International Book Fair.
             </p>
             <Link to="/publisher/upcoming-book-fairs">
               <Button className="w-full">Browse Upcoming Book fair</Button>
             </Link>
           </Card>
 
-          <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
-            <h2 className="text-2xl font-bold text-foreground">Your Reservations</h2>
-            <p className="text-muted-foreground">
-              View and manage all your stall reservations and bookings.
-            </p>
-            <Link to="/publisher/reservations">
-              <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-white">
-                View Reservations
-              </Button>
-            </Link>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
           <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
             <h3 className="text-lg font-semibold text-foreground">Quick Info</h3>
             <div className="space-y-3 text-sm">
@@ -124,9 +111,24 @@ const PublisherDashboard: React.FC = () => {
                   {displayRole}
                 </p>
               </div>
-              
+
             </div>
           </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg">
+            <h2 className="text-2xl font-bold text-foreground">Your Reservations</h2>
+            <p className="text-muted-foreground">
+              View and manage all your stall reservations and bookings.
+            </p>
+            <Link to="/publisher/reservations">
+              <Button className="w-full border border-primary text-primary hover:bg-primary hover:text-white">
+                View Reservations
+              </Button>
+            </Link>
+          </Card>
+          
 
           <Card className="min-w-[300px] p-6 space-y-4 bg-white shadow-md rounded-lg mb-10">
             <h3 className="text-lg font-semibold text-foreground">Need Help?</h3>

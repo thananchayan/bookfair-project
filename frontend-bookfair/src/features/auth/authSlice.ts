@@ -54,7 +54,11 @@ export const signup = createAsyncThunk<
     }
     return res;
   } catch (err: any) {
-    const message = err?.response?.data?.message || err?.message || "Signup failed";
+    const message =
+      err?.response?.data?.data ||
+      err?.response?.data?.message ||
+      err?.message ||
+      "Signup failed";
     return rejectWithValue(message);
   }
 });
