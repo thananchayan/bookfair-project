@@ -171,7 +171,7 @@ public class StallServiceImpl implements StallService {
   private StallEntity mapToEntity(CreateStallRequest createStallRequest) {
     return StallEntity.builder()
         .stallName(createStallRequest.getStallName())
-        .size(Size.SMALL)
+        .size(createStallRequest.getSize())
         .description(createStallRequest.getDescription())
         .status(Status.AVAILABLE)
         .build();

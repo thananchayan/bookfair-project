@@ -72,7 +72,8 @@ public class BookFairServiceImpl implements BookFairService {
       UpdateBookFairRequest updateBookFairRequest) {
     BookFairEntity existingEntity = bookFairRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("Book fair not found"));
-    if (bookFairRepository.existsByName(updateBookFairRequest.getName())) {
+    if (!existingEntity.getName().equals(updateBookFairRequest.getName())
+        && bookFairRepository.existsByName(updateBookFairRequest.getName())) {
       throw new IllegalArgumentException("Book fair with this name already exists");
     }
     java.time.LocalDate start = updateBookFairRequest.getStartDate();
