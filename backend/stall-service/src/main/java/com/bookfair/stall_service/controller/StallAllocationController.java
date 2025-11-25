@@ -5,6 +5,7 @@ import com.bookfair.stall_service.dto.request.CreateMultipleStallAllocationReque
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.entity.StallEntity;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import com.bookfair.stall_service.service.StallAllocationService;
 import jakarta.validation.Valid;
@@ -73,5 +74,17 @@ public class StallAllocationController {
       @PathVariable Long bookFairId, @RequestParam StallAllocationStatus status) {
     return ResponseEntity.ok(
         stallAllocationService.getStallAllocationsByBoofairIdAndStatus(bookFairId, status));
+  }
+
+  @GetMapping("/availableStalls/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallEntity>>> getAvailableStallsByBookFairId(
+      @PathVariable Long bookFairId) {
+    return ResponseEntity.ok(stallAllocationService.getAvailableStallsByBookFairId(bookFairId));
+  }
+
+  @GetMapping("/allocated/{bookFairId}")
+  public ResponseEntity<ContentResponse<List<StallEntity>>> getAllocatedStallsByBookFairId(
+      @PathVariable Long bookFairId) {
+    return ResponseEntity.ok(stallAllocationService.getAllocatedStallsByBookFairId(bookFairId));
   }
 }

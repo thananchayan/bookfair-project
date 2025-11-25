@@ -296,6 +296,53 @@ public class StallAllocationServiceImp implements StallAllocationService {
     );
   }
 
+  @Override
+  public ContentResponse<List<StallEntity>> getAvailableStallsByBookFairId(Long bookFairId) {
+    if (!bookFairRepository.existsById(bookFairId)) {
+      throw new IllegalArgumentException("Book Fair not found");
+    }
+
+    List<StallEntity> allocatedStalls = stallAllocationRepository
+        .findByBookFair_Id(bookFairId)
+        .stream()
+        .map(StallAllocationEntity::getStall)
+        .toList();
+
+    List<StallEntity> availableStalls = stallRepository.findAll()
+        .stream()
+        .filter(stall -> !allocatedStalls.contains(stall) && stall.getStatus() != Status.BLOCKED)
+        .toList();
+
+    return new ContentResponse<>(
+        "Stall",
+        "SUCCESS",
+        "200",
+        "Available Stalls for Book Fair retrieved successfully",
+        availableStalls
+    );
+  }
+
+  @Override
+  public ContentResponse<List<StallEntity>> getAllocatedStallsByBookFairId(Long bookFairId) {
+    if (!bookFairRepository.existsById(bookFairId)) {
+      throw new IllegalArgumentException("Book Fair not found");
+    }
+
+    List<StallEntity> allocatedStalls = stallAllocationRepository
+        .findByBookFair_Id(bookFairId)
+        .stream()
+        .map(StallAllocationEntity::getStall)
+        .toList();
+
+    return new ContentResponse<>(
+        "Stall",
+        "SUCCESS",
+        "200",
+        "Allocated Stalls for Book Fair retrieved successfully",
+        allocatedStalls
+    );
+  }
+
   private StallAllocationEntity mapToEntity(CreateStallAllocationRequest request) {
     return StallAllocationEntity.builder()
         .bookFair(bookFairRepository.findById(request.getBookFairId()).get())

@@ -5,6 +5,7 @@ import com.bookfair.stall_service.dto.request.CreateMultipleStallAllocationReque
 import com.bookfair.stall_service.dto.request.CreateStallAllocationRequest;
 import com.bookfair.stall_service.dto.request.UpdateStallAllocationPrice;
 import com.bookfair.stall_service.dto.response.StallAllocationResponse;
+import com.bookfair.stall_service.entity.StallEntity;
 import com.bookfair.stall_service.enums.StallAllocationStatus;
 import java.util.List;
 
@@ -29,4 +30,8 @@ public interface StallAllocationService {
 
   ContentResponse<List<StallAllocationResponse>> getStallAllocationsByBoofairIdAndStatus(
       Long bookFairId, StallAllocationStatus status);
+
+  ContentResponse<List<StallEntity>> getAvailableStallsByBookFairId(Long bookFairId);
+
+  ContentResponse<List<StallEntity>> getAllocatedStallsByBookFairId(Long bookFairId);
 }

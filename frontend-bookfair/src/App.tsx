@@ -20,6 +20,7 @@ import { GrDashboard } from "react-icons/gr";
 import LoginPageAdmin from "./pages/auth/LoginPageAdmin";
 import OrganizerStallAllocationPage from "./pages/organizer/Stalls/StallAllocationPage";
 import UpcomingBookFairsPage from "./pages/publisher/Reservation/UpcomingBookFairsPage";
+import AllocationMapAdmin from "./pages/admin/AllocationMapAdmin";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           <Route path="recentreservations" element={<RecentReservations />} />
           <Route path="createstalls" element={<AdminStallManagement />} />
           <Route path="usermanagement" element={<UserManagement />} />
+          <Route path="allocation" element={<AllocationMapAdmin />} />
 
 
 

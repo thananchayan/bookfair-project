@@ -339,7 +339,7 @@ const ReservationManage: React.FC = () => {
                         <td className="px-4 py-3 text-sm">
                           <button
                             className="px-3 py-1 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50"
-                            // onClick={() => navigate("/publisher/reserve-stall", { state: { bookFairId: bf.id } })}
+                            onClick={() => navigate("/admin/allocation", { state: { bookFairId: bf.id } })}
                           >
                             Allocation
                           </button>
